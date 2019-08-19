@@ -1,0 +1,49 @@
+body {
+	opacity:0;
+	 -webkit-transition: width 2s; /* Safari */
+    transition: opacity 2s;
+
+	background-size: 100vw;
+	.container {
+		width: 440px;
+		position: relative;
+		left: 50%;
+		margin-left: -220px;
+		top: 50px;
+		font-size: 20px;
+
+		md-progress-linear{
+			position:absolute;
+			bottom:0px;
+			width:100%;
+		}
+
+		.login{
+			background-color:rgba(255,255,255,0.85);
+			padding: 40px 20px 15px 20px;
+			div{
+				margin-bottom: 10px;
+			}
+			button[type=submit]{
+				display: none;
+			}
+		}
+
+		img {
+			height: 100px;
+			width: 370px;
+			margin: 0 0 30px 15px;
+		}
+
+		input:-webkit-autofill {
+			-webkit-box-shadow: 0 0 0 1000px white inset !important;
+			-webkit-text-fill-color: #CCC !important;
+		}
+
+		.loginFail {
+			text-align: center;
+			margin-top: 5px;
+			font-size: 16px;
+		}
+	}
+}

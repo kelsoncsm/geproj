@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<title>GDoks - Ajuda</title>
+	<link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+	<link rel="stylesheet" href="../webapp/css/normalizer.css">
+	<link rel="stylesheet" href="help.css">
+</head>
+<body>
+	<aside>
+		<ul>
+			<li><a href="#cadUsuarios">Usuários</a></li>
+			<li><a href="#cadClientes">Clientes</a></li>
+			<li><a href="#cadDisciplinas">Disciplinas e Subdisciplinas</a></li>
+			<li><a href="#cadCargos">Cargos</a></li>
+			<li><a href="#log">Log de Utilização do GDoks</a></li>
+			<li>
+				<a href="#projetos">Projetos</a>
+				<ul>
+					<li><a href="#projetos">Visualizando Projetos</a></li>
+					<li>
+						<a href="#cadProjetos">Cadastrando Projetos</a>
+						<ul>
+							<li><a href="#areas">Áreas e Subáreas</a></li>
+							<li><a href="#daos">Docs. de Abertura de Operações</a></li>
+							<li><a href="#docs">Documentos</a></li>
+							<li><a href="#importar">Importar Lista de Documentos</a></li>
+						</ul>
+					</li>
+					<li><a href="#inatProjetos">Inativando Projetos</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="#documentos">Documentos</a>
+				<ul>
+					<li><a href="#bloqDoc">Bloquear um Documento</a></li>
+					<li><a href="#atualDoc">Atualizar/Alterar um Documento</a></li>
+					<li><a href="#validDoc">Validar Documento</a></li>
+					<li><a href="#validacao">Validação em Lote</a></li>
+					<li><a href="#avancarRevisaoDoc">Avançar Revisão de Documento</a></li>
+					<li><a href="#atualDocAvancado">Atualizar Documento (Avançado)</a></li>
+				</ul>
+			</li>
+			<li>
+				<a href="#grd">GRD - Guia de Remessa de Documentos</a>
+				<ul>
+					<li><a href="#criarGrd">Criar GRD</a></li>
+					<li><a href="#enviarGrd">Enviar GRD para Cliente</a></li>
+					<li><a href="#regObsGrd">Registrar Observações do Clinte</a></li>
+				</ul>
+			</li>
+			<li><a href="#conf">Configurações Gerais</a></li>
+			<li><a href="#trocaSenha">Trocar login/senha</a></li>
+		</ul>
+	</aside>
+	<main>
+
+		<img class="logo" src="/webapp/img/logo.png" alt="GDoks">
+
+		<article id="cadUsuarios">
+			<h1>Usuários</h1>
+			<p>
+				Clique em  Menu > Usuários para acessar a tela que lista os usuários
+			</p>
+			<p>
+				Clique em um dos usuários para alterar as informações deste usuário.
+				Ao final, clique em Salvar para que as alterações se tornem permanentes ou Cancelar para descartar
+				alterações realizadas. Os campos "Senha" e "Confirme a Senha" sempre aparecem em branco.
+				A senha do usuário só é alterada se estes campos forem preenchidos.
+			</p>
+			<img src="img/1.png" class="imgTela" alt="Tela de usuário - dados">
+			<p>
+				Você também pode alterar as permissões de acesso do usuário nesta tela.
+				Basta clicar na aba "Permissões". Marque as telas que o usuário terá acesso e, no painel direito,
+				as opções que serão permitidas ao usuário.
+			</p>
+			<p>
+				Ao final das alterações clique em "Salvar" para que elas se tornem permanentes.
+			</p>
+			<img src="img/2.png" class="imgTela" alt="Tela de usuário - permissões">
+			<p>
+				Para cadastrar um novo usuário, clique em Menu > Usuários e depois no botão "Adicionar Usuário".
+				As permissões deste novo usuário só poderão ser alteradas depois que ele for criado
+				(clicar em "Salvar").
+			</p>
+		</article>
+
+		<article id="cadClientes">
+			<h1>Clientes</h1>
+			<p>
+				Clique em Menu > Clientes para acessar a tela que lista clientes.
+				Clique em "Adicionar Cliente" para ir a tela de adicionar um novo cliente.
+			</p>
+			<img src="img/3.png" class="imgTela" alt="Cadastro de cliente">
+			<p>
+				Alguns campos desta tela são auto explicativos. Segue explanação dos outros campos.
+			</p>
+			<h3>Login, Senha e Confirmação de senha</h3>
+			<p>
+				Estes campos são as informações de acesso que o seu cliente terá para ver os documentos publicados
+				na sua área do cliente.
+			</p>
+			<h3>Endereço FTP, Usuário do FTP e Senha do FTP</h3>
+			<p>
+				Se o seu cliente tiver um servidor FTP dedicado a receber os arquivos, as informações de acesso a
+				este servidor devem ser inseridas nestes campos.
+			</p>
+			<p>
+				Clique no botão "Salvar" para que as alterações se tornem permanentes
+			</p>
+		</article>
+
+		<article id="cadDisciplinas">
+			<h1>Disciplinas e Subdisciplinas</h1>
+			<p>
+				No GDoks, os documentos são classificados, entre outras coisas, por disciplina e subdisciplina.
+			</p>
+			<p>	
+				A ideia é que cada disciplina represente uma área do conhecimento, como Engenharia Civil, Engenharia
+				Elétrica, Automação, etc. Subdisciplinas são subdivisões de uma disciplina.
+			</p>
+			<p>
+				O GDoks já tem cadastrada uma série de disciplinas com subdisciplinas nele.
+				É possível alterar qualquer disciplina e até mesmo cadastrar alguma outra.
+				Para isso, clique em Menu > Disciplinas.
+			</p>
+			<img src="img/4.png" class="imgTela" alt="Lista de Disciplinas">
+			<p>
+				Clique na disciplina que deseja alterar. Na primeira aba, podem ser alteradas o nome e a sigla da
+				disciplina ou, se preferir, inativa-la. Ao final da alteração, clique em "Salvar"
+				para que as alterações se tornem permanentes.
+			</p>
+			<img src="img/5.png" class="imgTela" alt="Alterar Disciplinas">
+			<p>
+				Na segunda aba, você verá as subdisciplinas desta disciplina. Poderá alterar subdisciplinas
+				clicando em uma delas no ícone de lápis. Ao final da alteração clique em "Salvar"
+			</p>
+			<p>
+				O processo para adicionar uma subdisciplina é semelhante, bastando clicar no botão "Nova Subdisciplina".
+			</p>
+			<img src="img/6.png" class="imgTela" alt="Adicionar subdisciplina">
+			<h3>Especialistas e Validadores</h3>
+			<p>
+				Especialistas de uma disciplina são usuários do GDoks que serão capazes de atualizar/alterar
+				um documento desta disciplina.
+			</p>
+			<p>
+				Para adicionar um especialista a disciplina, basta começar a escrever o nome dele e selecioná-lo da
+				lista suspensa que aparecerá enquanto digita. Depois, clique em "Salvar" para que o novo conjunto de
+				especialistas seja efetivamente alterado.
+			</p>
+			<img src="img/7.png" class="imgTela" alt="Especialistas">
+			<p>
+				Validadores de uma disciplina são usuários do GDoks que validam (ratificam) as alterações que os
+				especialistas fazem nos documentos. O processo de adição de um validador é análogo ao de adição de um
+				especialista.
+			</p>
+			<p>
+				O GDoks pode ser configurado de modo que ele envie um e-mail para um validador toda vez
+				que um documento da disciplina da qual ele é validador estiver esperando por validação.
+			</p>
+		</article>
+
+		<article id="cadCargos">
+			<h1>Cargos</h1>
+			<p>
+				Quando <a href="#cadProjetos">criamos um projeto</a>, nele cadastramos os documentos que farão
+				parte deste projeto. A cada um destes documentos, podemos determinar quantos HH (homem hora) serão
+				necessários para concluir este documento.
+			</p>
+			<p>
+				Para efeito de cálculo de custo para confecção de um documento, definimos aqui os cargos com seus
+				respectivos valores de HH.
+			</p>
+			<img src="img/8.png" class="imgTela" alt="Adicionar/Alterar Cargo">
+		</article>
+
+		<article id="log">
+			<h1>Log de Utilização do GDoks</h1>
+			<p>
+				Todas as ações realizadas no GDoks que alterem de alguma forma as informações nele armazenada
+				são registradas. Fica registrada assim a ação, o usuário que a realizou, em que instante e outras
+				informações que descrevam a ação.
+			</p>
+			<p>
+				Esses registros podem ser vistos acessando Menu > Log e ficam armazenadas por 2 (dois) anos.
+			</p>
+			<img src="img/30.png" class="imgTela" alt="Log do GDoks">
+		</article>
+
+		<article id="projetos">
+			<h1>Projetos</h1>
+			<p>
+				Para ver uma lista dos projetos ativos, clique em Menu > Projetos.
+				Aparecerá uma lista com os projetos lançados no GDoks que ainda estão ativos. Em destaque, aparecerão
+				os últimos projetos acessados pelo usuário que está logado no GDoks.
+				Para incluir na lista os projetos inativos, clique no botão "Mostrar Projetos Inativos".
+			</p>
+			<img src="img/9.png" class="imgTela" alt="Lista de Projetos">
+			<p>
+				Assim como em várias outras telas, pode-se utilizar o campo de busca para se localizar um projeto.
+			</p>
+			<p>
+				Clicando na linha do projeto você irá para uma tela que exibirá informações gerais sobre o projeto
+				como documentos, andamento geral e GRD's emitidas neste projeto.
+			</p>
+			<img src="img/10.png" class="imgTela" alt="Dashboard de Projeto">
+			<p>
+				Clicando sobre o ícone "lápis" de um projeto, você irá para a tela de edição do um projeto.
+				Será lá nesta tela onde serão definidas informações como nome, código do projeto, cliente,
+				documentos, áreas e subáreas do projeto. A partir desta tela, também é possível baixar uma lista de
+				documentos de um projeto (Baixar LDP).
+			</p>
+
+			<h3 id="cadProjetos">Cadastrando Projetos</h3>
+			<p>
+				Para cadastrar um projeto clique em Menu > Projetos e em seguida no botão "Cadastrar Novo Projeto".
+			</p>
+			<p>
+				Preencha todos os campos e clique em salvar. As outras abas (Áreas, Documentos de Abertura de Operações
+				e Documentos) ficarão habilitadas.
+			</p>
+			<img src="img/11.png" class="imgTela" alt="Cadastro de Projeto">
+			<h3 id="areas">Áreas e Subáreas</h3>
+			<p>
+				As áreas de um projeto são o primeiro nível de subdivisão de um projeto. Podem representar divisões
+				físicas ou geográficas em um projeto. As subáreas são divisões de uma área.
+			</p>
+			<p>
+				Para se cadastrar uma área, clique na aba "Área" e depois no botão "Nova Área". A medida que áreas novas
+				sejam inseridas, elas serão listadas na tela.
+			</p>
+			<img src="img/12.png" class="imgTela" alt="Criação de Áreas">
+			<p>
+				Caso o projeto não seja	grande o suficiente a ponto de justificar tal divisão/subdivisão, recomenda-se
+				cadastrar somente uma área e, dentro desta, somente uma subárea.
+				Para o cadastro de uma subárea, role a tela para baixo e clique no botão "Nova Subárea".
+				O processo de criação de uma subárea é muito semelhante.
+			</p>
+			<img src="img/13.png" class="imgTela" alt="Criação de Subáreas">
+			
+			<h3 id="daos">Documentos de Abertura de Operações (DAOs)</h3>
+			<p>
+				São documentos que, de alguma forma, caracterizam o projeto. Como exemplo, podemos citar o contrato de
+				prestação de serviço, atas de reunião, definições de escopo e proposta aprovada. Clique no botão
+				"Selecione" e selecione os arquivos desejados.
+			</p>
+			<p>
+				Para selecionar mais de um arquivo mantenha a tecla ctrl do teclado e clique sobre os arquivos
+				desejados.
+			</p>
+			<p>
+				Dê um nome para cada arquivo que deseja subir para o GDoks clique no botão "Salvar Documentos de
+				Abertura de Operações".
+			</p>
+			<img src="img/14.png" class="imgTela" alt="Criação de Documentos de Abertura de Operações">
+			
+			<h3 id="docs">Cadastrando Documentos no Projeto</h3>
+			<p>
+				Existem duas maneiras de cadastrar documentos em um projeto:
+				<ul>
+					<li><a href="#modo1">Um a um</a></li>
+					<li><a href="#modo2">Em Lote (em desenvolvimento)</a></li>
+				</ul>
+			</p>
+			<h4 id="modo1">Modo 1 - Um a um</h4>
+			<p>
+				Clique na aba "Documento" na tela de edição do projeto. Depois clique no botão "+ Novo Documento".
+			</p>
+			<img src="img/15.png" class="imgTela" alt="Criação de Documentos de Abertura de Operações">
+			<p>
+				Aparecerá um formulário que deve ser preenchido de acordo com as instruções contidas nele.
+				Feito isso, clique no botão "Salvar Documento".
+			</p>
+			<img src="img/16.png" class="imgTela" alt="Criação de Documentos - 1">
+			<p>
+				Pronto. Um documento do projeto foi cadastrado. Na tela que segue, você verá algumas opções.
+				Você poderá clonar o documento já existente, alterar o cadastro do documento ou remover o
+				documento criado. A medida que os documentos vão sendo criados, eles vão sendo acrescentados a lista.
+			</p>
+			<img src="img/17.png" class="imgTela" alt="Documento Criado">
+			<p>
+				Note que o documento não tem ainda nenhum arquivo. Ele somente foi cadastrado no GDoks com várias
+				informações referidas a ele.
+			</p>
+			<h4 id="importar">Modo 2 - Em Lote</h4>
+			<p>
+				É possível informar ao GDoks todos os documentos de um projeto de uma só vez. Ele faz isso interpretando
+				as informações de uma planilha modelo, que pode ser baixada no próprio GDoks, na aba "Documentos",
+				clicando no botão "Baixar Modelo Para Importação".
+			</p>
+			<img src="img/42.png" class="imgTela" alt="Baixar modelo para importação">
+			<p>
+				Feito isso, você deve preencher a planilha com as informações dos documentos do projeto, levando em
+				conta algumas restrições que o GDoks impõe para que seja mantida a consistência e integridade dos dados.
+				São elas:
+				<ul>
+					<li>Código Único: O GDoks não permite que dois documentos possuam o mesmo código.</li>
+					<li>
+						Relação Disciplina/Subdisciplina: O GDoks não permite que você atribua uma subdisciplina a um
+						documento que não seja subdisciplina da disciplina escolhida.
+					</li>
+				</ul>
+			</p>
+			<p>
+				Os códigos de área e subáreas da planilha serão adicionados ao projeto.
+				Caso já exista uma área/subárea com o código inserido na planilha, essa área/subárea será utilizada.
+			</p>
+			<p>
+				Para importar a lista de documentos, depois dela pronta, basta clicar no botão "Implortar" e selecionar
+				o arquivo que contém a lista de documentos, baseado no modelo baixado.
+			</p>
+			<h3 id="inatProjetos">Inativando Projetos</h3>
+			<p>
+				É uma boa prática inativar projetos que foram concluídos para que eles não sejam mais listados na tela
+				inicial. Também fica bloqueado a criação de GRDs e documentos para projetos inativos.
+				A qualquer momento o projeto pode ser reativado.
+			</p>
+			<p>
+				Para inativar um projeto, vá até a aba "Dados" da tela de edição de projeto, desmarque a opção "Ativo"
+				e clique em salvar.
+			</p>
+			<img src="img/18.png" class="imgTela" alt="Inativando Projeto">
+
+		</article>
+
+		<article id="documentos">
+			<h1>Documentos</h1>
+			<p>Ao clicar em Menu > Documentos você será direcionado para uma página de busca de documentos.</p>
+			<p>A busca pode utilizar vários critérios como o próprio formulário sugere</p>
+			<img src="img/19.png" class="imgTela" alt="Busca de documentos">
+			<p>Uma vez que o documento desejado seja encontrado ele pode ser acessado clicando-se sobre ele.</p>
+			<p>Os últimos documentos acessados são listados no acesso rápido no canto superior direito da tela.</p>
+			<img src="img/20.png" class="imgTela" alt="Acesso rápido 1">
+			<img src="img/21.png" class="imgTela" alt="Acesso rápido 2">
+			Clicando em qualquer item do menu acima te levará para a tela do documento ao qual ele se refere.
+			<img src="img/22.png" class="imgTela" alt="Tela do Documento">
+			O fluxo de trabalho geral pelo qual o documento passa pode ser descrito nos seguintes passos:
+			<ol>
+				<li>Bloquear documento</li>
+				<li>Atualizar/Alterar o documento (fora do GDoks)</li>
+				<li>Transmitir arquivo atualizado do documento para o GDoks</li>
+				<li>Validar alterações no documento</li>
+			</ol>
+			<p>
+				Esses passos são repetidos até que o documento seja dado como concluído (validado com 100% de progresso).
+			</p>
+			<p>
+				Por padrão, o GDoks é configurado para que somente documentos concluídos possam ser emitidos para o
+				cliente. Tendo sido emitido para o cliente este documento não poderá ser alterado, exceto se uma nova
+				revisão deste for criada (clicando no botão "Avançar Revisão").
+				A política "Somente documentos concluídos podem ser enviados para o cliente" pode ser flexibilizado na
+				tela de configurações do GDoks.
+			</p>
+			<h3 id="bloqDoc">Bloquear um Documento</h3>
+			<p>
+				Qualquer usuário que seja especialista da disciplina de um determinado documento poderá trabalhar neste
+				documento. Contudo, o primeiro passo para que isso seja feito é o bloqueio documento. Isso evita que
+				um especialista-A sobreponha as alterações realizadas por um especialista-B.
+			</p>
+			<p>
+				É então fundamental que, antes de bloquear um documento, o especialista tenha certeza de estar
+				trabalhando na última versão oficial dele. Para isso, ele pode simplesmente "Baixar" a ultima versão da
+				revisão atual do documento clicando no botão "Baixar".
+			</p>
+			<p>
+				Tendo a certeza de ter a última versão oficial do documento, o especialista pode bloquear o documento
+				clicando no botão "Bloquear". Quando ele faz isso, existem apenas dois destinos para o documento no
+				GDoks: Ou ele é desbloqueado sem nenhuma alteração (clicando no botão "Desbloquear") ou ele
+				atualiza/altera o documento (fora do GDoks) e transmite os arquivos atualizados para o GDoks.
+				Trataremos deste segundo caminho a seguir.
+			</p>
+			<h3 id="atualDoc">Atualizar/Alterar um Documento</h3>
+			<p>
+				Imagine então que o documento foi baixado pelo especialista e bloqueado para ser alterado.
+				O especialista faz as alterações devidas nos arquivos do documento em sua máquina, usando o programa
+				adequado para a alteração do arquivo (Word, Excel, AutoCAD, etc). Feita essa alteração, deseja-se então
+				atualizar o documento no GDoks.
+			</p>
+			<p>
+				Cabe então ao especialista acessar a tela do documento, clicar na aba "Atualizar Revisão" e
+				depois no botão "Selecionar Arquivos (Máximo  ___ MB)".
+			</p>
+			<img src="img/23.png" class="imgTela" alt="Atualizar Documento 1">
+			<p>
+				Uma janela se abrirá onde o especialista da deve selecionar os arquivos que compõem a nova versão do
+				documento. Ele então deverá fornecer qual o progresso que aquela atualização representa para o andamento
+				do documento e, caso o documento esteja atrasado, ele deverá preencher o campo "Observação" com a
+				justificativa para o atraso. Também poderá nesse momento dizer o número de páginas que cada arquivo
+				possui e o tamanho.
+			</p>
+			<img src="img/24.png" class="imgTela" alt="Atualizar Documento 2">
+			<p>
+				Observe as diferenças da tela depois que o documento é atualizado com o envio do(s) arquivo(s):
+				<ul>
+					<li>A imagem que indica o status do documento muda de "Em Revisão" para "Para validação"</li>
+					<li>
+						Caso o usuário logado seja um também um validador da disciplina, o botão "Validar Progresso"
+						ficará habilitado.
+					</li>
+					<li>
+						A aba "Atualizar revisão" está fica desabilitada, aguardando algum validador validar o progresso
+						do documento.
+					</li>
+					<li>
+						O botão de bloquear ou desbloquear documento fica desabilitado exibindo a mensagem "Aguardando
+						Validação"
+					</li>
+					<li>
+						A barra de progresso indica 50% em verde.
+					</li>
+				</ul>
+			</p>
+			<img src="img/25.png" class="imgTela" alt="Atualizar Documento 3">
+			<h3 id="validDoc">Validar Documento</h3>
+			<p>
+				O GDoks, por padrão, é configurado para enviar um e-mail para todos os validadores de uma disciplina
+				que tenha um documento alterado e precisando de validação.
+				Também pode ser exibido na tela inicial do GDoks a informação de quantos documentos o usuário logado
+				tem para validar.
+			</p>
+			<img src="img/26.png" class="imgTela" alt="Documentos a validar">
+			<p>
+				Estando na tela do documento a ser validado, basta que o validador clique no botão "Validar Progresso".
+				Uma janela se abrirá para que o validador determine qual o valor real do progresso. Por padrão, o campo
+				já vem preenchido com o progresso que o especialista determinou.
+				Cabe o validador acetar aquele progresso ou alterá-lo para mais ou para menos.
+			</p>
+			<img src="img/27.png" class="imgTela" alt="Validando um documento">
+			<p>
+				Observe as diferenças na tela depois que um documento é validado:
+				<ul>
+					<li>A imagem que indica o status do documento muda de "Para validação" para "Validado".</li>
+					<li>A barra de progresso agora está em azul, indicando que aquele progresso foi validado.</li>
+					<li>Caso o validador também seja especialista da disciplina, o botão "Bloquear" aparecerá habilitado.</li>
+				</ul>
+			</p>
+			<img src="img/28.png" class="imgTela" alt="Documento validado">
+			<h3 id="validacao">Validação em Lote</h3>
+			<p>
+				A tela "Validação" permite que um validador veja todos os documentos que precisão de validação e que
+				podem ser validados por ele. Basta então que ele marque os documentos que deseja validar, atribua um
+				progresso para cada um deles e clique no botão "Validar Documentos Selecionados". Essa tela pode ser
+				acessada clicando em Menu > Validação.
+			</p>
+			<img src="img/29.png" class="imgTela" alt="Validação em Lote">
+			<h3 id="avancarRevisaoDoc">Avançar Revisão de Documento</h3>
+			<p>Um documento pode ter sua revisão avançada (ex: sair de Rev 0 para Rev 1).</p>
+			<p>Em geral, isso é realizado depois que um documento emitido é criticado pelo cliente.</p>
+			<p>
+				Quando um documento tem sua revisão avançada e ele se encontra em uma outra revisão, seu status volta a
+				ser virgem mesmo que ele contenha já alguns arquivos da revisão anterior.
+			</p>
+			<p>
+				O fluxo de trabalho com o documento então se reinicia:
+				<ol>
+					<li>Bloquear documento</li>
+					<li>Atualizar/Alterar o documento (fora do GDoks)</li>
+					<li>Transmitir arquivo atualizado do documento para o GDoks</li>
+					<li>Validar alterações no documento</li>
+				</ol>
+			</p>
+			<p>
+				Para avançar a revisão de um documento basta clicar no botão "Avançar Revisão" na tela do documento.
+			</p>
+			<img src="img/31.png" class="imgTela" alt="Avançar Revisão">
+			<img src="img/32.png" class="imgTela" alt="Revisão Avançada">
+			<h3 id="atualDocAvancado">Atualizar Documento (Avançado)</h3>
+			<p>
+				Em algumas situações um documento é composto por vários arquivos.
+			</p>
+			<p>
+				Para atualizar um documento composto por vários arquivos, o especialista só necessita enviar para o
+				GDoks o(s) arquivos que foram alterados. Por exemplo, imagine que um documento é inicialmente composto
+				por dois arquivos de nomes 0001.pdf e 0002.pdf. Depois, em um dado momento, o especialista deseja
+				atualizar este documento enviando dois arquivos:
+				<ul>
+					<li>0002.pdf, que é o mesmo 0002.pdf mas com algumas</li>
+					<li>0003.pdf que é um arquivo novo no documento</li>
+				</ul>
+			</p>
+			<p>
+				Nestas condições, o GDoks exibiria uma tela como mostra a figura abaixo:
+			</p>
+			<img src="img/33.png" class="imgTela" alt="Atualizando Documento Composto">
+			<p>
+				Observe que:
+				<ul>
+					<li>
+						O arquivo 0001.pdf, por já existir no GDoks, aparece listado mesmo não tendo sido
+						selecionado pelo especialista. É dada a opção ao especialista de manter este arquivo ou
+						remove-lo do documento.
+					</li>
+					<li>
+						O arquivo 0002.pdf já existe no documento e está sendo enviado novamente (Preexistente para
+						Atualizar). O GDoks entende que este arquivo será atualizado (sobrescrito) pela nova versão
+						que está sendo enviada.
+					</li>
+					<li>
+						O arquivo 0003.pdf ainda não existe no documento até o presente momento. O GDoks então irá
+						armazenar este arquivo como sendo um novo arquivo do documento.
+					</li>
+				</ul> 
+			</p>
+		</article>
+
+		<article id="grd">
+			<h1>GRD - Guia de Remessa de Documentos</h1>
+			<p>
+				Uma <u>G</u>uia de <u>R</u>emessa de <u>D</u>ocumento (ou GRD) é a forma com que o GDoks
+				envia os documentos para os seus clientes.
+			</p>
+			<p>
+				De modo geral, uma GRD consiste em um arquivo pdf que lista e descreve os arquivos contidos na GRD
+				acompanhado pelos arquivos que compõe os documentos, organizados em pastas. O arquivo PDF é fornecido
+				pela empresa como modelo. Este modelo será implementado no GDoks.
+			</p>
+			<h3 id="criarGrd">Criar GRD</h3>
+			<p>
+				Para criar uma GRD clique em Menu > GRD. Selecione o cliente e em seguida um dos projetos do cliente.
+				TOdos os documentos do projeto do cliente serão listados, porém, somente os que tiverem a última revisão
+				completa poderão ser marcados para fazerem parte da GRD. Clique no botão "Salvar GRD".
+			</p>
+			<img src="img/34.png" class="imgTela" alt="Atualizando Salvando GRD">
+			<p>
+				Uma GRD que ainda não enviada para o cliente pode ser alterada quantas vezes seja necessário.
+				Uma vez enviada, ela pode ser reenviada sem nenhuma restrição. Apenas não poderá ser alterada.
+			</p>
+			<p>
+				Pode-se alterar parâmetros de um documento dentro da GRD como número de vias, número de folhas,
+				Código EMI.
+			</p>
+			<img src="img/35.png" class="imgTela" alt="Atualizando parâmetros de documento na GRD">
+			<p>
+				Também pode-se registrar o endereço físico de um documento emitido.
+			</p>
+			<img src="img/36.png" class="imgTela" alt="Endereço físico de um documento">
+
+			<h3 id="enviarGrd">Enviar GRD para Cliente</h3>
+			<p>
+				Existem três maneiras de se enviar uma GRD para o cliente
+				<ol>
+					<li><a href="#pubArea">Publicar na Área do Cliente</a></li>
+					<li><a href="#pubMailLink">Enviar por e-mail link para baixar GRD</a></li>
+					<li><a href="#pubFTP">Fazer upload de GRD no servidor FTP do cliente</a></li>
+				</ol>
+			</p>
+
+			<h4 id="pubArea">Publicar na Área do Cliente <img src="img/publicar.png" class="imgInline" alt=""></h4>
+			<p>
+				Um cliente cadastrado no GDoks pode ter um login e senha definidos no seu cadastro. Esses login
+				e senha podem ser utilizados para acessar uma área na qual ele terá acesso às GRD's publicadas.
+				O acesso a área do cliente, por padrão, é feito pelo endereço
+				<i>www.gdoks.com.br/clientes/nome_da_sua_empresa/</i>.
+			</p>
+			<p>
+				O formulário de acesso à área do cliente também pode ser incorporado no site da sua empresa
+				com total transparência para o seu cliente.
+			</p>
+			<h4 id="pubMailLink">Enviar por e-mail link para baixar GRD<img src="img/envmail.png" class="imgInline" alt=""></h4>
+			<p>
+				Nesta opção, o cliente receberá um e-mail com um link para baixar a GRD.
+			</p>
+			<p>
+				A mensagem, o assunto e a assinatura do e-mail podem ser <a href="#conf">configuradas</a> para um valor
+				padrão. Mesmo assim, na hora do envio, essas informações podem ser alteradas de acordo com a necessidade
+				do usuário.
+			</p>
+			<img src="img/37.png" class="imgTela" alt="Envio de link de GRD por email">
+			<p>
+				Podem ser adicionados até 3 (três) destinatários para o envio da mensagem que contém o link para GRD.
+			</p>
+			<h4 id="pubFTP">Fazer upload de GRD no Servidor FTP do cliente<img src="img/envftp.png" class="imgInline" alt=""></h4>
+			<p>Esta opção somente fica disponível se o cliente tiver em seu cadastro definidos endereço, login e senha
+			de acesso ao servidor FTP do cliente.</p>
+			
+			<h3 id="regObsGrd">Registrar Observações do Cliente</h3>
+			<p>
+				Quando uma GRD é enviada para um cliente, espera-se que este cliente retorne, dando os arquivos que
+				compõem a GRD como concluído. Contudo, é possível que o cliente faça algumas observações sobre um dado
+				documento.
+			</p>
+			<p>
+				Com o GDoks é possível registrar essas observações do cliente e ainda acionar o especialista para que
+				este possa voltar trabalhar nos documentos em questão o quanto antes. Para tanto, abra a GRD que está
+				sendo criticada pelo cliente e clique na aba "Retorno de GRD". Selecione o documento criticado
+				e preencha os outros campos. Também é possível anexar arquivos a esta observação. Ao final, clique no
+				botão "Salvar"
+			</p>
+
+			<img src="img/38.png" class="imgTela" alt="Registrando o Retorno de GRD">
+			
+			<p>
+				O resultado será a observação registrada e os especialistas da disciplina notificados quanto a
+				observação do cliente. Outras observações ainda podem ser inseridas repetindo este processo.
+			</p>
+
+			<img src="img/39.png" class="imgTela" alt="Observação Registrada">
+		</article>
+		
+		<article id="conf">
+			
+			<h1>Configurações Gerais</h1>
+			<p>
+				A tela Menu > Configurações concentra as mais diversas configurações do GDoks.
+			</p>
+
+			<img src="img/40.png" class="imgTela" alt="Configurações Gerais">
+						
+			<h3>Máximo de projetos no histórico</h3>
+			<p>É o número máximo de projetos que aparecem listados em destaque na lista de projetos.</p>
+			
+			<h3>Assunto padrão no envio de GRD por e-mail</h3>
+			<p>
+				No envio do link de uma GRD para um cliente por e-mail o assunto já vem preenchido com um texto
+				padrão. É muito importante que este assunto possua informações curtas relevantes para que os seus
+				clientes não acharem que se trata de um vírus. É importante então que o assunto do e-mail transmita
+				credibilidade a quem recebe o e-mail.
+			</p>
+			<p>
+				Para isso, você pode utilizar os códigos de substituição relacionados no quadro da direita. Esses
+				códigos (começados com $) serão, na hora do envio, substituídos pelas palavras às quais eles correspondem.
+				Exemplo:
+			</p>
+			<p>
+				E empresa ENGEMAX está trabalhando num projeto chamado "Linha Savana" para o cliente "Savanas LTDA".
+				O nome do contato é Miguel Aleixo. Se está enviando a GRD-2018-000003 para o cliente.
+				O assunto padrão poderá está configurado assim:<br>
+				<center><i>$empresa_nome - $projeto_nome: Envio de Arquivos ($grd_codigo)</i></center>
+				Na hora do envio da mensagem se transformará em:
+				<center><i>ENGEMAX - Linha Savana: Envio de Arquivos (GRD-2018-000003)</i></center>
+			</p>
+
+			<h4>Mensagem padrão no envio de GRD</h4>
+			<p>Análogo ao item anterior (assunto da mensagem), mas a possibilidade de alguma formatação de texto.</p>
+
+			<h4>Assinatura no envio de GRD</h4>
+			<p>Análogo ao item anterior (Mensagem)</p>
+
+			<h4>Notificar Validador por E-mail</h4>
+			<p>
+				Quando habilitada, envia um e-mail para os validadores de uma disciplina que tenha um documento
+				precisando de validação
+			</p>
+
+			<h4>Notificar Especialistas por E-mail</h4>
+			<p>
+				Quando habilitada, envia um e-mail para os especialistas para avisar que algum documento precisa da
+				atenção deles.
+			</p>
+
+			<h4>Somente Documentos Concluídos podem ser emitidos</h4>
+			<p>
+				Se habilitado, só poderá ser emitido (incluído numa GRD) o documento que estiver completo (progresso total em 100%).
+			</p>
+		</article>
+		
+		<article id="trocaSenha">
+			<h1>Troca de Senha</h1>
+			<p>
+				A qualquer momento um usuário dentro do GDoks pode trocar as suas informações de login e senha.
+				Para isso, basta acessar o menu no canto superior direito e clicar em "Trocar Senha", preencher os
+				campos de acordo e clicar em "Salvar".
+			</p>
+			<p>
+				Se os campos "Senha" e "Confirmação de Senha" não forem preenchidos a senha não será alterada.
+			</p>
+			<img src="img/41.png" class="imgTela" alt="Troca de Senha">	
+		</article>
+
+	</main>
+</body>
+</html>

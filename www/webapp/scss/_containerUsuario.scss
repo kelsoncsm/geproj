@@ -1,0 +1,42 @@
+#usuario_container{
+	.aviso{
+		color: #FF5722;
+		font-size: 14px;
+	}
+
+	.permissoes_container{
+		&>div{
+			border-top:1px solid #DDD;
+			.telas_container{
+				height:299px;
+				overflow-y:hidden;
+				border-right: 1px solid #DDD;
+				.tela{
+					border-bottom:1px solid #DDD;
+					padding:10px 20px 0 20px;
+					width:100%;
+					md-checkbox{
+						width:calc(100% - 50px);
+					}
+					button{
+						width:32px;
+					}
+				}
+				.tela:hover{
+					background-color:$azulClaro;
+				}
+			}
+			.telas_container:hover{
+				overflow-y:auto;
+			}
+			.opcoesDeTela_container{
+				.opcao{
+					padding:16px 20px 0 20px;
+				}
+			}
+		}
+		.controles {
+			padding:15px 10px 0 10px;
+		}
+	}
+}

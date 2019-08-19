@@ -1,0 +1,103 @@
+#proposta_container{
+
+	.controles {
+		.search {
+
+			md-input-container {
+				width:200px;
+			}
+			.selectContainer {
+				position: relative;
+				top: -12px;
+			}
+			
+		}	
+		button {
+			position: relative;
+			top: -16px;
+		}
+	}
+
+	.arquivoSelecionado {
+		color: rgba(0, 0, 0, 0.54);
+		padding: 40px 20px 10px 40px;
+		border: 1px solid rgba(0, 0, 0, 0.12);
+		background-color: rgba(0, 0, 0, 0.03);
+		button {
+			position: relative;
+			top:8px;
+		}
+	}
+
+	table {
+		border-collapse: collapse;
+		width: 100%;
+		margin-bottom: 50px;
+		position: relative;
+		top: 20px;
+		cursor: default;
+		tr{
+			outline:none;
+		}
+		td {
+			padding: 10px 0;
+			&:nth-child(1){
+				text-align: center;
+			}
+			&:nth-child(2){
+				text-align: center;
+			}
+			&:nth-child(3){
+				text-align: center;
+			}
+			&:nth-child(4){
+				text-align: center;
+			}
+			&:nth-child(5){
+				text-align: center;
+			}
+			&:nth-child(6){
+				text-align: right;
+				width:300px;
+			}
+		}
+		thead {
+			color:$cinza;
+			font-size: 12px;
+		}
+		tbody{
+			tr{
+				&:last-child{
+					td{
+						border-bottom: 1px solid $cinzaClaro;
+					}
+				}
+				&:hover{
+					td{
+						background-color: #FFF;
+					}
+				}
+			}
+			td{
+				border-top:1px solid $cinzaClaro;
+				
+				span{
+					display: block;
+					font-size: 12px;
+					color:$cinza;
+				}
+				&:nth-child(6){
+					padding-top:20px;
+				}
+			}
+			.aprovada {
+				td{
+					font-style: italic;
+				}
+				td:first-child:before,td:first-child:after{
+					content:" * ";
+				}
+			}
+		}
+	}
+}

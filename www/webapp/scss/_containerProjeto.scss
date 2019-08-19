@@ -1,0 +1,108 @@
+#addprojeto_dados_container {
+	a {
+		color:$azul;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+}
+#addprojeto_dao_container md-input-container{
+	position: relative;
+	top:20px;
+}
+
+#addprojeto_areas_container {
+	padding-bottom: 56px
+}
+
+#addprojeto_areas_container .bt_adicionar{
+	position: absolute;
+	right: 15px;
+	bottom: 15px;
+}
+
+#addprojeto_areas_container table input[type=text]{
+	width: 100%;
+}
+
+#form_daos > div.alertaDeTamanho{
+	text-align:center;
+	color:$laranja;
+	margin-bottom: 10px;
+}
+
+#daosRegistradas_container{
+	table {
+		td:last-child{
+			text-align: right;
+		}
+	}
+}
+
+#addprojeto_documentos_container {
+	.lista_de_docs{
+
+		td:nth-child(2){
+			width: 160px;
+		}
+		td:nth-child(3){
+			width: 80px;
+		}
+		td:nth-child(4){
+			width: 80px;
+		}
+		td:nth-child(5){
+			width: 175px;
+		}
+
+		thead {
+			td {
+				font-size: 14px;
+				padding-bottom: 5px;
+			}
+		}
+
+		.codigo{
+			font-size:18px;
+		}
+		.codigo, .subdisciplina, .area {
+			display:block;
+		}
+		.nome,.disciplina,.subarea{
+			font-size:12px;
+		}
+		tbody .impar td{
+			border-top: 1px solid $cinza;
+			border-bottom: none !important;
+		}
+		tbody .par td{
+			border-top: none;
+		}
+	}
+
+	.criticas{
+		margin: 0 10px;
+		div {
+			padding:20px;
+			text-align:center;
+			background-color:$laranja;
+			color:#FFF;
+		}
+		&>ul{
+			border:1px solid $laranja;
+			margin-top:0px;
+			padding:20px 50px;
+			color:$laranja;
+		}
+	}
+}
+
+#addprojeto_financeiro_container {
+	background-color: #FFF;
+	md-input-container {
+		width: 50%;
+		max-width:300px;
+		&:nth-child(2){
+			margin: 50px 0 0 0;
+		}
+	}
+}

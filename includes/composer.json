@@ -1,0 +1,17 @@
+{
+    "name": "GDoks",
+    "description": "Gestor Eletrônico de Documentos WEB",
+    "authors": [
+        {
+            "name": "Sérgio Moura",
+            "email": "smouracalmon@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "sendgrid/sendgrid": "~6.0",
+        "slim/slim": "~2.0",
+        "nicolab/php-ftp-client": "^1.4",
+        "phpoffice/phpspreadsheet": "^1.1"
+    }
+}

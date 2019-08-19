@@ -1,0 +1,168 @@
+#dashprojeto_container {
+	.cabecalho{
+		margin-bottom: 50px;
+		item{
+			float: left;
+			padding:0 20px 20px 0;
+			label{
+				display:block;
+				font-size: 10px;
+				color:$cinza;
+			}
+			value{
+				display: block;
+			}
+		}
+	}
+
+	.documentos {
+		position: relative;
+		padding-top: 10px;
+		.btn-add-documento {
+			position: absolute;
+			right: 0px;
+			top: 15px;
+		}
+		.tb-documentos{
+			border-collapse:collapse;
+			width:100%;
+			margin-bottom: 50px;
+			cursor: default;
+			tr{
+				outline:none;
+			}
+			td {
+				padding: 10px 0;
+				&:nth-child(1){
+					text-align: left;	
+				}
+				&:nth-child(2){
+					text-align: center;
+					width: 80px;
+				}
+				&:nth-child(3){
+					text-align: center;
+					width: 80px;
+				}
+				&:nth-child(4){
+					text-align: center;
+					width: 100px;
+				}
+				&:nth-child(5){
+					text-align: center;
+					width: 100px;
+				}
+				&:nth-child(6){
+					text-align: center;
+					width: 150px;
+				}
+				&:nth-child(7){
+					text-align: right;
+					width: 180px;
+					span {
+						display: inline;
+					}
+				}
+			}
+			thead {
+				color:$cinza;
+				font-size: 12px;
+			}
+			tbody{
+				cursor:pointer;
+				tr{
+					&:last-child{
+						td{
+							border-bottom: 1px solid $cinzaClaro;
+						}
+					}
+					&:hover{
+						td{
+							background-color: #FFF;
+						}
+					}
+				}
+				td{
+					border-top:1px solid $cinzaClaro;
+					
+					span{
+						display: block;
+						font-size: 12px;
+						color:$cinza;
+					}
+					&:nth-child(6){
+						padding-top:20px;
+					}
+				}
+			}
+		}
+	}
+	.grds{
+		position: relative;
+		padding-top: 10px;
+		.btn-add-grd {
+			position: absolute;
+			right: 0px;
+			top: 15px;
+		}
+		.tb-grds{
+			border-collapse:collapse;
+			width:100%;
+			cursor: default;
+			td {
+				padding: 10px 0;
+				
+				&:nth-child(2){
+					text-align: center;
+				}
+				&:nth-child(3){
+					text-align: center;
+				}
+				&:nth-child(4){
+					text-align: center;
+				}
+				&:nth-child(5){
+					text-align: center;
+				}
+				&:nth-child(6){
+					text-align: center;
+					width: 40px;
+				}
+			}
+			thead {
+				color:$cinza;
+				font-size: 12px;
+			}
+			tbody{
+				cursor: pointer;
+				tr{
+					outline: none;
+					&:last-child{
+						td{
+							border-bottom: 1px solid $cinzaClaro;
+						}
+					}
+					&:hover{
+						td{
+							background-color: #FFF;
+						}
+					}
+				}
+				td{
+					border-top:1px solid $cinzaClaro;
+					
+					span{
+						display: block;
+						font-size: 12px;
+						color:$cinza;
+					}
+				}
+			}
+		}
+	}
+
+	.aviso{
+		text-align: center;
+		margin-bottom: 50px;
+	}
+}

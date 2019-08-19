@@ -1,0 +1,27 @@
+#clientes_container{
+    md-input-container {
+        margin-top: 40px;
+    }
+    
+    .aviso{
+        color:$cinzaClaro;
+        border-radius: 5px;
+        text-align:center;
+    }
+
+    .lista{
+        
+        .cliente{
+            display: inline-block;
+            width: calc(33% - 50px);
+            margin-bottom: 20px;
+            padding: 20px;
+            text-decoration: none;
+            margin-right:20px;
+        }
+
+        .cliente:nth-child(3n){
+			margin-right:0px;	
+		}
+    }
+}

@@ -1,0 +1,210 @@
+#documento_container {
+	.aviso{
+		background-color: #ddd;
+		color: #9891a0;
+		padding: 10px 36px;
+		margin-top: 20px;
+		border-radius: 3px;
+	}
+	button span{
+		text-transform:none;
+	}
+	progresso {
+		position: relative;
+		top:6px;
+	}
+	.tabs{
+		
+	}
+	.fabs_container{
+		position: relative;
+		height: 0;
+		top: 8px;
+	}
+
+	.md-whiteframe-1dp {
+		margin: 0 0 30px 0;
+		background-color: #FFF;
+		md-content {
+		 	background-color: #fff;
+		}
+	}
+
+	.header_table {
+		font-size: 14px;
+		width: 100%;
+		margin-bottom:20px;
+		tr td {
+			padding: 2px 0px;
+			label{
+				font-weight: bold;
+			}
+			label:after{
+				content: ": ";
+			}
+		}
+		span {
+			a {
+				display: inline-block;
+				padding:2px 5px;
+				color: $azul;
+				&:hover {
+					background-color:$azulClaro;
+					color: $azul;
+				}
+			}
+			
+		}
+
+	}
+	.files_table{
+		font-size: 14px;
+		width:100%;
+		border-collapse: collapse;
+		margin-top:20px;
+		td{
+			border-bottom:1px solid #e5e5e5;
+			padding:0 15px;
+			border-right:1px solid #e5e5e5;
+			
+		}
+
+		td:nth-child(1){
+			border-left:1px solid #e5e5e5;
+		}
+		td:nth-child(2){
+			width:25px;
+		}
+		td:nth-child(3){
+			width:50px;
+			padding:0;
+			input{
+				border:none;
+				background:none;
+				padding:10px;
+				height:100%;
+				text-align:center;
+				width: 100px;
+			}
+			input:focus{
+				outline:none;
+			}
+		}
+		td:nth-child(4){
+			width:95px;
+		}
+		td:nth-child(5){
+			width:200px;
+		}
+		td:nth-child(6){
+			width:50px;
+		}
+		md-select {
+			margin:0;
+		}
+		md-input-container {
+			margin:0;
+		}
+		md-input-container input{
+			margin: 25px 0 0 0;
+		}
+		tbody{
+			tr:nth-child(odd) td{
+				background-color:#F0F0F0;
+			}
+			tr:nth-child(even) td{
+				
+			}
+		}
+		thead{
+			color:$azul;
+			td{
+				padding:10px 0 10px 10px !important;
+			}
+		}
+	}
+	.afterControls {
+		margin: 20px 0 0 0;
+	}
+	.hbar{
+		background-color: #DFDFDF;
+		height: 20px;
+		width: 100%;
+		margin-bottom: 5px;
+		display: inline-block;
+		outline:none;
+		cursor:pointer;
+		div{
+			transition: width 0.3s ease-out;
+			display: inline-block;
+			height: 20px;
+			font-size: 10px;
+			text-align: right;
+			padding-right: 2px;
+			position: relative;
+			left: 0;
+			overflow: hidden;
+			line-height:20px;
+		}
+
+		.prgValidado{
+			background-color: #2196F3;
+			color: #FFF;
+		}
+		
+		.prgAValidar{
+			background-color: #6DD900;
+			color: #FFF;
+		}
+	}
+	.short {
+		width: calc(100% - 75px);
+	}
+
+	.historico{
+		.revisao{
+			margin: 0 0 20px 0;
+			padding: 0 0 20px 0;
+			border-bottom: 1px solid $cinzaClaro;
+			.titulo{
+				margin: 0 0 10px 0;
+			}
+			.pda {
+				.pda_info {
+					width: 100%;
+					padding: 15px;
+					background-color: #dfdfdf;
+					position: relative;
+					top: -6px;
+					font-size: 13px;
+					min-height: 115px;
+					ul {
+						list-style-type: decimal-leading-zero;
+						margin: 0 0 0 25px;
+    					padding: 0;
+    					li {
+    						margin: 3px 0 0 0;
+    						padding: 0 0 0 5px;
+    					}
+					}
+					a {
+						color:$azul;
+					}
+					div:nth-child(2){
+						text-align:right;
+						.md-button {
+							display: block;
+							position: absolute;
+							top: 55px;
+							right: 6px;
+						}
+					}
+				}
+			}
+			&:last-child {
+				border-bottom:none;
+			}
+		}
+	}
+	overflow-x: hidden;
+}
