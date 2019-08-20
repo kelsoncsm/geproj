@@ -48,6 +48,8 @@
 
 			// Tratando url de tela para testar na query
 			$url_tela = str_replace('/www','', $url_tela);
+			$url_tela = str_replace('/gdoks','', $url_tela);
+
 
 			// Verificando se existe uma tela com a url passada
 			$sql = 'SELECT
@@ -59,6 +61,7 @@
 						a.href
 					FROM gdoks_telas a
 					WHERE a.endereco=?';
+
 			$rs = $db->query($sql,'s',$url_tela);
 			if(sizeof($rs) == 0){
 				throw new Exception("Erro: Tela inexistente", 1);

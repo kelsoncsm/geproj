@@ -8,7 +8,7 @@
 	ini_set('date.timezone', 'America/Sao_Paulo');
 
 	// Required files - - - - - - - - - - - - - - - - - - -
-	require('autoload.php');
+	require('vendor/autoload.php');
 	require('constantes.php');
 	require('db.php');
 	require('definicoes_de_acoes.php');
@@ -48,12 +48,14 @@
 		$token = $user->token;
 	}
 
+
 	// Definindo os nomes dos arquivos do cliente;
+	// $FILE_DBKEY = CLIENT_DATA_PATH.$empresa.'/dbkey.php';
 	$FILE_DBKEY = CLIENT_DATA_PATH.$empresa.'/dbkey.php';
 	$FILE_GRD = CLIENT_DATA_PATH.$empresa.'/grd.php';
 	$FILE_LOGO = CLIENT_DATA_PATH.$empresa.'/logo.jpg';
 	$FILE_CONFIG = CLIENT_DATA_PATH.$empresa.'/config.json';
-	
+	// die($FILE_DBKEY);
 	// Criando a conexão
 	if(isset($empresa) && file_exists($FILE_DBKEY)){
 		// Incluindo arquivo que define $dbkey

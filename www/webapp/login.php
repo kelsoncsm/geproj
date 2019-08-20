@@ -22,7 +22,7 @@
 				</md-input-container>
 				<md-input-container>
 					<label>Login</label>
-					<input type="text" ng-model="loginData.login" id="login" >
+					<input type="text" ng-model="loginData.login" id="login"  >
 				</md-input-container>
 				<md-input-container>
 					<label>Senha</label>
