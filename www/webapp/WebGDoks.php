@@ -57,7 +57,7 @@
 						Histórico de Documentos
 					</md-tooltip>
 				</md-button>
-				<md-menu-content ng-controller="HistoricoController">
+				<md-menu-content ng-controller="HistoricoController"> 
 					<md-menu-item ng-repeat="doc in root.historico">
 						<md-button ng-click="goToDoc(doc.i)">
 							<md-icon class="material-icons step" aria-label="Ir para documento {{doc.nome}}">insert_drive_file</md-icon>
