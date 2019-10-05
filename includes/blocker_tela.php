@@ -3,7 +3,7 @@
 	// verificando se o usuário está setado
 	if(!isset($_COOKIE['user'])){
 		// redirecionando para página inicial.
-		header("Location: /webapp/login.php");
+		header("Location: /geproj/www/webapp/login.php");
 		die();
 	}
 
@@ -25,7 +25,7 @@
 	$url = $_SERVER['SCRIPT_NAME'];
 
 	// Carregando o objeto tela
-	include('GDoks/Tela.php');
+	include('GeProj/Tela.php');
 	try {
 		$tela = Tela::CreateByUrl($url,$user->id,$db);
 	} catch (Exception $e) {

@@ -9,7 +9,7 @@
 	module.controller('NovaPropostaController',NovaPropostaController);
 
 	// Definindo o controller
-	function PropostasController($scope,GDoksFactory,$mdToast,$location){
+	function PropostasController($scope,GeProjFactory,$mdToast,$location){
 
 		// Definindo variáveis do scope
 		$scope.clientes = null;
@@ -21,7 +21,7 @@
 			id_cliente:null
 		}
 		// Carregando clientes da base de dados
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 		.success(function(response){
 			$scope.clientes = response.clientes;
 			parsePropostas();
@@ -40,7 +40,7 @@
 		});
 
 		// Carregando propostas
-		GDoksFactory.getUltimasPropostas()
+		GeProjFactory.getUltimasPropostas()
 		.success(function(response){
 			$scope.propostas = response.propostas;
 			parsePropostas();
@@ -72,7 +72,7 @@
 
 		// Função de busca
 		function buscar(){
-			GDoksFactory.buscarProposta($scope.busca)
+			GeProjFactory.buscarProposta($scope.busca)
 			.success(function(response){
 				$scope.propostas = response.propostas;
 				parsePropostas();
@@ -101,7 +101,7 @@
 		}
 	}
 
-	function PropostaController($scope,GDoksFactory,Upload,$cookies,$routeParams,$location,$mdToast,$mdDialog){
+	function PropostaController($scope,GeProjFactory,Upload,$cookies,$routeParams,$location,$mdToast,$mdDialog){
 
 		// Lendo id da proposta do routParam
 		var id_proposta = $routeParams.id;
@@ -111,7 +111,7 @@
 		$scope.clientes = null;
 
 		// Carregando clientes da base de dados
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 		.success(function(response){
 			$scope.clientes = response.clientes;
 			parseProposta();
@@ -145,7 +145,7 @@
 
 			// Carregando configurações para gerar ou não código automaticamente
 			$scope.geraCodigosAutomaticamente = false;
-			GDoksFactory.getConfiguracoes().
+			GeProjFactory.getConfiguracoes().
 			success(function(response){
 				$scope.geraCodigosAutomaticamente = (response.config.GERAR_CODIGOS_DE_PROPOSTAS_AUTOMATICAMENTE.valor === true);
 			})
@@ -161,7 +161,7 @@
 
 		} else {
 			// Carregando proposta da base de dados
-			GDoksFactory.getProposta(id_proposta)
+			GeProjFactory.getProposta(id_proposta)
 			.success(function(response){
 				$scope.proposta = response.proposta;
 				parseProposta();
@@ -290,7 +290,7 @@
 		}
 
 		function deleteVersao(serial){
-			GDoksFactory.deleteVersao($scope.proposta.id,serial)
+			GeProjFactory.deleteVersao($scope.proposta.id,serial)
 			.success(function(response){
 				var v = $scope.proposta.versoes;
 				v.splice(v.findIndex(function(a){return a.serial==this},serial),1);
@@ -310,7 +310,7 @@
 		}
 
 		$scope.deleteProposta = function(){
-			GDoksFactory.deleteProposta($scope.proposta.id)
+			GeProjFactory.deleteProposta($scope.proposta.id)
 			.success(function(response){
 				$location.url('/propostas');
 			})
@@ -329,7 +329,7 @@
 		}
 
 		$scope.downloadVersaoDeProposta = function(serial){
-			GDoksFactory.downloadVersaoDeProposta($scope.proposta.id,serial);
+			GeProjFactory.downloadVersaoDeProposta($scope.proposta.id,serial);
 		}
 
 		$scope.onAprovarVersaoClick = function(evt,serial){
@@ -357,7 +357,7 @@
 		}
 
 		function aprovarVersao(serial){
-			GDoksFactory.aprovarVersao($scope.proposta.id,serial)
+			GeProjFactory.aprovarVersao($scope.proposta.id,serial)
 			.success(function(response){
 				for (var i = $scope.proposta.versoes.length - 1; i >= 0; i--) {
 					$scope.proposta.versoes[i].aprovacao = null;
@@ -394,7 +394,7 @@
 		}
 
 		function reprovarVersao(serial){
-			GDoksFactory.reprovarVersao($scope.proposta.id,serial)
+			GeProjFactory.reprovarVersao($scope.proposta.id,serial)
 			.success(function(response){
 				$scope.proposta.versoes.find(function(a){return a.serial == this},serial).aprovacao = null;
 			})
@@ -436,13 +436,13 @@
 			}
 		}
 
-		function enviarPropostaDialogController($scope,parentScope,versao,GDoksFactory,$cookies,$mdToast)
+		function enviarPropostaDialogController($scope,parentScope,versao,GeProjFactory,$cookies,$mdToast)
 		{
 			// Definindo variável que manterá as configurações
 			var config = null;
 
 			// Carregando configurações do servidor
-			GDoksFactory.getConfiguracoes()
+			GeProjFactory.getConfiguracoes()
 			.success(function(response){
 				config = response.config;
 				$scope.mail = setUpMail();
@@ -525,7 +525,7 @@
 				// mostra carregando
 				parentScope.root.carregando == true;
 
-				GDoksFactory.mailProposta(parentScope.proposta.id,versao.serial,$scope.mail)
+				GeProjFactory.mailProposta(parentScope.proposta.id,versao.serial,$scope.mail)
 				.success(function(response){
 					// Esconde carregando
 					parentScope.root.carregando = false;
@@ -578,7 +578,7 @@
 
 		$scope.onSalvarClick = function(){
 			
-			GDoksFactory.alterarProposta($scope.proposta)
+			GeProjFactory.alterarProposta($scope.proposta)
 			.success(function(){
 				// Retornando Toast para usuário
 				$mdToast.show(
@@ -599,7 +599,7 @@
 		}
 	}
 
-	function NovaPropostaController($scope,GDoksFactory,Upload,$cookies,$routeParams,$location,$mdToast){
+	function NovaPropostaController($scope,GeProjFactory,Upload,$cookies,$routeParams,$location,$mdToast){
 		
 		// Definindo proposta vazia
 		$scope.proposta = {
@@ -611,7 +611,7 @@
 		}
 
 		// Carregando clientes
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 		.success(function(response){
 			$scope.clientes = response.clientes;
 		})
@@ -627,7 +627,7 @@
 
 		// Carregando configurações para gerar ou não código automaticamente
 		$scope.geraCodigosAutomaticamente = false;
-		GDoksFactory.getConfiguracoes().
+		GeProjFactory.getConfiguracoes().
 		success(function(response){
 			$scope.geraCodigosAutomaticamente = (response.config.GERAR_CODIGOS_DE_PROPOSTAS_AUTOMATICAMENTE.valor === true);
 		})

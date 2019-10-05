@@ -1,12 +1,12 @@
 angular.module('Log',[])
-.controller('LogController',function($scope,$cookies,GDoksFactory){
+.controller('LogController',function($scope,$cookies,GeProjFactory){
 	// Definindo logs
 	$scope.logs = [];
 
 	// Levantando usuários da base
 	$scope.usuarios = [];
 	$scope.dicUsuarios = [];
-	indexedDB.open("gdoks").onsuccess = function(evt){
+	indexedDB.open("geproj").onsuccess = function(evt){
 		evt.target.result.transaction("usuarios").objectStore("usuarios").getAll().onsuccess = function(evt){
 			$scope.$apply(function(){
 				$scope.usuarios = evt.target.result;
@@ -23,7 +23,7 @@ angular.module('Log',[])
 	// Levantando ações
 	$scope.acoes = [];
 	$scope.dicAcoes = [];
-	GDoksFactory.getAcoes().success(function(response){
+	GeProjFactory.getAcoes().success(function(response){
 		$scope.acoes = response.acoes;
 		$scope.acoesCarregadas = true;
 		$scope.q.aid = 0;
@@ -46,7 +46,7 @@ angular.module('Log',[])
 
 	// Definindo função que faz a consulta ao log
 	$scope.getLogs = function(){
-		GDoksFactory.getLogs($scope.q).success(function(response){
+		GeProjFactory.getLogs($scope.q).success(function(response){
 			$scope.logs = response.logs;
 			for (var i = $scope.logs.length - 1; i >= 0; i--) {
 				$scope.logs[i].data = new Date($scope.logs[i].data);

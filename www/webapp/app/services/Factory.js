@@ -1,8 +1,8 @@
-WebGDoks.factory('GDoksFactory',
+WebGeProj.factory('GeProjFactory',
 	[
 		'$http','$cookies',
 		function($http,$cookies){
-			var GDoksFactory = {};
+			var GeProjFactory = {};
 
 			// Função auxiliar que retorna headers baseada no cooke user = = = = = = = = = = = = = = = = = = = = = = = = =
 			var buildHeaders = function(){
@@ -11,83 +11,83 @@ WebGDoks.factory('GDoksFactory',
 
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para mudar login e senha
-			GDoksFactory.mudaLoginSenha = function(novoLogin,novaSenha){
+			GeProjFactory.mudaLoginSenha = function(novoLogin,novaSenha){
 				return $http.post(API_ROOT+'/mudaLoginSenha',{'novoLogin':novoLogin,'novaSenha':novaSenha},buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.refreshToken = function(){
+			GeProjFactory.refreshToken = function(){
 				return $http.get(API_ROOT+'/refresh',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.loadUsuarios = function(){
+			GeProjFactory.loadUsuarios = function(){
 				return $http.get(API_ROOT+'/usuarios',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para atualizar o usuario enviado
-			GDoksFactory.atualizarUsuario = function(usuario){
+			GeProjFactory.atualizarUsuario = function(usuario){
 				return $http.put(API_ROOT+'/usuarios/'+usuario.id,usuario,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para adicionar novo usuario enviado
-			GDoksFactory.adicionarUsuario = function(usuario){
+			GeProjFactory.adicionarUsuario = function(usuario){
 				return $http.post(API_ROOT+'/usuarios',usuario,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getTelasDeUsuario = function(id_usuario){
+			GeProjFactory.getTelasDeUsuario = function(id_usuario){
 				return $http.get(API_ROOT+'/usuarios/'+id_usuario+'/telas',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.salvarTelasDeUsuario = function(id_usuario,telas){
+			GeProjFactory.salvarTelasDeUsuario = function(id_usuario,telas){
 				return $http.put(API_ROOT+'/usuarios/'+id_usuario+'/telas',telas,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDisciplinas = function(){
+			GeProjFactory.getDisciplinas = function(){
 				return $http.get(API_ROOT+'/disciplinas',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDisciplina = function(id_disciplina){
+			GeProjFactory.getDisciplina = function(id_disciplina){
 				return $http.get(API_ROOT+'/disciplinas/'+id_disciplina,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para atualizar o usuario enviado
-			GDoksFactory.atualizarDisciplina = function(disciplina){
+			GeProjFactory.atualizarDisciplina = function(disciplina){
 				return $http.put(API_ROOT+'/disciplinas/'+disciplina.id,disciplina,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para adicionar nova disciplina
-			GDoksFactory.adicionarDisciplina = function(disciplina){
+			GeProjFactory.adicionarDisciplina = function(disciplina){
 				return $http.post(API_ROOT+'/disciplinas',disciplina,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarSubdisciplina = function(subdisciplina){
+			GeProjFactory.atualizarSubdisciplina = function(subdisciplina){
 				return $http.put(API_ROOT+'/disciplinas/'+subdisciplina.id_disciplina+'/subs/'+subdisciplina.id,subdisciplina,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarSubdisciplina = function(subdisciplina){
+			GeProjFactory.adicionarSubdisciplina = function(subdisciplina){
 				return $http.post(API_ROOT+'/disciplinas/'+subdisciplina.id_disciplina+'/subs/',subdisciplina,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerSubdisciplina = function(subdisciplina){
+			GeProjFactory.removerSubdisciplina = function(subdisciplina){
 				return $http.delete(API_ROOT+'/disciplinas/'+subdisciplina.id_disciplina+'/subs/'+subdisciplina.id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.salvarEspecialistas = function(id_disciplina,ids_especialistas){
+			GeProjFactory.salvarEspecialistas = function(id_disciplina,ids_especialistas){
 				return $http.put(API_ROOT+'/disciplinas/'+id_disciplina+'/especialistas/',ids_especialistas,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarValidador = function(id_disciplina,id_usuario,tipo){
+			GeProjFactory.adicionarValidador = function(id_disciplina,id_usuario,tipo){
 				return $http.post(API_ROOT+'/disciplinas/'+id_disciplina+'/validadores/',{"idu":id_usuario,"tipo":tipo},buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerValidador = function(id_disciplina,id_usuario){
+			GeProjFactory.removerValidador = function(id_disciplina,id_usuario){
 				return $http.delete(API_ROOT+'/disciplinas/'+id_disciplina+'/validadores/'+id_usuario,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.salvarValidadores = function(id_disciplina,ids_validadores){
+			GeProjFactory.salvarValidadores = function(id_disciplina,ids_validadores){
 				return $http.put(API_ROOT+'/disciplinas/'+id_disciplina+'/validadores/',ids_validadores,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getProjetos = function(id_cliente){
+			GeProjFactory.getProjetos = function(id_cliente){
 				if(id_cliente == undefined){
 					return $http.get(API_ROOT+'/projetos',buildHeaders());
 				} else {
@@ -95,112 +95,112 @@ WebGDoks.factory('GDoksFactory',
 				}
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getProjetosDetalhados = function(listarInativos){
+			GeProjFactory.getProjetosDetalhados = function(listarInativos){
 				var i = (listarInativos === true)?1:0;
 				return $http.get(API_ROOT+'/projetos/detalhados?i='+i,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getProjeto = function(id){
+			GeProjFactory.getProjeto = function(id){
 				return $http.get(API_ROOT+'/projetos/'+id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarProjeto = function(projeto){
+			GeProjFactory.atualizarProjeto = function(projeto){
 				return $http.put(API_ROOT+'/projetos/'+projeto.id,projeto,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarProjeto = function(projeto){
+			GeProjFactory.adicionarProjeto = function(projeto){
 				return $http.post(API_ROOT+'/projetos',projeto,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarArea = function(area){
+			GeProjFactory.adicionarArea = function(area){
 				return $http.post(API_ROOT+'/projetos/'+area.id_projeto+'/areas/',area,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarArea = function(area){
+			GeProjFactory.atualizarArea = function(area){
 				return $http.put(API_ROOT+'/projetos/'+area.id_projeto+'/areas/'+area.id,area,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerArea = function(area){
+			GeProjFactory.removerArea = function(area){
 				return $http.delete(API_ROOT+'/projetos/'+area.id_projeto+'/areas/'+area.id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getAreas = function(id_projeto){
+			GeProjFactory.getAreas = function(id_projeto){
 				return $http.get(API_ROOT+'/projetos/'+id_projeto+'/areas',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarSubarea = function(subarea){
+			GeProjFactory.adicionarSubarea = function(subarea){
 				return $http.post(API_ROOT+'/subareas/',subarea,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarSubarea = function(subarea){
+			GeProjFactory.atualizarSubarea = function(subarea){
 				return $http.put(API_ROOT+'/subareas/'+subarea.id,subarea,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerSubarea = function(subarea){
+			GeProjFactory.removerSubarea = function(subarea){
 				return $http.delete(API_ROOT+'/subareas/'+subarea.id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getSubareas = function(id_projeto,id_area){
+			GeProjFactory.getSubareas = function(id_projeto,id_area){
 				return $http.get(API_ROOT+'/projetos/'+id_projeto+'/areas/'+id_area+'/subareas',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.salvarDAOs = function(){
+			GeProjFactory.salvarDAOs = function(){
 				// implementada em ProjetoDAOsControlller
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerDAO = function(dao){
+			GeProjFactory.removerDAO = function(dao){
 				return $http.delete(API_ROOT+'/projetos/'+dao.id_projeto+'/daos/'+dao.id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.alterarDocumento = function(documento){
+			GeProjFactory.alterarDocumento = function(documento){
 				return $http.put(API_ROOT+'/projetos/'+documento.id_projeto+'/documentos/'+documento.id,documento,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarDocumento = function(documento){
+			GeProjFactory.adicionarDocumento = function(documento){
 				return $http.post(API_ROOT+'/projetos/'+documento.id_projeto+'/documentos/',documento,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerDocumento = function(documento){
+			GeProjFactory.removerDocumento = function(documento){
 				return $http.delete(API_ROOT+'/projetos/'+documento.id_projeto+'/documentos/'+documento.id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getClientes = function(){
+			GeProjFactory.getClientes = function(){
 				return $http.get(API_ROOT+'/clientes',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getCliente = function(id){
+			GeProjFactory.getCliente = function(id){
 				return $http.get(API_ROOT+'/clientes/'+id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarCliente = function(cliente){
+			GeProjFactory.atualizarCliente = function(cliente){
 				return $http.put(API_ROOT+'/clientes/'+cliente.id,cliente,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarCliente = function(cliente){
+			GeProjFactory.adicionarCliente = function(cliente){
 				return $http.post(API_ROOT+'/clientes',cliente,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDocumentosParaValidar = function(){
+			GeProjFactory.getDocumentosParaValidar = function(){
 				return $http.get(API_ROOT+'/documentos/paraValidar',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDocumentosDoProjeto = function(id_projeto){
+			GeProjFactory.getDocumentosDoProjeto = function(id_projeto){
 				return $http.get(API_ROOT+'/projetos/'+id_projeto+'/documentos/',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getGrdsDoProjeto = function(id_projeto){
+			GeProjFactory.getGrdsDoProjeto = function(id_projeto){
 				return $http.get(API_ROOT+'/projetos/'+id_projeto+'/grds/',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDocumentos = function(id_projeto){
+			GeProjFactory.getDocumentos = function(id_projeto){
 				return $http.get(API_ROOT+'/documentos',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDocumento = function(id_documento){
+			GeProjFactory.getDocumento = function(id_documento){
 				return $http.get(API_ROOT+'/documentos/'+id_documento,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.downloadArquivo = function(idArquivo){
+			GeProjFactory.downloadArquivo = function(idArquivo){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT+'/arquivos/'+idArquivo);
@@ -225,31 +225,31 @@ WebGDoks.factory('GDoksFactory',
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.validarProgresso = function(idDocumento,progresso){
+			GeProjFactory.validarProgresso = function(idDocumento,progresso){
 				return $http.post(API_ROOT+'/documentos/'+idDocumento+'/validacaoDeProgresso', progresso,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.validarProgressos = function(progressos){
+			GeProjFactory.validarProgressos = function(progressos){
 				return $http.post(API_ROOT+'/documentos/validarProgressos', progressos,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.lockDoc = function(idDoc){
+			GeProjFactory.lockDoc = function(idDoc){
 				return $http.get(API_ROOT+'/documentos/'+idDoc+'/lock',buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.delockDoc = function(idDoc){
+			GeProjFactory.delockDoc = function(idDoc){
 				return $http.get(API_ROOT+'/documentos/'+idDoc+'/delock',buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getAcoes = function(){
+			GeProjFactory.getAcoes = function(){
 				return $http.get(API_ROOT+'/acoes',buildHeaders());		
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getTelas = function(){
+			GeProjFactory.getTelas = function(){
 				return $http.get(API_ROOT+'/telas',buildHeaders());		
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getLogs = function(q){
+			GeProjFactory.getLogs = function(q){
 				var query = [];
 				if(!isNaN(q.uid)){query.push(q.uid)};
 				if(!isNaN(q.aid)){query.push(q.aid)};
@@ -258,33 +258,35 @@ WebGDoks.factory('GDoksFactory',
 				return $http.get(API_ROOT+'/logs/'+query.join('/'),buildHeaders());		
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getCargos = function(){
+			GeProjFactory.getCargos = function(){
 				return $http.get(API_ROOT+'/cargos',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarCargo = function(cargo){
+			GeProjFactory.atualizarCargo = function(cargo){
 				return $http.put(API_ROOT+'/cargos/'+cargo.id,cargo,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.inserirCargo = function(cargo){
+			GeProjFactory.inserirCargo = function(cargo){
 				return $http.post(API_ROOT+'/cargos',cargo,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerCargo = function(idCargo){
+			GeProjFactory.removerCargo = function(idCargo){
 				return $http.delete(API_ROOT+'/cargos/'+idCargo,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getTamanhosDePapel = function(){
+			GeProjFactory.getTamanhosDePapel = function(){
 				return $http.get(API_ROOT+'/tamanhosDePapel',buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.baixarPDA = function(id_pda){
+			GeProjFactory.baixarPDA = function(id_pda){
+
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT+'/pdas/'+id_pda);
 				form.setAttribute('method','GET');
 				form.setAttribute('style','display:none');
 
+			
 				// adicionando form a dom
 				document.body.appendChild(form);
 
@@ -295,7 +297,7 @@ WebGDoks.factory('GDoksFactory',
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.baixarPDAParaRevisao = function(id_pda){
+			GeProjFactory.baixarPDAParaRevisao = function(id_pda){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT+'/pdas/checkout/'+id_pda);
@@ -324,15 +326,15 @@ WebGDoks.factory('GDoksFactory',
 				return token;
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.bloquearDocumentoParaRevisao = function(id_doc){
+			GeProjFactory.bloquearDocumentoParaRevisao = function(id_doc){
 				return $http.post(API_ROOT+'/documentos/'+id_doc+'/checkout',null,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.desbloquearDocumento = function(id_doc){
+			GeProjFactory.desbloquearDocumento = function(id_doc){
 				return $http.post(API_ROOT+'/documentos/'+id_doc+'/checkin',null,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.baixarRevisaoAtualizada = function(id_revisao){
+			GeProjFactory.baixarRevisaoAtualizada = function(id_revisao){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT+'/revisoes/'+id_revisao);
@@ -349,27 +351,27 @@ WebGDoks.factory('GDoksFactory',
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarGrd = function(grd){
+			GeProjFactory.adicionarGrd = function(grd){
 				return $http.post(API_ROOT+'/grds', grd,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarGrd = function(grd){
+			GeProjFactory.atualizarGrd = function(grd){
 				return $http.put(API_ROOT+'/grds/'+grd.id, grd,buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getGrd = function(id_grd){
+			GeProjFactory.getGrd = function(id_grd){
 				return $http.get(API_ROOT+'/grds/'+id_grd,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getCodigosEmi = function(){
+			GeProjFactory.getCodigosEmi = function(){
 				return $http.get(API_ROOT+'/emis',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getTiposDeDocumento = function(){
+			GeProjFactory.getTiposDeDocumento = function(){
 				return $http.get(API_ROOT+'/tiposDeDocumento',buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.viewGRD = function(id_grd){
+			GeProjFactory.viewGRD = function(id_grd){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT + '/grds/' + id_grd);
@@ -394,7 +396,7 @@ WebGDoks.factory('GDoksFactory',
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.downloadGRD = function(id_grd){
+			GeProjFactory.downloadGRD = function(id_grd){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT + '/grds/' + id_grd);
@@ -418,7 +420,7 @@ WebGDoks.factory('GDoksFactory',
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.buscarGRD = function(query){
+			GeProjFactory.buscarGRD = function(query){
 				
 				// Montando a query string com base no objeto query
 				var queryString = '';
@@ -445,27 +447,27 @@ WebGDoks.factory('GDoksFactory',
 				return $http.get(API_ROOT+'/grds/search/q?'+queryString,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.mailGRD = function(id_grd,mail){
+			GeProjFactory.mailGRD = function(id_grd,mail){
 				return $http.post(API_ROOT+'/grds/'+id_grd+'/mail',mail,buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.mailLinkGRD = function(id_grd,mail){
+			GeProjFactory.mailLinkGRD = function(id_grd,mail){
 				return $http.post(API_ROOT+'/grds/'+id_grd+'/link',mail,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.loadObservacoesDeGRD = function(id_grd){
+			GeProjFactory.loadObservacoesDeGRD = function(id_grd){
 				return $http.get(API_ROOT+'/grds/'+id_grd+'/obs',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.ftpGRD = function(id_grd){
+			GeProjFactory.ftpGRD = function(id_grd){
 				return $http.post(API_ROOT+'/grds/'+id_grd+'/ftp',null,buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.publicarGRD = function(id_grd){
+			GeProjFactory.publicarGRD = function(id_grd){
 				return $http.post(API_ROOT+'/grds/'+id_grd+'/publicar',null,buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.buscarDocumentos = function(query){
+			GeProjFactory.buscarDocumentos = function(query){
 				// Montando a query string com base no objeto query
 				var queryString = '';
 				for(var i in query){
@@ -479,27 +481,27 @@ WebGDoks.factory('GDoksFactory',
 				return $http.get(API_ROOT+'/documentos/search/q?'+queryString,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.updateEndFisico = function(doc){
+			GeProjFactory.updateEndFisico = function(doc){
 				return $http.put(API_ROOT+'/documentos/'+doc.id+'/revisoes/'+doc.rev_id+'/enderecoFisico', doc.end_fisico,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.avancarRevisao = function(doc){
+			GeProjFactory.avancarRevisao = function(doc){
 				return $http.get(API_ROOT+'/documentos/'+doc.id+'/avancarRevisao',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getHistProjetos = function(){
+			GeProjFactory.getHistProjetos = function(){
 			 	return $http.get(API_ROOT+'/historico/projetos',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getVisaoGeral = function(){
+			GeProjFactory.getVisaoGeral = function(){
 				return $http.get(API_ROOT+'/visaogeral',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getEstatisticasDeProjeto = function(id_projeto){
+			GeProjFactory.getEstatisticasDeProjeto = function(id_projeto){
 				return $http.get(API_ROOT+'/projetos/'+id_projeto+'/stats',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.baixarModeloParaImportacao = function(id_projeto){
+			GeProjFactory.baixarModeloParaImportacao = function(id_projeto){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT + '/projetos/'+id_projeto+'/modeloLdpParaImportacao');
@@ -516,7 +518,7 @@ WebGDoks.factory('GDoksFactory',
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.baixarLDP = function(idProjeto,busca){
+			GeProjFactory.baixarLDP = function(idProjeto,busca){
 
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
@@ -542,7 +544,7 @@ WebGDoks.factory('GDoksFactory',
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.emitirLDP = function(idProjeto,busca){
+			GeProjFactory.emitirLDP = function(idProjeto,busca){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT + '/projetos/' + idProjeto + '/ldp');
@@ -573,31 +575,31 @@ WebGDoks.factory('GDoksFactory',
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getConfiguracoes = function(){
+			GeProjFactory.getConfiguracoes = function(){
 				return $http.get(API_ROOT+'/configuracoes',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.putConfiguracoes = function(config){
+			GeProjFactory.putConfiguracoes = function(config){
 				return $http.put(API_ROOT+'/configuracoes',config,buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDadosFinanceirosDoProjeto = function(id){
+			GeProjFactory.getDadosFinanceirosDoProjeto = function(id){
 				return $http.get(API_ROOT+'/projetos/'+id+'/dadosFinanceiros',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.salvaDadosFinanceirosDoProjeto = function(idProjeto,dadosFinanceiros){
+			GeProjFactory.salvaDadosFinanceirosDoProjeto = function(idProjeto,dadosFinanceiros){
 				return $http.put(API_ROOT+'/projetos/'+idProjeto+'/dadosFinanceiros',dadosFinanceiros,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getUltimasPropostas = function(id){
+			GeProjFactory.getUltimasPropostas = function(id){
 				return $http.get(API_ROOT+'/propostas/ultimas',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getProposta = function(id_proposta){
+			GeProjFactory.getProposta = function(id_proposta){
 				return $http.get(API_ROOT+'/propostas/'+id_proposta,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.downloadVersaoDeProposta = function(id_proposta,serial_versao){
+			GeProjFactory.downloadVersaoDeProposta = function(id_proposta,serial_versao){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT + '/propostas/' + id_proposta + '/versoes/'+serial_versao);
@@ -615,27 +617,27 @@ WebGDoks.factory('GDoksFactory',
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.deleteVersao = function(id_proposta,serial_versao){
+			GeProjFactory.deleteVersao = function(id_proposta,serial_versao){
 				return $http.delete(API_ROOT+'/propostas/'+id_proposta+'/versoes/'+serial_versao, buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.aprovarVersao = function(id_proposta,serial_versao){
+			GeProjFactory.aprovarVersao = function(id_proposta,serial_versao){
 				return $http.post(API_ROOT+'/propostas/'+id_proposta+'/versoes/'+serial_versao+'/aprovar',null, buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.reprovarVersao = function(id_proposta,serial_versao){
+			GeProjFactory.reprovarVersao = function(id_proposta,serial_versao){
 				return $http.post(API_ROOT+'/propostas/'+id_proposta+'/versoes/'+serial_versao+'/reprovar',null, buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.deleteProposta = function(id_proposta){
+			GeProjFactory.deleteProposta = function(id_proposta){
 				return $http.delete(API_ROOT+'/propostas/'+id_proposta, buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.mailProposta = function(id_proposta,serial_versao,mail){
+			GeProjFactory.mailProposta = function(id_proposta,serial_versao,mail){
 				return $http.post(API_ROOT+'/propostas/'+id_proposta+'/versoes/'+serial_versao+'/enviar',mail,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.buscarProposta = function(busca){
+			GeProjFactory.buscarProposta = function(busca){
 				// Criando string de busca "qstring"
 				var parametros = []
 				for (i in busca) {
@@ -650,16 +652,16 @@ WebGDoks.factory('GDoksFactory',
 				return $http.get(API_ROOT+'/propostas/q?'+parametros.join('&'),buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.alterarProposta = function(proposta){
+			GeProjFactory.alterarProposta = function(proposta){
 				return $http.put(API_ROOT+'/propostas/'+proposta.id,proposta,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getPropostasDeCliente = function(id_cliente){
+			GeProjFactory.getPropostasDeCliente = function(id_cliente){
 				// Fazendo requisição de busca
 				return $http.get(API_ROOT+'/clientes/'+id_cliente+'/propostas?',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			return GDoksFactory;
+			return GeProjFactory;
 		}
 	]
 )

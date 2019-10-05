@@ -18,7 +18,7 @@
 
 	// inserindo disciplinas
 	foreach ($disciplinas as $d) {
-		$sql = 'INSERT INTO gdoks_disciplinas (sigla,nome) VALUES (?,?)';
+		$sql = 'INSERT INTO disciplinas (sigla,nome) VALUES (?,?)';
 		$db->query($sql,'',);
 	}
 

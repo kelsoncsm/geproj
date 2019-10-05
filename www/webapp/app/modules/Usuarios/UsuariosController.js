@@ -9,13 +9,13 @@
 	usuarioModulo.controller('PermissoesController',PermissoesController);
 
 	// Definindo controller para os usuários
-	function UsuariosController($scope,GDoksFactory,$location){
+	function UsuariosController($scope,GeProjFactory,$location){
 
 		// Declarando vetor de usuários
 		$scope.usuarios = [];
 
 		// Carregando usuarios da base local
-		var openReq = indexedDB.open("gdoks");
+		var openReq = indexedDB.open("geproj");
 		openReq.onsuccess = function(){
 			var db = openReq.result;
 			db.transaction('usuarios').objectStore('usuarios').getAll().onsuccess = function(evt){
@@ -30,7 +30,7 @@
 	};
 
 	// Definindo controller para usuário
-	function UsuarioController($scope,$routeParams,GDoksFactory,$mdToast,$location){
+	function UsuarioController($scope,$routeParams,GeProjFactory,$mdToast,$location){
 		// Capturando o id passado na url
 		var id = $routeParams.id;
 
@@ -47,7 +47,7 @@
 			$scope.inicialmenteAtivo = true;
 		} else {
 			// Carregando usuário da base
-			var openReq = indexedDB.open('gdoks');
+			var openReq = indexedDB.open('geproj');
 			openReq.onsuccess = function(evt){
 				var db = openReq.result;
 				db.transaction('usuarios').objectStore('usuarios').get(id*1).onsuccess = function(evt){
@@ -71,7 +71,7 @@
 			$scope.root.carregando =true;
 			
 			if($scope.usuario.id == 0){
-				GDoksFactory.adicionarUsuario($scope.usuario)
+				GeProjFactory.adicionarUsuario($scope.usuario)
 				.success(
 					function(response){
 
@@ -97,7 +97,7 @@
 						delete($scope.usuario.senha2);
 
 						// Salvando usuário na base
-						var openReq = indexedDB.open('gdoks');
+						var openReq = indexedDB.open('geproj');
 						openReq.onsuccess = function(evt){
 							var db = evt.target.result;
 							db.transaction('usuarios','readwrite').objectStore('usuarios').add($scope.usuario);
@@ -126,7 +126,7 @@
 					}
 				);
 			} else {
-				GDoksFactory.atualizarUsuario($scope.usuario)
+				GeProjFactory.atualizarUsuario($scope.usuario)
 				.success(
 					function(response){
 						// Esconde Carregando
@@ -145,7 +145,7 @@
 						delete($scope.usuario.senha2);
 						
 						// Atualizando usuário na base
-						var openReq = indexedDB.open('gdoks');
+						var openReq = indexedDB.open('geproj');
 						openReq.onsuccess = function(evt){
 							var db = evt.target.result;
 							db.transaction('usuarios','readwrite').objectStore('usuarios').put($scope.usuario);
@@ -179,7 +179,7 @@
 	};
 
 	// Definindo controller para permissões
-	function PermissoesController($scope,$cookies,GDoksFactory,$mdToast,$routeParams){
+	function PermissoesController($scope,$cookies,GeProjFactory,$mdToast,$routeParams){
 		// Lendo id do usuário na url
 		var id_usuario = $routeParams.id;
 
@@ -276,7 +276,7 @@
 			$scope.root.carregando = true;
 
 			// Enviando para o servidor
-			GDoksFactory.salvarTelasDeUsuario(id_usuario,telas)
+			GeProjFactory.salvarTelasDeUsuario(id_usuario,telas)
 			.success(function(response){
 				// Esconde carregando
 				$scope.root.carregando = false;
@@ -314,7 +314,7 @@
 
 		// FUNÇÕES DE CARGA DE DADOS = = = = = = = = = = = = = = = = = = = =
 		function loadTelas(){
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				var db = evt.target.result;
 				db.transaction('telas').objectStore('telas').getAll().onsuccess = function(evt){
 
@@ -331,7 +331,7 @@
 			$scope.root.carregando = true;
 
 			// Fazendo requisição ao servidor
-			GDoksFactory.getTelasDeUsuario(id_usuario)
+			GeProjFactory.getTelasDeUsuario(id_usuario)
 			.success(function(response){
 
 				// Esconde carregando

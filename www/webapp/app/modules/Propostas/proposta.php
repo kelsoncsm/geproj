@@ -1,7 +1,7 @@
 <?php
  
     // Incluindo classe "Tela" para carregar as opções da tela Documentos
-    require 'GDoks/Tela.php';
+    require 'GeProj/Tela.php';
 
     // Levantando dados do usuário a partir do cookie
     $user = json_decode($_COOKIE['user']);

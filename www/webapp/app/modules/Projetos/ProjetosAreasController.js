@@ -1,5 +1,5 @@
 angular.module('Projetos').controller('ProjetosAreasController',ProjetosAreasController);
-function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
+function ProjetosAreasController($scope,GeProjFactory,$mdDialog,$mdToast){
 	
 	$scope.openAreaDialog = function(ev,idArea){
 		// Declarando o objeto area clicado
@@ -20,7 +20,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 					$scope.area = area;
 					$scope.salvar = function(area){
 						if(area.id == 0){
-							GDoksFactory.adicionarArea(area)
+							GeProjFactory.adicionarArea(area)
 							.success(function(response){
 								area.id = response.newId;
 								parentAreas.push(area);
@@ -41,7 +41,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 								);
 							});
 						} else {
-							GDoksFactory.atualizarArea(area)
+							GeProjFactory.atualizarArea(area)
 							.success(function(response){
 								parentArea.nome = area.nome;
 								parentArea.codigo = area.codigo;
@@ -104,7 +104,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 			function() {
 				var area = $scope.projeto.areas.find(function(a){return a.id==this},idArea);
 				area.id_projeto = $scope.projeto.id;
-				GDoksFactory.removerArea(area)
+				GeProjFactory.removerArea(area)
 				.success(function(response){
 					$scope.projeto.areas = $scope.projeto.areas.filter(function(a){return a.id!= this},idArea);
 					$mdToast.show(

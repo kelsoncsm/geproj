@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="pt-br" ng-app="GDoksEsqueci">
+<html lang="pt-br" ng-app="GeProjEsqueci">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>GDoks</title>
+		<title>GeProj</title>
 		<link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
 		<link rel="shortcut icon" href="/favicon.ico" />
-		<link rel="stylesheet" href="../webapp/css/normalizer.css">
-		<link rel="stylesheet" href="../webapp/node_modules/angular-material/angular-material.min.css">
-		<link rel="stylesheet" href="../webapp/css/geral.css">
-		<link rel="stylesheet" href="../webapp/css/esqueci.css">
+		<link rel="stylesheet" href="../geproj/www/webapp/css/normalizer.css">
+		<link rel="stylesheet" href="../geproj/www/webapp/node_modules/angular-material/angular-material.min.css">
+		<link rel="stylesheet" href="../geproj/www/webapp/css/geral.css">
+		<link rel="stylesheet" href="../geproj/www/webapp/css/esqueci.css">
 	</head>
 	<body ng-controller="controller">
 		<div class="container" ng-cloak>
 			<md-progress-linear md-mode="indeterminate" ng-if="carregando"></md-progress-linear>
 			<form name="esqueci" class="login" layout="column" md-whiteframe="1dp">
-				<img src="../webapp/img/logo.png" alt="GDoks">
+				<img src="../geproj/www/webapp/img/logo.png" alt="GeProj">
 				<div style="text-align:center;">
 					Esqueceu sua senha?
 				</div>
@@ -32,14 +32,14 @@
 			</form>
 		</div>
 	</body>
-	<script src="../webapp/node_modules/angular/angular.min.js"></script>
-	<script src="../webapp/node_modules/angular-animate/angular-animate.min.js"></script>
-	<script src="../webapp/node_modules/angular-aria/angular-aria.min.js"></script>
-	<script src="../webapp/node_modules/angular-cookies/angular-cookies.min.js"></script>
-	<script src="../webapp/node_modules/angular-material/angular-material.min.js"></script>
+	<script src="../geproj/www/webapp/node_modules/angular/angular.min.js"></script>
+	<script src="../geproj/www/webapp/node_modules/angular-animate/angular-animate.min.js"></script>
+	<script src="../geproj/www/webapp/node_modules/angular-aria/angular-aria.min.js"></script>
+	<script src="../geproj/www/webapp/node_modules/angular-cookies/angular-cookies.min.js"></script>
+	<script src="../geproj/www/webapp/node_modules/angular-material/angular-material.min.js"></script>
 	<script>
 		// Definindo módulo
-		var mod = angular.module("GDoksEsqueci",['ngAnimate','ngMaterial']);
+		var mod = angular.module("GeProjEsqueci",['ngAnimate','ngMaterial']);
 
 		// Definindo controller
 		mod.controller('controller',
@@ -69,7 +69,7 @@
 						);
 
 						// Redirecionando para a tela de login
-						setTimeout(function(){window.location = "/webapp/login.php"},6000);
+						setTimeout(function(){window.location = "/geproj/www/webapp/login.php"},6000);
 
 					})
 					.error(function(error){

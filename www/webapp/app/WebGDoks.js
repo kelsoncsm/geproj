@@ -1,5 +1,5 @@
-// Definindo Module WebGDoks
-var WebGDoks = angular.module('WebGDoks',
+// Definindo Module WebGeProj
+var WebGeProj = angular.module('WebGeProj',
 								[
 								'ngRoute',
 								'ngCookies',
@@ -36,7 +36,7 @@ var WebGDoks = angular.module('WebGDoks',
 								]);
 
 // Definindo Rotas
-WebGDoks.config(
+WebGeProj.config(
 	function ($routeProvider){
 		$routeProvider
 		.when(
@@ -227,7 +227,7 @@ WebGDoks.config(
 )
 
 // Configurando o Locale do DatePicker
-WebGDoks.config(function($mdDateLocaleProvider) {
+WebGeProj.config(function($mdDateLocaleProvider) {
     $mdDateLocaleProvider.formatDate = function(date) {
     	if(date){
     		var d = date.getDate();
@@ -255,15 +255,15 @@ WebGDoks.config(function($mdDateLocaleProvider) {
 });
 
 // Configurando cores
-WebGDoks.config(function($mdThemingProvider) {
+WebGeProj.config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
     .primaryPalette('blue')
     .accentPalette('orange',{'default':'800'});
 })
 
 // Definindo próprio controller
-WebGDoks.controller('RootController',RootController);
-function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMenu){
+WebGeProj.controller('RootController',RootController);
+function RootController($scope,$interval,$cookies,GeProjFactory,$mdSidenav,$mdMenu){
 
 	// definindo o objeto root.
 	$scope.root = {};
@@ -283,14 +283,14 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo função que carrega usuários do servidor
 	$scope.root.loadUsuarios = function(){
-		GDoksFactory.loadUsuarios()
+		GeProjFactory.loadUsuarios()
 			.success(
 				function(response){
 					// Carregando usuários
 					var usuarios = response.usuarios;
 
 					// Conectando-se a base de dados
-					var reqOpen = indexedDB.open("gdoks");
+					var reqOpen = indexedDB.open("geproj");
 					
 					reqOpen.onsuccess = function(evt){
 						// Capturando a conexão com a base
@@ -326,14 +326,14 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo função que carrega clientes do servidor
 	$scope.root.loadClientes = function(){
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 			.success(
 				function(response){
 					// Carregando usuários
 					var clientes = response.clientes;
 
 					// Conectando-se a base de dados
-					var reqOpen = indexedDB.open("gdoks");
+					var reqOpen = indexedDB.open("geproj");
 					
 					reqOpen.onsuccess = function(evt){
 						// Capturando a conexão com a base
@@ -366,14 +366,14 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo função que carrega projetos do servidor
 	$scope.root.loadProjetos = function(){
-		GDoksFactory.getProjetos()
+		GeProjFactory.getProjetos()
 		.success(
 			function(response){
 				// Carregando projetos
 				var projetos = response.projetos;
 
 				// Conectando-se a base de dados
-				var reqOpen = indexedDB.open("gdoks");
+				var reqOpen = indexedDB.open("geproj");
 				
 				reqOpen.onsuccess = function(evt){
 					// Capturando a conexão com a base
@@ -409,14 +409,14 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo função que carrega disciplinas do servidor
 	$scope.root.loadDisciplinas = function(){
-		GDoksFactory.getDisciplinas()
+		GeProjFactory.getDisciplinas()
 		.success(
 			function(response){
 				// Carregando disciplinas
 				var disciplinas = response.disciplinas;
 
 				// Conectando-se a base de dados
-				var reqOpen = indexedDB.open("gdoks");
+				var reqOpen = indexedDB.open("geproj");
 				
 				reqOpen.onsuccess = function(evt){
 					// Capturando a conexão com a base
@@ -457,10 +457,10 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo função que carrega telas do servidor
 	$scope.root.loadTelas = function(){
-		GDoksFactory.getTelas()
+		GeProjFactory.getTelas()
 		.success(function(response){
 			// abrindo db local
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				// Pondo telas na tabela
 				var telas = response.telas;
 				for (var i = telas.length - 1; i >= 0; i--) {
@@ -473,7 +473,7 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 	}
 
 	// Criando base de dados.
-	var reqOpen = indexedDB.open("gdoks");
+	var reqOpen = indexedDB.open("geproj");
 	
 	reqOpen.onerror = function(e){
 		console.log("Falha na abertura da base.");
@@ -527,7 +527,7 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo funções que renovam o token
 	var refreshToken = function(){
-		GDoksFactory.refreshToken()
+		GeProjFactory.refreshToken()
 		.success(
 			function(response){
 				var user = $cookies.getObject('user');
@@ -540,7 +540,7 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				console.warn('Token não foi renovado!');
 				console.warn(error);
 				$cookies.remove('user',{path:'/'});
-				indexedDB.deleteDatabase('gdoks');
+				indexedDB.deleteDatabase('geproj');
 				window.location="/";
 			}
 		);

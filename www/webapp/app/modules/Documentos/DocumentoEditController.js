@@ -6,7 +6,7 @@
 	module.controller('DocumentoEditController', DocumentoEditController);
 
 	// Defininfo controller
-	function DocumentoEditController($scope,$routeParams,GDoksFactory,$mdToast,$cookies,$location){
+	function DocumentoEditController($scope,$routeParams,GeProjFactory,$mdToast,$cookies,$location){
 
 		// Lendo o id da rota
 		var id = $routeParams.id;
@@ -27,7 +27,7 @@
 			let clone = $location.search().clone;
 
 			if(id_projeto != undefined && !isNaN(id_projeto)){
-				GDoksFactory.getProjeto(id_projeto)
+				GeProjFactory.getProjeto(id_projeto)
 				.success(function(response){
 					$scope.doc.id_cliente = response.projeto.id_cliente
 					$scope.doc.nome_cliente = response.projeto.nome_cliente;
@@ -39,7 +39,7 @@
 				})
 			} else if (clone != undefined && !isNaN(clone)){
 				// Carregando documento da base
-				GDoksFactory.getDocumento(clone)
+				GeProjFactory.getDocumento(clone)
 				.success(function(response){
 					
 					// Escrevento resultado da requisição no escopo
@@ -66,7 +66,7 @@
 
 		} else {
 			// Carregando documento da base
-			GDoksFactory.getDocumento(id)
+			GeProjFactory.getDocumento(id)
 			.success(function(response){
 
 				// Escrevento resultado da requisição no escopo
@@ -114,7 +114,7 @@
 				doc.id_subdisciplina = $scope.disciplinas.selecionada.subs.selecionada.id;
 
 				// Documento NOVO. Proceder criação
-				GDoksFactory.adicionarDocumento(doc)
+				GeProjFactory.adicionarDocumento(doc)
 				.success(function(response){
 					// Esconde carregando
 					$scope.root.carregando = false;
@@ -143,7 +143,7 @@
 			} else {
 
 				// Documento já existente. Proceder alteração
-				GDoksFactory.alterarDocumento(doc)
+				GeProjFactory.alterarDocumento(doc)
 				.success(function(response){
 					// Esconde carregando
 					$scope.root.carregando = false;
@@ -179,7 +179,7 @@
 			$scope.doc.revisoes[0].data_limite = new Date($scope.doc.revisoes[0].data_limite);
 
 			// Carregando áreas
-			GDoksFactory.getAreas($scope.doc.id_projeto)
+			GeProjFactory.getAreas($scope.doc.id_projeto)
 			.success(function(response){
 				$scope.areas = response.areas;
 				if($scope.doc.id_area != undefined) {
@@ -198,7 +198,7 @@
 			});
 
 			// Carregando disciplinas
-			GDoksFactory.getDisciplinas()
+			GeProjFactory.getDisciplinas()
 			.success(function(response){
 				$scope.disciplinas = response.disciplinas;
 				if($scope.doc.id_disciplina != undefined){
@@ -217,7 +217,7 @@
 			});
 
 			// Carregando Cargos
-			GDoksFactory.getCargos()
+			GeProjFactory.getCargos()
 			.success(function(response){
 				$scope.cargos = response.cargos;
 			})
@@ -232,7 +232,7 @@
 			});
 
 			// Carregando documentos de projeto
-			GDoksFactory.getDocumentosDoProjeto($scope.doc.id_projeto)
+			GeProjFactory.getDocumentosDoProjeto($scope.doc.id_projeto)
 			.success(function(response){
 
 				// Salvando resposta do servidor

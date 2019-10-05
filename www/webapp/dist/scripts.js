@@ -19201,11 +19201,11 @@ module.exports = function(Chart) {
 	
 	var modCargos = angular.module('Cargos',[]);
 
-	var CargosController = function($scope,$mdDialog,GDoksFactory,$mdToast){
+	var CargosController = function($scope,$mdDialog,GeProjFactory,$mdToast){
 
 		$scope.cargos = [];
 
-		GDoksFactory.getCargos().success(function(response){
+		GeProjFactory.getCargos().success(function(response){
 			for (var i = response.cargos.length - 1; i >= 0; i--) {
 				response.cargos[i].valor_hh *= 1;
 			}
@@ -19234,7 +19234,7 @@ module.exports = function(Chart) {
 							parentScope.root.carregando = true;
 
 							if(cargo.id == 0){
-								GDoksFactory.inserirCargo(cargo)
+								GeProjFactory.inserirCargo(cargo)
 								.success(function(response){
 									// Esconde carregando
 									parentScope.root.carregando = false;
@@ -19267,7 +19267,7 @@ module.exports = function(Chart) {
 									);
 								});
 							} else {
-								GDoksFactory.atualizarCargo(cargo)
+								GeProjFactory.atualizarCargo(cargo)
 								.success(function(response){
 									// Esconde carregando
 									parentScope.root.carregando = false;
@@ -19336,7 +19336,7 @@ module.exports = function(Chart) {
 
 			$mdDialog.show(confirm).then(
 				function() {
-					GDoksFactory.removerCargo(idCargo)
+					GeProjFactory.removerCargo(idCargo)
 					.success(function(response){
 						$scope.cargos = $scope.cargos.filter(function(c){return c.id!= this},idCargo);
 						$mdToast.show(
@@ -19358,10 +19358,10 @@ module.exports = function(Chart) {
 	.controller('ClienteController',ClienteController);
 
 
-	function ClientesController($scope,GDoksFactory,$location){
+	function ClientesController($scope,GeProjFactory,$location){
 		// levantando clientes na base de dados local
 		$scope.clientes = [];
-		indexedDB.open('gdoks').onsuccess = function(evt){
+		indexedDB.open('geproj').onsuccess = function(evt){
 			evt.target.result.transaction('clientes').objectStore('clientes').getAll().onsuccess = function(evt){
 				$scope.$apply(function(){$scope.clientes = evt.target.result});
 			}
@@ -19372,7 +19372,7 @@ module.exports = function(Chart) {
 		}
 	};
 
-	function ClienteController($scope,$routeParams,GDoksFactory,$location,$mdToast){
+	function ClienteController($scope,$routeParams,GeProjFactory,$location,$mdToast){
 		// Capturando o id passado na url
 		var id = $routeParams.id;
 
@@ -19398,7 +19398,7 @@ module.exports = function(Chart) {
 			$scope.cliente.senha2 = '';
 		} else {
 			// Carregando informações do cliente a partir da base
-			GDoksFactory.getCliente(id)
+			GeProjFactory.getCliente(id)
 				.success(
 					function(response){
 						$scope.cliente = response.cliente;
@@ -19429,7 +19429,7 @@ module.exports = function(Chart) {
 
 			if($scope.cliente.id == 0){
 
-				GDoksFactory.adicionarCliente(cliente)
+				GeProjFactory.adicionarCliente(cliente)
 				.success(
 					function(response){
 						// Esconde carregando
@@ -19457,7 +19457,7 @@ module.exports = function(Chart) {
 						delete cliente.ftp_usuario;
 						delete cliente.ftp_senha;
 
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							evt.target.result.transaction('clientes','readwrite').objectStore('clientes').add(cliente);
 						}
 						
@@ -19491,7 +19491,7 @@ module.exports = function(Chart) {
 					}
 				);
 			} else {
-				GDoksFactory.atualizarCliente(cliente)
+				GeProjFactory.atualizarCliente(cliente)
 				.success(
 					function(response){
 						// Esconde carregando
@@ -19522,7 +19522,7 @@ module.exports = function(Chart) {
 						delete cliente.ftp_host;
 						delete cliente.ftp_usuario;
 						delete cliente.ftp_senha;
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							evt.target.result.transaction('clientes','readwrite').objectStore('clientes').put(cliente);
 						}
 
@@ -19565,9 +19565,9 @@ module.exports = function(Chart) {
 	angular.module('Configuracoes',[]).controller('ConfiguracoesController',ConfiguracoesController);
 
 	// Definição da ConfigurcoesController
-	function ConfiguracoesController($scope,GDoksFactory,$mdToast,$window){
+	function ConfiguracoesController($scope,GeProjFactory,$mdToast,$window){
 				
-		GDoksFactory.getConfiguracoes()
+		GeProjFactory.getConfiguracoes()
 		.success(function(response){
 			$scope.config = response.config;
 		})
@@ -19582,7 +19582,7 @@ module.exports = function(Chart) {
 		});
 
 		$scope.salvar = function(){
-			GDoksFactory.putConfiguracoes($scope.config)
+			GeProjFactory.putConfiguracoes($scope.config)
 			.success(function(response){
 				// Retornando Toast para o usuário
 				$mdToast.show(
@@ -19624,7 +19624,7 @@ module.exports = function(Chart) {
 	module.filter('daysFromNow',daysFromNow);
 	
 	// Definindo função controller
-	function DocumentosController($scope,GDoksFactory,$mdToast,$location,$cookies){
+	function DocumentosController($scope,GeProjFactory,$mdToast,$location,$cookies){
 		
 		// Definindo 'agora'
 		$scope.agora = new Date();
@@ -19653,7 +19653,7 @@ module.exports = function(Chart) {
 
 		// Função que carrega clientes
 		function carregaClientes(){
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				evt.target.result.transaction("clientes").objectStore("clientes").getAll().onsuccess = function(evt){
 					$scope.$apply(function(){
 						$scope.clientes = evt.target.result;
@@ -19664,7 +19664,7 @@ module.exports = function(Chart) {
 
 		// Função que carrega projetos
 		function carregaProjetos(){
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				evt.target.result.transaction("projetos").objectStore("projetos").getAll().onsuccess = function(evt){
 					$scope.$apply(function(){
 						projetos = evt.target.result;
@@ -19676,7 +19676,7 @@ module.exports = function(Chart) {
 
 		// função que carrega áreas de um projeto
 		function carregaAreas(id_projeto){
-			GDoksFactory.getAreas(id_projeto)
+			GeProjFactory.getAreas(id_projeto)
 			.success(function(response){
 				$scope.areas = response.areas;
 			})
@@ -19696,7 +19696,7 @@ module.exports = function(Chart) {
 
 		// função que carrega subáreas de uma area
 		function carregaSubareas(id_projeto,id_area){
-			GDoksFactory.getSubareas(id_projeto,id_area)
+			GeProjFactory.getSubareas(id_projeto,id_area)
 			.success(function(response){
 				$scope.subareas = response.subareas;
 			})
@@ -19716,7 +19716,7 @@ module.exports = function(Chart) {
 
 		// Função que carrega as disciplinas e subdisciplinas (base do cliente)
 		function carregaDisciplinas(){
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				evt.target.result.transaction("disciplinas").objectStore("disciplinas").getAll().onsuccess = function(evt){
 					$scope.disciplinas = evt.target.result;
 				}
@@ -19756,11 +19756,11 @@ module.exports = function(Chart) {
 		}
 
 		$scope.onBaixarLdpClick = function(){
-			GDoksFactory.baixarLDP($scope.busca.id_projeto,$scope.busca);
+			GeProjFactory.baixarLDP($scope.busca.id_projeto,$scope.busca);
 		}
 
 		$scope.onEmitirLdpClick = function(){
-			GDoksFactory.emitirLDP($scope.busca.id_projeto,$scope.busca);	
+			GeProjFactory.emitirLDP($scope.busca.id_projeto,$scope.busca);	
 		}
 
 		$scope.onOpenClick = function(id){
@@ -19810,7 +19810,7 @@ module.exports = function(Chart) {
 			$scope.root.carregando = true;
 
 			// Mandando fazer busca
-			GDoksFactory.buscarDocumentos($scope.busca)
+			GeProjFactory.buscarDocumentos($scope.busca)
 			.success(function(response){
 				// Esconde Carregando
 				$scope.root.carregando = false;
@@ -19888,7 +19888,7 @@ module.exports = function(Chart) {
 	module.controller('DocumentoController', DocumentoController);
 
 	// Defininfo controller
-	function DocumentoController($scope,Upload,$mdExpansionPanel,$routeParams,GDoksFactory,$mdToast,$cookies,$mdDialog,$interval,$location){
+	function DocumentoController($scope,Upload,$mdExpansionPanel,$routeParams,GeProjFactory,$mdToast,$cookies,$mdDialog,$interval,$location){
 
 		// Carregando informações do usuário logado a partir do cookie
 		$scope.usuario = $cookies.getObject('user');
@@ -19970,7 +19970,7 @@ module.exports = function(Chart) {
 		}
 
 		$scope.bloquearParaRevisao = function(){
-			GDoksFactory.bloquearDocumentoParaRevisao($scope.documento.id)
+			GeProjFactory.bloquearDocumentoParaRevisao($scope.documento.id)
 			.success(function(response){
 				$scope.documento.datahora_do_checkout = new Date(response.datahora);
 				$scope.documento.idu_checkout = $scope.usuario.id;
@@ -19994,7 +19994,7 @@ module.exports = function(Chart) {
 		}
 
 		$scope.desbloquear = function(){
-			GDoksFactory.desbloquearDocumento($scope.documento.id)
+			GeProjFactory.desbloquearDocumento($scope.documento.id)
 			.success(function(response){
 				$scope.documento.idu_checkout = null;
 				$scope.documento.datahora_do_checkout = null;
@@ -20015,15 +20015,15 @@ module.exports = function(Chart) {
 		}
 
 		$scope.baixar = function(){
-			GDoksFactory.baixarPDA($scope.documento.revisoes[0].pdas[0].id);
+			GeProjFactory.baixarPDA($scope.documento.revisoes[0].pdas[0].id);
 		}
 
 		$scope.downloadPda = function(idPda){
-			GDoksFactory.baixarPDA(idPda);
+			GeProjFactory.baixarPDA(idPda);
 		}
 
 		$scope.downloadArquivo = function(idArquivo){
-			GDoksFactory.downloadArquivo(idArquivo);
+			GeProjFactory.downloadArquivo(idArquivo);
 		}
 
 		$scope.enviarArquivos = function(){
@@ -20133,7 +20133,7 @@ module.exports = function(Chart) {
 					// Mostra carregando
 					$scope.root.carregando = true;
 
-					GDoksFactory.removerDocumento($scope.documento)
+					GeProjFactory.removerDocumento($scope.documento)
 					.success(function(response){
 
 						// Esconde carregando
@@ -20196,7 +20196,7 @@ module.exports = function(Chart) {
 
 			$mdDialog.show(confirm).then(
 				function() {
-					GDoksFactory.avancarRevisao($scope.documento)
+					GeProjFactory.avancarRevisao($scope.documento)
 					.success(function(response){
 						if(response.error == 0){
 							var rev = {
@@ -20254,7 +20254,7 @@ module.exports = function(Chart) {
 			}
 
 			$scope.validar = function(){
-				GDoksFactory.validarProgresso($scope.doc.id,$scope.doc.revisoes[0].progresso_a_validar)
+				GeProjFactory.validarProgresso($scope.doc.id,$scope.doc.revisoes[0].progresso_a_validar)
 				.success(function(response){
 					// Atualizando documento localmente
 					parentScope.documento.revisoes[0].pdas[0].progresso_total = $scope.doc.revisoes[0].progresso_a_validar + $scope.doc.revisoes[0].progresso_validado;
@@ -20287,7 +20287,7 @@ module.exports = function(Chart) {
 			$scope.root.carregando = true;
 
 			// Faz a requisição a factory
-			GDoksFactory.getDocumento(id)
+			GeProjFactory.getDocumento(id)
 			.success(function(response){
 				// Esconde carregando
 				$scope.root.carregando = false;
@@ -20338,7 +20338,7 @@ module.exports = function(Chart) {
 		}
 
 		function carregaTamanhosDePapel(){
-			GDoksFactory.getTamanhosDePapel()
+			GeProjFactory.getTamanhosDePapel()
 			.success(function(response){
 				$scope.tamanhosDePapel = response.tamanhosDePapel;
 				$scope.tamanhoPadrao = $scope.tamanhosDePapel.find(function(a){
@@ -20366,7 +20366,7 @@ module.exports = function(Chart) {
 		}
 
 		function carregaUsuarios(){
-			indexedDB.open("gdoks").onsuccess = function(evt){
+			indexedDB.open("geproj").onsuccess = function(evt){
 				evt.target.result.transaction('usuarios').objectStore('usuarios').getAll().onsuccess = function(evt){
 					$scope.$apply(function(){
 						$scope.usuarios = evt.target.result;
@@ -20428,7 +20428,7 @@ module.exports = function(Chart) {
 	module.controller('DocumentoEditController', DocumentoEditController);
 
 	// Defininfo controller
-	function DocumentoEditController($scope,$routeParams,GDoksFactory,$mdToast,$cookies,$location){
+	function DocumentoEditController($scope,$routeParams,GeProjFactory,$mdToast,$cookies,$location){
 
 		// Lendo o id da rota
 		var id = $routeParams.id;
@@ -20449,7 +20449,7 @@ module.exports = function(Chart) {
 			let clone = $location.search().clone;
 
 			if(id_projeto != undefined && !isNaN(id_projeto)){
-				GDoksFactory.getProjeto(id_projeto)
+				GeProjFactory.getProjeto(id_projeto)
 				.success(function(response){
 					$scope.doc.id_cliente = response.projeto.id_cliente
 					$scope.doc.nome_cliente = response.projeto.nome_cliente;
@@ -20461,7 +20461,7 @@ module.exports = function(Chart) {
 				})
 			} else if (clone != undefined && !isNaN(clone)){
 				// Carregando documento da base
-				GDoksFactory.getDocumento(clone)
+				GeProjFactory.getDocumento(clone)
 				.success(function(response){
 					
 					// Escrevento resultado da requisição no escopo
@@ -20488,7 +20488,7 @@ module.exports = function(Chart) {
 
 		} else {
 			// Carregando documento da base
-			GDoksFactory.getDocumento(id)
+			GeProjFactory.getDocumento(id)
 			.success(function(response){
 
 				// Escrevento resultado da requisição no escopo
@@ -20536,7 +20536,7 @@ module.exports = function(Chart) {
 				doc.id_subdisciplina = $scope.disciplinas.selecionada.subs.selecionada.id;
 
 				// Documento NOVO. Proceder criação
-				GDoksFactory.adicionarDocumento(doc)
+				GeProjFactory.adicionarDocumento(doc)
 				.success(function(response){
 					// Esconde carregando
 					$scope.root.carregando = false;
@@ -20565,7 +20565,7 @@ module.exports = function(Chart) {
 			} else {
 
 				// Documento já existente. Proceder alteração
-				GDoksFactory.alterarDocumento(doc)
+				GeProjFactory.alterarDocumento(doc)
 				.success(function(response){
 					// Esconde carregando
 					$scope.root.carregando = false;
@@ -20601,7 +20601,7 @@ module.exports = function(Chart) {
 			$scope.doc.revisoes[0].data_limite = new Date($scope.doc.revisoes[0].data_limite);
 
 			// Carregando áreas
-			GDoksFactory.getAreas($scope.doc.id_projeto)
+			GeProjFactory.getAreas($scope.doc.id_projeto)
 			.success(function(response){
 				$scope.areas = response.areas;
 				if($scope.doc.id_area != undefined) {
@@ -20620,7 +20620,7 @@ module.exports = function(Chart) {
 			});
 
 			// Carregando disciplinas
-			GDoksFactory.getDisciplinas()
+			GeProjFactory.getDisciplinas()
 			.success(function(response){
 				$scope.disciplinas = response.disciplinas;
 				if($scope.doc.id_disciplina != undefined){
@@ -20639,7 +20639,7 @@ module.exports = function(Chart) {
 			});
 
 			// Carregando Cargos
-			GDoksFactory.getCargos()
+			GeProjFactory.getCargos()
 			.success(function(response){
 				$scope.cargos = response.cargos;
 			})
@@ -20654,7 +20654,7 @@ module.exports = function(Chart) {
 			});
 
 			// Carregando documentos de projeto
-			GDoksFactory.getDocumentosDoProjeto($scope.doc.id_projeto)
+			GeProjFactory.getDocumentosDoProjeto($scope.doc.id_projeto)
 			.success(function(response){
 
 				// Salvando resposta do servidor
@@ -20790,12 +20790,12 @@ module.exports = function(Chart) {
 .controller('EspecialistasController',EspecialistasController)
 .controller('ValidadoresController',ValidadoresController)
 
-function DisciplinasController($scope,GDoksFactory,$location){
+function DisciplinasController($scope,GeProjFactory,$location){
 	// Definindo variável que carrega aa disciplinas
 	$scope.disciplinas = [];
 
 	// Carregando disciplinas da base
-	var openReq = indexedDB.open("gdoks");
+	var openReq = indexedDB.open("geproj");
 	openReq.onsuccess = function(){
 		var db = openReq.result;
 		db.transaction('disciplinas').objectStore('disciplinas').getAll().onsuccess = function(evt){
@@ -20809,7 +20809,7 @@ function DisciplinasController($scope,GDoksFactory,$location){
 	}
 };
 
-function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$location){
+function DisciplinaController($scope,$routeParams,GeProjFactory,$mdToast,$location){
 	// Lendo id da url
 	var id = $routeParams.id;
 
@@ -20819,7 +20819,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 
 	function carregaUsuarios(){
 		// Levantando usuários da base
-		indexedDB.open("gdoks").onsuccess = function(evt){
+		indexedDB.open("geproj").onsuccess = function(evt){
 			evt.target.result.transaction("usuarios").objectStore("usuarios").getAll().onsuccess = function(evt){
 				$scope.$apply(function(){
 					$scope.usuarios = evt.target.result;
@@ -20852,7 +20852,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 			};
 		} else {
 			// Carregando dados da disciplina a partir da base no cliente
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				var db = evt.target.result;
 				var transaction = db.transaction(['disciplinas','usuarios']);
 				transaction.objectStore('disciplinas').get(id*1).onsuccess = function(evt){
@@ -20883,7 +20883,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 		$scope.root.carregando = true;
 
 		if($scope.disciplina.id == 0){
-			GDoksFactory.adicionarDisciplina($scope.disciplina)
+			GeProjFactory.adicionarDisciplina($scope.disciplina)
 			.success(
 				function(response){
 					// Esconde carregando
@@ -20893,7 +20893,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 					$scope.disciplina.id = response.newId;
 
 					// salvando na base de dados local
-					indexedDB.open('gdoks').onsuccess = function(evt){
+					indexedDB.open('geproj').onsuccess = function(evt){
 						evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').add($scope.disciplina);
 					}
 
@@ -20929,7 +20929,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 				}
 			);
 		} else {
-			GDoksFactory.atualizarDisciplina($scope.disciplina)
+			GeProjFactory.atualizarDisciplina($scope.disciplina)
 			.success(
 				function(response){
 					// Esconde carregando
@@ -20944,7 +20944,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 					);
 
 					// atualizando usuário na base local
-					indexedDB.open('gdoks').onsuccess = function(evt){
+					indexedDB.open('geproj').onsuccess = function(evt){
 						evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina);
 					}
 				}
@@ -20971,7 +20971,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 
 	// Definindo função que cancela as alterações
 	$scope.cancel = function(){
-		window.location = "WebGDoks.php#/disciplinas";
+		window.location = "WebGeProj.php#/disciplinas";
 	}
 }
 
@@ -20993,7 +20993,7 @@ function SubdisciplinaController($scope,$mdDialog){
 	}
 }
 
-function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFactory,$mdToast){
+function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GeProjFactory,$mdToast){
 	$scope.sub = sub;
 
 	$scope.salvar = function(sub){
@@ -21005,7 +21005,7 @@ function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFac
 
 		// Verificando se vai adicionar ou atualizar subdisciplina
 		if(sub.id != 0){
-			GDoksFactory.atualizarSubdisciplina(sub)
+			GeProjFactory.atualizarSubdisciplina(sub)
 				.success(
 					function(response){
 						// Esconde Carregando
@@ -21017,7 +21017,7 @@ function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFac
 						parentSub.ativa = sub.ativa;
 
 						// atualizar na base local
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').put(parentScope.disciplina);
 						}
 
@@ -21049,7 +21049,7 @@ function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFac
 					}
 				);
 		} else {
-			GDoksFactory.adicionarSubdisciplina(sub)
+			GeProjFactory.adicionarSubdisciplina(sub)
 				.success(
 					function(response){
 						// Escondendo o carregando
@@ -21070,7 +21070,7 @@ function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFac
 						parentScope.disciplina.subs.push(sub);
 
 						// atualizar na base local
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							var putRequest = evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').put(parentScope.disciplina);
 							putRequest.onsuccess = function(evt){
 								console.log("atualizou disciplina na base local");
@@ -21111,7 +21111,7 @@ function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFac
 	}
 }
 
-function EspecialistasController($scope,GDoksFactory,$mdToast){
+function EspecialistasController($scope,GeProjFactory,$mdToast){
 
 	// Copiando vetor de especialistas para comportamento de interface
 	$scope.$watch('disciplina',function(){
@@ -21138,7 +21138,7 @@ function EspecialistasController($scope,GDoksFactory,$mdToast){
 		var ids = $scope.especialistas.map(function(a){return a.id});
 
 		// Enviando informações para salvamento
-		GDoksFactory.salvarEspecialistas($scope.disciplina.id,ids)
+		GeProjFactory.salvarEspecialistas($scope.disciplina.id,ids)
 		.success(function(response){
 			// Esconde o carregando
 			$scope.root.carregando = false;
@@ -21147,7 +21147,7 @@ function EspecialistasController($scope,GDoksFactory,$mdToast){
 			$scope.disciplina.especialistas = $scope.especialistas;
 
 			// Salvando na base local
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				// clonando disciplina a ser salva na base
 				var d = angular.copy($scope.disciplina);
 				d.especialistas = d.especialistas.map(function(a){return a.id});
@@ -21181,7 +21181,7 @@ function EspecialistasController($scope,GDoksFactory,$mdToast){
 	}
 }
 
-function ValidadoresController($scope,GDoksFactory,$mdToast){
+function ValidadoresController($scope,GeProjFactory,$mdToast){
 
 	// Copiando vetor de validadores para comportamento de interface
 	$scope.$watch('disciplina',function(){
@@ -21208,7 +21208,7 @@ function ValidadoresController($scope,GDoksFactory,$mdToast){
 		var ids = $scope.validadores.map(function(a){return a.id});
 
 		// Enviando informações para salvamento
-		GDoksFactory.salvarValidadores($scope.disciplina.id,ids)
+		GeProjFactory.salvarValidadores($scope.disciplina.id,ids)
 		.success(function(response){
 			// Esconde o carregando
 			$scope.root.carregando = false;
@@ -21217,7 +21217,7 @@ function ValidadoresController($scope,GDoksFactory,$mdToast){
 			$scope.disciplina.validadores = $scope.validadores;
 
 			// Salvando na base local
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				// clonando disciplina a ser salva na base
 				var d = angular.copy($scope.disciplina);
 				d.validadores = d.validadores.map(function(a){return a.id});
@@ -21252,7 +21252,7 @@ function ValidadoresController($scope,GDoksFactory,$mdToast){
 }
 
 
-function OldDisciplinaController($scope,$routeParams,GDoksFactory){
+function OldDisciplinaController($scope,$routeParams,GeProjFactory){
 	
 
 	// definindo função que remove subdisciplina
@@ -21260,13 +21260,13 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 		if(confirm("Tem certeza que deseja excluir a subdisciplina? A ação não poderá ser desfeita.")){
 			var sub = $scope.disciplina.subs.find(function(a){return a.id == this},id);
 			sub.id_disciplina = $scope.disciplina.id;
-			GDoksFactory.removerSubdisciplina(sub)
+			GeProjFactory.removerSubdisciplina(sub)
 				.success(
 					function(response){
 						$scope.disciplina.subs = $scope.disciplina.subs.filter(function(a){return a.id!=this},id);
 
 						// Atualizando na base local
-						var openReq = indexedDB.open('gdoks');
+						var openReq = indexedDB.open('geproj');
 						openReq.onsuccess = function(){
 							var db = openReq.result;
 							db.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina);
@@ -21311,7 +21311,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 	$scope.salvarSubdisciplina = function(){
 		if($scope.subdisciplinaEditada != null){
 			if($scope.subdisciplinaEditada.id != 0){
-				GDoksFactory.atualizarSubdisciplina($scope.subdisciplinaEditada)
+				GeProjFactory.atualizarSubdisciplina($scope.subdisciplinaEditada)
 					.success(
 						function(response){
 							var sub = $scope.disciplina.subs.find(function(a){return a.id == this},$scope.subdisciplinaEditada.id);
@@ -21322,7 +21322,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 							$scope.erroEmOperacaoDeSubdisciplina = null;
 
 							// atualizar na base local
-							var openReq = indexedDB.open('gdoks');
+							var openReq = indexedDB.open('geproj');
 							openReq.onsuccess = function(){
 								var db = openReq.result;
 								db.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina)
@@ -21335,14 +21335,14 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 						}
 					);
 			} else {
-				GDoksFactory.adicionarSubdisciplina($scope.subdisciplinaEditada)
+				GeProjFactory.adicionarSubdisciplina($scope.subdisciplinaEditada)
 					.success(
 						function(response){
 							$scope.subdisciplinaEditada.id = response.newId;
 							$scope.subdisciplinaEditada = null;
 
 							// atualizar na base local
-							var openReq = indexedDB.open('gdoks');
+							var openReq = indexedDB.open('geproj');
 							openReq.onsuccess = function(){
 								var db = openReq.result;
 								db.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina);
@@ -21363,7 +21363,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 		$scope.data = {};
 
 		// levantando usuários na base de dados local
-		var openReq = indexedDB.open('gdoks');
+		var openReq = indexedDB.open('geproj');
 		openReq.onsuccess = function(evt){
 			var db = openReq.result;
 			db.transaction('usuarios').objectStore('usuarios').getAll().onsuccess = function(evt){
@@ -21394,13 +21394,13 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 	// definindo função que remove especialista
 	$scope.removerEspecialista = function(id_especialista){
 		if(confirm("Tem certeza que deseja remover o especialista da disciplina?")){
-			GDoksFactory.removerEspecialista($scope.disciplina.id,id_especialista)
+			GeProjFactory.removerEspecialista($scope.disciplina.id,id_especialista)
 				.success(
 					function(response){
 						$scope.disciplina.especialistas = $scope.disciplina.especialistas.filter(function(a){return a != this},id_especialista);
 
 						// salvando especialista na base local
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							$scope.$apply(function(){
 								evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina);
 							})
@@ -21423,13 +21423,13 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 	// definindo função que salva alterações em subdisciplinas
 	$scope.salvarEspecialista = function(){
-		GDoksFactory.adicionarEspecialista($scope.disciplina.id,$scope.data.selecionado.id)
+		GeProjFactory.adicionarEspecialista($scope.disciplina.id,$scope.data.selecionado.id)
 			.success(
 				function(response){
 					$scope.disciplina.especialistas.push($scope.data.selecionado.id);
 					
 					// Capturando o especialista selecionado e adicionando a vetor de especialistas
-					var openReq = indexedDB.open('gdoks');
+					var openReq = indexedDB.open('geproj');
 					openReq.onsuccess = function(evt){
 						var transaction = openReq.result.transaction(['usuarios','disciplinas'],'readwrite');
 						transaction.objectStore('usuarios').get($scope.data.selecionado.id).onsuccess = function(evt){
@@ -21454,7 +21454,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 		$scope.dataValidadores = {};
 
 		// Levantando os possíveis validadores desta disciplina na base local
-		var openReq = indexedDB.open('gdoks');
+		var openReq = indexedDB.open('geproj');
 		openReq.onsuccess = function(evt){
 			var db = evt.target.result;
 			db.transaction('usuarios').objectStore('usuarios').getAll().onsuccess = function(evt){
@@ -21485,14 +21485,14 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 	// definindo função que remove validador
 	$scope.removerValidador = function(id_validador){
 		if(confirm("Tem certeza que deseja remover o validador da disciplina?")){
-			GDoksFactory.removerValidador($scope.disciplina.id,id_validador)
+			GeProjFactory.removerValidador($scope.disciplina.id,id_validador)
 				.success(
 					function(response){
 						$scope.disciplina.validadores = $scope.disciplina.validadores.filter(function(a){return a.id != this},id_validador);
 						$scope.validadores = $scope.validadores.filter(function(a){return a.id != this},id_validador);
 
 						// salvando remoção na base de dados
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina);
 						}
 					}
@@ -21512,14 +21512,14 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 	// definindo função que salva alterações em subdisciplinas
 	$scope.salvarValidador = function(){
-		GDoksFactory.adicionarValidador($scope.disciplina.id,$scope.dataValidadores.selecionado.id,$scope.tiposDeValidadores.selecionado.id)
+		GeProjFactory.adicionarValidador($scope.disciplina.id,$scope.dataValidadores.selecionado.id,$scope.tiposDeValidadores.selecionado.id)
 			.success(
 				function(response){
 					// Alterando validador no scope
 					$scope.disciplina.validadores.push({"id":$scope.dataValidadores.selecionado.id,"tipo":$scope.tiposDeValidadores.selecionado.id});
 
 					// Alterando o validador na base
-					indexedDB.open('gdoks').onsuccess = function(evt){
+					indexedDB.open('geproj').onsuccess = function(evt){
 						// salvando disciplina alterada na base local
 						var transaction = evt.target.result.transaction(['disciplinas','usuarios'],'readwrite');
 						transaction.objectStore('disciplinas').put($scope.disciplina);
@@ -21546,7 +21546,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 	var GrdsModule = angular.module('Grds',[]);
 
 	// Criando função controller de Grds
-	var GrdsController = function($scope, $location,GDoksFactory){
+	var GrdsController = function($scope, $location,GeProjFactory){
 
 		// Iniciando as variáveis
 		$scope.clientes = [];
@@ -21573,7 +21573,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 		// FUNÇÕES DE COMUNICAÇÃO COM O SERVIDOR = = = = = = = = = = = = = = = = = = = = = = = =
 		function buscar(q){
 			$scope.root.carregando = true;
-			GDoksFactory.buscarGRD(q).success(function(response){
+			GeProjFactory.buscarGRD(q).success(function(response){
 				$scope.root.carregando = false;
 				$scope.resultados = response.result;
 				$scope.nPaginas = response.nPaginas;
@@ -21650,7 +21650,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 		// FUNÇÕES DE CARGA DE DADOS = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		// função que carrega clientes da base local
 		function loadClientes(){
-			indexedDB.open('gdoks').onsuccess= function(evt){
+			indexedDB.open('geproj').onsuccess= function(evt){
 				evt.target.result.transaction('clientes').objectStore('clientes').getAll().onsuccess = function(evt){
 					$scope.clientes = evt.target.result;
 				}
@@ -21659,7 +21659,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 		// Função que carrega projetos da base local
 		function loadProjetos(){
-			indexedDB.open('gdoks').onsuccess= function(evt){
+			indexedDB.open('geproj').onsuccess= function(evt){
 				evt.target.result.transaction('projetos').objectStore('projetos').getAll().onsuccess = function(evt){
 					projetos = evt.target.result;
 					$scope.projetosListados = projetos;
@@ -21669,9 +21669,9 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 			}
 		}
 
-		// Função que carrega configurações do GDoks
+		// Função que carrega configurações do GeProj
 		function loadConfig(){
-			GDoksFactory.getConfiguracoes()
+			GeProjFactory.getConfiguracoes()
 			.success(function(response){
 				$scope.somenteConcluidosPodemSerAdd = response.config.SOMENTE_DOC_CONCLUIDOS_SAO_EMITIDOS.valor;
 			})
@@ -21694,7 +21694,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 	}
 
 	// Criando função controller de Grds
-	var GrdController = function($scope,$location,GDoksFactory,$routeParams,$mdToast,$mdDialog){
+	var GrdController = function($scope,$location,GeProjFactory,$routeParams,$mdToast,$mdDialog){
 
 		// Lendo id da url
 		var id_grd = $routeParams.id;
@@ -21727,7 +21727,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 		// Carregando clientes
 		$scope.clientes = [];
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 		.success(function(response){
 			$scope.clientes = response.clientes;
 
@@ -21746,9 +21746,9 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 			);
 		});
 
-		// Carregando configurações do GDoks
+		// Carregando configurações do GeProj
 		var config = null;
-		GDoksFactory.getConfiguracoes().
+		GeProjFactory.getConfiguracoes().
 		success(function(response){
 			config = response.config;
 		})
@@ -21768,7 +21768,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 			$scope.root.carregando = true;
 
 			// Carrega os projetos daquele cliente
-			GDoksFactory.getProjetos($scope.grd.cliente.id)
+			GeProjFactory.getProjetos($scope.grd.cliente.id)
 			.success(function(response){
 
 				// Esconde carregando
@@ -21835,7 +21835,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 			delete grd.projeto;
 
 			if($scope.grd.id == undefined || $scope.grd.id==0){
-				GDoksFactory.adicionarGrd(grd)
+				GeProjFactory.adicionarGrd(grd)
 				.success(function(response){
 					// Esconde carregando
 					$scope.root.carregando = false;
@@ -21866,7 +21866,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 					$scope.root.carregando = false;
 				});
 			} else {
-				GDoksFactory.atualizarGrd(grd)
+				GeProjFactory.atualizarGrd(grd)
 				.success(function(response){
 					// Esconde carregando
 					$scope.root.carregando = false;
@@ -21914,12 +21914,12 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 		// Baixa o pda mais atual do documento
 		$scope.baixarPda = function(id_pda){
-			GDoksFactory.baixarPDA(id_pda);
+			GeProjFactory.baixarPDA(id_pda);
 		}
 
 		// Baixa último pda de uma revisão
 		$scope.baixarRevisaoAtualizada = function(id_revisao){
-			GDoksFactory.baixarRevisaoAtualizada(id_revisao);
+			GeProjFactory.baixarRevisaoAtualizada(id_revisao);
 		}
 
 		// Função que abre diálogo para alterar observações de uma grd
@@ -22288,7 +22288,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 				parentScope.root.carregando = true;
 
 				// Fazendo requisição
-				GDoksFactory.updateEndFisico(doc)
+				GeProjFactory.updateEndFisico(doc)
 				.success(function(response){
 					// Escondendo carregando
 					parentScope.root.carregando = false;
@@ -22325,11 +22325,11 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 		// Função executada quando se clica no burão para visualizar o GRD
 		$scope.onVisualizarGrdClick = function(){
-			GDoksFactory.viewGRD($scope.grd.id);
+			GeProjFactory.viewGRD($scope.grd.id);
 		}
 
 		$scope.onBaixarGrdEmZipClick = function(){
-			GDoksFactory.downloadGRD($scope.grd.id);
+			GeProjFactory.downloadGRD($scope.grd.id);
 		}
 
 		$scope.confirmFtpUploadController = function(evt){
@@ -22347,7 +22347,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 					$scope.root.carregando = true;
 
 					// Fazendo requisição de envio
-					GDoksFactory.ftpGRD($scope.grd.id)
+					GeProjFactory.ftpGRD($scope.grd.id)
 					.success(function(response){
 						// Esconde carregando
 						$scope.root.carregando = false;
@@ -22397,7 +22397,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 					$scope.root.carregando = true;
 
 					// Fazendo requisição de envio
-					GDoksFactory.publicarGRD($scope.grd.id)
+					GeProjFactory.publicarGRD($scope.grd.id)
 					.success(function(response){
 						// Esconde carregando
 						$scope.root.carregando = false;
@@ -22447,7 +22447,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 				});
 		}
 
-		function enviarLinkViaEmailDialogController($scope,parentScope,config,GDoksFactory,$cookies){
+		function enviarLinkViaEmailDialogController($scope,parentScope,config,GeProjFactory,$cookies){
 
 			// Amarrando a grd deste scope com o parentScope
 			$scope.grd = parentScope.grd;
@@ -22522,7 +22522,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 				// mostra carregando
 				parentScope.root.carregando == true;
 
-				GDoksFactory.mailLinkGRD($scope.grd.id,$scope.mail)
+				GeProjFactory.mailLinkGRD($scope.grd.id,$scope.mail)
 				.success(function(response){
 					// Esconde carregando
 					parentScope.root.carregando = false;
@@ -22583,7 +22583,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 			// Função que carrega códigos EMI
 			function loadCodigosEmi(){
-				GDoksFactory.getCodigosEmi()
+				GeProjFactory.getCodigosEmi()
 				.success(function(response){
 					// Setando codigos emi no scope
 					$scope.codigosEmi = response.codigosEmi;
@@ -22613,7 +22613,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 			// Função que carrega Tipos de Documento
 			function loadTiposDeDocumento(){
-				GDoksFactory.getTiposDeDocumento()
+				GeProjFactory.getTiposDeDocumento()
 				.success(function(response){
 					// Setando codigos emi no scope
 					$scope.tiposDeDocumento = response.tiposDeDocumento;
@@ -22656,7 +22656,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 						$scope.grd.id_cliente = id_cliente;
 
 						// Carregando os projetos deste cliente
-						GDoksFactory.getProjetos(id_cliente)
+						GeProjFactory.getProjetos(id_cliente)
 						.success(function(response){
 							$scope.projetos = response.projetos;
 
@@ -22680,7 +22680,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 						$scope.root.carregado = true;
 
 						// Carregando GRD do servidor
-						GDoksFactory.getGrd(id)
+						GeProjFactory.getGrd(id)
 						.success(function(response){
 
 							// Esconde carregando
@@ -22705,7 +22705,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 							// Verificando se a grd é de um projeto ativo;
 							if($scope.grd.projeto_ativo == 1) {
 								// Projeto ativo. Carregando o projeto da base local
-								indexedDB.open('gdoks').onsuccess = function(evt){
+								indexedDB.open('geproj').onsuccess = function(evt){
 									evt.target.result.transaction('projetos').objectStore('projetos').getAll().onsuccess = function(evt){
 										// Levantando os projetos do cliente
 										$scope.projetos = evt.target.result.filter(function(a){return a.id_cliente==this},$scope.grd.id_cliente);
@@ -22764,7 +22764,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 			// Função que carrega documentos de um projeto e põe no scope.
 			// Só funciona direito se códigos emi e tipos de documento já tiverem sido carregados
 			function loadDocumentosDeProjeto(id_projeto){
-				GDoksFactory.getDocumentosDoProjeto(id_projeto)
+				GeProjFactory.getDocumentosDoProjeto(id_projeto)
 				.success(function(response){
 					
 					// Declarando variáveis locais
@@ -22815,7 +22815,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 			// Função que carrega disciplinas
 			function loadDisciplinas(){
-				GDoksFactory.getDisciplinas()
+				GeProjFactory.getDisciplinas()
 				.success(function(response){
 					$scope.disciplinas = response.disciplinas;
 				})
@@ -22835,7 +22835,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 			// Função que carrega áreas do projeto
 			function loadAreasDeProjeto(id_projeto){
-				GDoksFactory.getAreas(id_projeto)
+				GeProjFactory.getAreas(id_projeto)
 				.success(function(response){
 					$scope.areas = response.areas;
 				})
@@ -22854,7 +22854,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 			}
 
 			function loadObservacoes(){
-				GDoksFactory.loadObservacoesDeGRD($scope.grd.id)
+				GeProjFactory.loadObservacoesDeGRD($scope.grd.id)
 				.success(function(response){
 					$scope.grd.observacoes = response.observacoes;
 
@@ -22868,7 +22868,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 					}
 
 					// Parsing nomes dos usuários
-					indexedDB.open('gdoks').onsuccess = function(evt){
+					indexedDB.open('geproj').onsuccess = function(evt){
 						var os = evt.target.result.transaction('usuarios').objectStore('usuarios');
 						var obs;
 						for (var i = $scope.grd.observacoes.length - 1; i >= 0; i--) {
@@ -22921,14 +22921,14 @@ function NavController($scope){
 		$scope.menuExpanded = false;
 	}
 };angular.module('Log',[])
-.controller('LogController',function($scope,$cookies,GDoksFactory){
+.controller('LogController',function($scope,$cookies,GeProjFactory){
 	// Definindo logs
 	$scope.logs = [];
 
 	// Levantando usuários da base
 	$scope.usuarios = [];
 	$scope.dicUsuarios = [];
-	indexedDB.open("gdoks").onsuccess = function(evt){
+	indexedDB.open("geproj").onsuccess = function(evt){
 		evt.target.result.transaction("usuarios").objectStore("usuarios").getAll().onsuccess = function(evt){
 			$scope.$apply(function(){
 				$scope.usuarios = evt.target.result;
@@ -22945,7 +22945,7 @@ function NavController($scope){
 	// Levantando ações
 	$scope.acoes = [];
 	$scope.dicAcoes = [];
-	GDoksFactory.getAcoes().success(function(response){
+	GeProjFactory.getAcoes().success(function(response){
 		$scope.acoes = response.acoes;
 		$scope.acoesCarregadas = true;
 		$scope.q.aid = 0;
@@ -22968,7 +22968,7 @@ function NavController($scope){
 
 	// Definindo função que faz a consulta ao log
 	$scope.getLogs = function(){
-		GDoksFactory.getLogs($scope.q).success(function(response){
+		GeProjFactory.getLogs($scope.q).success(function(response){
 			$scope.logs = response.logs;
 			for (var i = $scope.logs.length - 1; i >= 0; i--) {
 				$scope.logs[i].data = new Date($scope.logs[i].data);
@@ -23013,7 +23013,7 @@ function NavController($scope){
 	}
 	$scope.logout = function(){
 		$cookies.remove('user',{path:'/'});
-		indexedDB.deleteDatabase('gdoks');
+		indexedDB.deleteDatabase('geproj');
 		window.location = '/';
 	}
 	$scope.onHelpClick = function(){
@@ -23028,7 +23028,7 @@ function NavController($scope){
 	.controller('ProjetoController',ProjetoController)
 	.controller('DashProjetoController',DashProjetoController);
 
-	function ProjetosController($scope,GDoksFactory,$location){
+	function ProjetosController($scope,GeProjFactory,$location){
 
 		// Definindo o valor mínimo para que a busca de projeto seja executada
 		$scope.minBusca = 3;
@@ -23052,7 +23052,7 @@ function NavController($scope){
 		
 
 		// Carregando histórico de projetos carregados
-		GDoksFactory.getHistProjetos()
+		GeProjFactory.getHistProjetos()
 		.success(function(response){
 			ids_projetos = response.historico;
 			parseHistorico();
@@ -23091,7 +23091,7 @@ function NavController($scope){
 			// Mostrar carregando
 			$scope.root.carregando = true;
 
-			GDoksFactory.getProjetosDetalhados(listarInativos)
+			GeProjFactory.getProjetosDetalhados(listarInativos)
 			.success(function(response){
 				// Escondendo carregando
 				$scope.root.carregando = false;
@@ -23160,11 +23160,11 @@ function NavController($scope){
 		// Função que baixa LDP
 		$scope.baixarLDP = function(idProjeto,evt){
 			evt.stopPropagation();
-			GDoksFactory.baixarLDP(idProjeto);
+			GeProjFactory.baixarLDP(idProjeto);
 		}
 	};
 
-	function ProjetoController($scope,$routeParams,$timeout,$cookies,Upload,GDoksFactory,$mdToast,$location){
+	function ProjetoController($scope,$routeParams,$timeout,$cookies,Upload,GeProjFactory,$mdToast,$location){
 
 		// Variáveis de controle sobre o conteúdo de clientes e usuários (se info já foi carregada da base);
 		var clientesCarregados = false;
@@ -23174,7 +23174,7 @@ function NavController($scope){
 		var documentosCarregados = false;
 
 		// Carregando clientes da base local
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 		.success(function(response){
 			$scope.clientes = response.clientes;
 			$scope.clientes.selecionado = undefined;
@@ -23192,7 +23192,7 @@ function NavController($scope){
 		});
 
 		// Carregando usuarios da base local
-		GDoksFactory.loadUsuarios()
+		GeProjFactory.loadUsuarios()
 		.success(function(response){
 				// Carregando usuários
 				$scope.usuarios = response.usuarios;
@@ -23205,7 +23205,7 @@ function NavController($scope){
 
 		// Carregando disciplinas do servidor
 		$scope.disciplinas = [];
-		GDoksFactory.getDisciplinas()
+		GeProjFactory.getDisciplinas()
 		.success(function(response){
 			$scope.disciplinas = response.disciplinas;
 			disciplinasCarregadas = true;
@@ -23215,15 +23215,15 @@ function NavController($scope){
 
 		// Carregando cargos do servidor
 		$scope.cargos = [];
-		GDoksFactory.getCargos().success(function(response){
+		GeProjFactory.getCargos().success(function(response){
 			$scope.cargos = response.cargos;
 			cargosCarregados = true;
 			carregaProjeto();
 		});
 
-		// Carregando configurações do GDoks
+		// Carregando configurações do GeProj
 		$scope.geraCodigosAutomaticamente = false;
-		GDoksFactory.getConfiguracoes().
+		GeProjFactory.getConfiguracoes().
 		success(function(response){
 			$scope.geraCodigosAutomaticamente = (response.config.GERAR_CODIGOS_DE_PROJETOS_AUTOMATICAMENTE.valor === true);
 		})
@@ -23277,7 +23277,7 @@ function NavController($scope){
 						carregaPropostas();
 					}
 				} else {
-					GDoksFactory.getProjeto($scope.projeto.id)
+					GeProjFactory.getProjeto($scope.projeto.id)
 					.success(function(response){
 						$scope.projeto = response.projeto;
 						$scope.projeto.id_responsavel = ($scope.projeto.id_responsavel==null)?0:$scope.projeto.id_responsavel;
@@ -23320,7 +23320,7 @@ function NavController($scope){
 		// Função que carrega documentos de projeto
 		$scope.carregaDocumentos = function (){
 			if ($scope.projeto.id != 0) {
-				GDoksFactory.getDocumentosDoProjeto($scope.projeto.id)
+				GeProjFactory.getDocumentosDoProjeto($scope.projeto.id)
 				.success(function(response){
 					var docs = response.documentos;
 					var achouSub,j,k;
@@ -23377,7 +23377,7 @@ function NavController($scope){
 
 		// Função que carrega propostas de cliente
 		function carregaPropostas(){
-			GDoksFactory.getPropostasDeCliente($scope.clientes.selecionado.id)
+			GeProjFactory.getPropostasDeCliente($scope.clientes.selecionado.id)
 			.success(function(response){
 				$scope.propostas = response.propostas;
 				parsePropostas();
@@ -23457,7 +23457,7 @@ function NavController($scope){
 
 		// definindo função Cancel
 		$scope.cancel = function(){
-			window.location = '/webapp/WebGDoks.php#/projetos';
+			window.location = '/geproj/www/webapp/WebGeProj.php#/projetos';
 		}
 
 		// Definindo função que salva o projeto
@@ -23479,7 +23479,7 @@ function NavController($scope){
 			delete projeto.subareas;
 
 			if(projeto.id == 0){
-				GDoksFactory.adicionarProjeto(projeto)
+				GeProjFactory.adicionarProjeto(projeto)
 				.success(
 					function(response){
 
@@ -23498,7 +23498,7 @@ function NavController($scope){
 						projeto.id = response.newId;
 
 						// Adicionando projeto na base local
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							// limpando dados para armazenamento na base local.
 							delete projeto.id_responsavel;
 							delete projeto.data_inicio_p;
@@ -23532,7 +23532,7 @@ function NavController($scope){
 					}
 				);
 			} else {
-				GDoksFactory.atualizarProjeto(projeto)
+				GeProjFactory.atualizarProjeto(projeto)
 				.success(
 					function(response){
 						// Esconde Carregando
@@ -23547,7 +23547,7 @@ function NavController($scope){
 						);
 
 						// Atualizando projeto na base local
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							// limpando dados para armazenamento.
 							delete projeto.id_responsavel;
 							delete projeto.data_inicio_p;
@@ -23579,7 +23579,7 @@ function NavController($scope){
 		}
 	};
 
-	function DashProjetoController($scope,GDoksFactory,$location,$routeParams,$mdToast,$mdDialog){
+	function DashProjetoController($scope,GeProjFactory,$location,$routeParams,$mdToast,$mdDialog){
 		
 		// Definindo variáveis de scope
 		$scope.projeto = {};
@@ -23590,7 +23590,7 @@ function NavController($scope){
 		var id_projeto = $routeParams.id;
 
 		// Carregando projeto	
-		GDoksFactory.getProjeto(id_projeto)
+		GeProjFactory.getProjeto(id_projeto)
 		.success(function(response){
 			if(response.error == 0){
 				// Parsing datas do projeto
@@ -23621,10 +23621,10 @@ function NavController($scope){
 		})
 
 		// Carregando estatísticas de projeto
-		GDoksFactory.getEstatisticasDeProjeto(id_projeto);
+		GeProjFactory.getEstatisticasDeProjeto(id_projeto);
 
 		// Carregando documentos do projeto
-		GDoksFactory.getDocumentosDoProjeto($routeParams.id)
+		GeProjFactory.getDocumentosDoProjeto($routeParams.id)
 		.success(function(response){
 			if(response.error == 0){
 				// parsing datas limites dos documentos
@@ -23654,7 +23654,7 @@ function NavController($scope){
 		});
 
 		// Carregando GRDs do projeto
-		GDoksFactory.getGrdsDoProjeto($routeParams.id)
+		GeProjFactory.getGrdsDoProjeto($routeParams.id)
 		.success(function(response){
 			if(response.error == 0){
 				// Parsing datahora
@@ -23725,7 +23725,7 @@ function NavController($scope){
 					$scope.root.carregando = true;
 
 					documento.id_projeto = $scope.projeto.id;
-					GDoksFactory.removerDocumento(documento)
+					GeProjFactory.removerDocumento(documento)
 					.success(function(response){
 
 						// Esconde carregando
@@ -23786,7 +23786,7 @@ function NavController($scope){
 	};
 
 })();;angular.module('Projetos').controller('ProjetosAreasController',ProjetosAreasController);
-function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
+function ProjetosAreasController($scope,GeProjFactory,$mdDialog,$mdToast){
 	
 	$scope.openAreaDialog = function(ev,idArea){
 		// Declarando o objeto area clicado
@@ -23807,7 +23807,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 					$scope.area = area;
 					$scope.salvar = function(area){
 						if(area.id == 0){
-							GDoksFactory.adicionarArea(area)
+							GeProjFactory.adicionarArea(area)
 							.success(function(response){
 								area.id = response.newId;
 								parentAreas.push(area);
@@ -23828,7 +23828,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 								);
 							});
 						} else {
-							GDoksFactory.atualizarArea(area)
+							GeProjFactory.atualizarArea(area)
 							.success(function(response){
 								parentArea.nome = area.nome;
 								parentArea.codigo = area.codigo;
@@ -23891,7 +23891,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 			function() {
 				var area = $scope.projeto.areas.find(function(a){return a.id==this},idArea);
 				area.id_projeto = $scope.projeto.id;
-				GDoksFactory.removerArea(area)
+				GeProjFactory.removerArea(area)
 				.success(function(response){
 					$scope.projeto.areas = $scope.projeto.areas.filter(function(a){return a.id!= this},idArea);
 					$mdToast.show(
@@ -23922,7 +23922,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 	mod.controller('ProjetosSubareasController',ProjetosSubareasController);
 	
 	// Definindo controller
-	function ProjetosSubareasController($scope,GDoksFactory,$mdDialog,$mdToast){
+	function ProjetosSubareasController($scope,GeProjFactory,$mdDialog,$mdToast){
 			$scope.openDialog = function(ev,idSubarea){
 				
 				// Declarando o objeto area clicado
@@ -23945,7 +23945,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 
 							$scope.salvar = function(subarea){
 								if(subarea.id == 0){
-									GDoksFactory.adicionarSubarea(subarea)
+									GeProjFactory.adicionarSubarea(subarea)
 									.success(function(response){
 										// Atribuindo novo id para a subárea recém criada
 										subarea.id = response.newId;
@@ -23972,7 +23972,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 										);
 									});
 								} else {
-									GDoksFactory.atualizarSubarea(subarea)
+									GeProjFactory.atualizarSubarea(subarea)
 									.success(function(response){
 										parentSubarea.nome = subarea.nome;
 										parentSubarea.codigo = subarea.codigo;
@@ -24038,7 +24038,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 				$mdDialog.show(confirm).then(
 					function() {
 						var subarea = $scope.projeto.subareas.find(function(a){return a.id==this},idSubarea);
-						GDoksFactory.removerSubarea(subarea)
+						GeProjFactory.removerSubarea(subarea)
 						.success(function(response){
 							$scope.projeto.subareas = $scope.projeto.subareas.filter(function(a){return a.id!= this},idSubarea);
 							$mdToast.show(
@@ -24067,7 +24067,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 ;(function(){
 	var modProjetos = angular.module('Projetos');
 
-	var ProjetosDAOsController = function($scope,Upload,$cookies,GDoksFactory,$mdToast,$mdDialog){
+	var ProjetosDAOsController = function($scope,Upload,$cookies,GeProjFactory,$mdToast,$mdDialog){
 
 		// Arquivos de documentos de abertura de operações
 		$scope.daoFiles = [];
@@ -24203,7 +24203,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 					// Ajeitando dao a ser removida
 					var dao = $scope.projeto.daos.find(function(a){return a.id == this},idDao);
 					dao.id_projeto = $scope.projeto.id;
-					GDoksFactory.removerDAO(dao)
+					GeProjFactory.removerDAO(dao)
 					.success(function(response){
 						// Esconde carregando
 						$scope.root.carregando = false;
@@ -24246,7 +24246,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 	angular.module('Projetos').controller('ProjetosDocumentosController',ProjetosDocumentosController);
 	
 	// Definindo o controller
-	function ProjetosDocumentosController($scope,GDoksFactory,$mdExpansionPanel,$mdDialog,$mdToast,Upload,$cookies,$timeout){
+	function ProjetosDocumentosController($scope,GeProjFactory,$mdExpansionPanel,$mdDialog,$mdToast,Upload,$cookies,$timeout){
 
 		// Definindo criticas
 		$scope.criticas = [];
@@ -24297,7 +24297,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 					$scope.root.carregando = true;
 
 					documento.id_projeto = $scope.projeto.id;
-					GDoksFactory.removerDocumento(documento)
+					GeProjFactory.removerDocumento(documento)
 					.success(function(response){
 
 						// Esconde carregando
@@ -24334,7 +24334,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 			);
 		};
 
-		function dialogController($scope,disciplinas,id_doc,documentos,cargos,parentScope,copy,GDoksFactory){
+		function dialogController($scope,disciplinas,id_doc,documentos,cargos,parentScope,copy,GeProjFactory){
 
 			// Copiando as disciplinas para o scope
 			$scope.disciplinas = disciplinas;
@@ -24418,7 +24418,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 				// Mostra carregando
 				parentScope.carregando = true;
 
-				GDoksFactory.getDocumento(id_doc)
+				GeProjFactory.getDocumento(id_doc)
 				.success(function(response){
 					
 					// Esconde carregando
@@ -24594,7 +24594,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 				// Verificando se é inserção de documento ou atualização pelo id
 				if(doc.id == 0){
 					// Inserir novo documento
-					GDoksFactory.adicionarDocumento(doc)
+					GeProjFactory.adicionarDocumento(doc)
 					.success(function(response){
 						// Esconde carregando
 						parentScope.root.carregando = false;
@@ -24632,7 +24632,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 					});
 				} else {
 					// Atualizar documento existente
-					GDoksFactory.alterarDocumento(doc)
+					GeProjFactory.alterarDocumento(doc)
 					.success(function(response){
 						// Esconde carregando
 						parentScope.root.carregando = false;
@@ -24684,7 +24684,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 		}
 
 		$scope.baixarModeloParaImportacao = function(){
-			GDoksFactory.baixarModeloParaImportacao($scope.projeto.id);
+			GeProjFactory.baixarModeloParaImportacao($scope.projeto.id);
 		}
 
 		//$scope.UploadXlsx = function($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event){
@@ -24748,7 +24748,7 @@ function ProjetosAreasController($scope,GDoksFactory,$mdDialog,$mdToast){
 
 	}
 })();angular.module('Projetos').controller('ProjetosFinanceiroController',ProjetosFinanceiroController);
-function ProjetosFinanceiroController($scope,GDoksFactory,$mdToast,$routeParams){
+function ProjetosFinanceiroController($scope,GeProjFactory,$mdToast,$routeParams){
 	
 	// Lendo id do projeto da rota
 	var id_projeto = $routeParams.id;
@@ -24770,7 +24770,7 @@ function ProjetosFinanceiroController($scope,GDoksFactory,$mdToast,$routeParams)
 
 	// Carregando dados financeiros do projeto
 	if(id_projeto != 0){
-		GDoksFactory.getDadosFinanceirosDoProjeto(id_projeto)
+		GeProjFactory.getDadosFinanceirosDoProjeto(id_projeto)
 		.success(function(response){
 			$scope.dadosFinanceiros = {};
 			if(response.dadosFinanceiros.forma_de_cobranca != undefined){
@@ -24804,7 +24804,7 @@ function ProjetosFinanceiroController($scope,GDoksFactory,$mdToast,$routeParams)
 
 	// Definindo função que salva dados financeiros
 	$scope.salvar = function(){
-		GDoksFactory.salvaDadosFinanceirosDoProjeto(id_projeto,$scope.dadosFinanceiros)
+		GeProjFactory.salvaDadosFinanceirosDoProjeto(id_projeto,$scope.dadosFinanceiros)
 		.success(function(response){
 			// Retornando Toast para o usuário
 			$mdToast.show(
@@ -24829,7 +24829,7 @@ function ProjetosFinanceiroController($scope,GDoksFactory,$mdToast,$routeParams)
 	}
 };angular.module('Senha',[]).controller('SenhaController',SenhaController)
 
-function SenhaController($scope,$mdToast,GDoksFactory){
+function SenhaController($scope,$mdToast,GeProjFactory){
 	// Inicializando o objeto data;
 	$scope.data = {};
 	$scope.data.login = '';
@@ -24837,7 +24837,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 	$scope.data.senha2 = '';
 
 	$scope.mudaLoginSenha = function(novoLogin,novaSenha){
-		GDoksFactory.mudaLoginSenha(novoLogin,novaSenha)
+		GeProjFactory.mudaLoginSenha(novoLogin,novaSenha)
 			.success(
 				function(response){
 					$mdToast.show(
@@ -24861,7 +24861,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 	}
 
 	$scope.cancel = function(){
-		window.location = "WebGDoks.php#/home";
+		window.location = "WebGeProj.php#/home";
 	}
 };(function(){
 	// Definição de modulo
@@ -24895,13 +24895,13 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 	usuarioModulo.controller('PermissoesController',PermissoesController);
 
 	// Definindo controller para os usuários
-	function UsuariosController($scope,GDoksFactory,$location){
+	function UsuariosController($scope,GeProjFactory,$location){
 
 		// Declarando vetor de usuários
 		$scope.usuarios = [];
 
 		// Carregando usuarios da base local
-		var openReq = indexedDB.open("gdoks");
+		var openReq = indexedDB.open("geproj");
 		openReq.onsuccess = function(){
 			var db = openReq.result;
 			db.transaction('usuarios').objectStore('usuarios').getAll().onsuccess = function(evt){
@@ -24916,7 +24916,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 	};
 
 	// Definindo controller para usuário
-	function UsuarioController($scope,$routeParams,GDoksFactory,$mdToast,$location){
+	function UsuarioController($scope,$routeParams,GeProjFactory,$mdToast,$location){
 		// Capturando o id passado na url
 		var id = $routeParams.id;
 
@@ -24933,7 +24933,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 			$scope.inicialmenteAtivo = true;
 		} else {
 			// Carregando usuário da base
-			var openReq = indexedDB.open('gdoks');
+			var openReq = indexedDB.open('geproj');
 			openReq.onsuccess = function(evt){
 				var db = openReq.result;
 				db.transaction('usuarios').objectStore('usuarios').get(id*1).onsuccess = function(evt){
@@ -24957,7 +24957,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 			$scope.root.carregando =true;
 			
 			if($scope.usuario.id == 0){
-				GDoksFactory.adicionarUsuario($scope.usuario)
+				GeProjFactory.adicionarUsuario($scope.usuario)
 				.success(
 					function(response){
 
@@ -24983,7 +24983,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 						delete($scope.usuario.senha2);
 
 						// Salvando usuário na base
-						var openReq = indexedDB.open('gdoks');
+						var openReq = indexedDB.open('geproj');
 						openReq.onsuccess = function(evt){
 							var db = evt.target.result;
 							db.transaction('usuarios','readwrite').objectStore('usuarios').add($scope.usuario);
@@ -25012,7 +25012,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 					}
 				);
 			} else {
-				GDoksFactory.atualizarUsuario($scope.usuario)
+				GeProjFactory.atualizarUsuario($scope.usuario)
 				.success(
 					function(response){
 						// Esconde Carregando
@@ -25031,7 +25031,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 						delete($scope.usuario.senha2);
 						
 						// Atualizando usuário na base
-						var openReq = indexedDB.open('gdoks');
+						var openReq = indexedDB.open('geproj');
 						openReq.onsuccess = function(evt){
 							var db = evt.target.result;
 							db.transaction('usuarios','readwrite').objectStore('usuarios').put($scope.usuario);
@@ -25065,7 +25065,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 	};
 
 	// Definindo controller para permissões
-	function PermissoesController($scope,$cookies,GDoksFactory,$mdToast,$routeParams){
+	function PermissoesController($scope,$cookies,GeProjFactory,$mdToast,$routeParams){
 		// Lendo id do usuário na url
 		var id_usuario = $routeParams.id;
 
@@ -25162,7 +25162,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 			$scope.root.carregando = true;
 
 			// Enviando para o servidor
-			GDoksFactory.salvarTelasDeUsuario(id_usuario,telas)
+			GeProjFactory.salvarTelasDeUsuario(id_usuario,telas)
 			.success(function(response){
 				// Esconde carregando
 				$scope.root.carregando = false;
@@ -25200,7 +25200,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 
 		// FUNÇÕES DE CARGA DE DADOS = = = = = = = = = = = = = = = = = = = =
 		function loadTelas(){
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				var db = evt.target.result;
 				db.transaction('telas').objectStore('telas').getAll().onsuccess = function(evt){
 
@@ -25217,7 +25217,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 			$scope.root.carregando = true;
 
 			// Fazendo requisição ao servidor
-			GDoksFactory.getTelasDeUsuario(id_usuario)
+			GeProjFactory.getTelasDeUsuario(id_usuario)
 			.success(function(response){
 
 				// Esconde carregando
@@ -25251,12 +25251,12 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 	var module = angular.module('VisaoGeral',[]);
 
 	// Definindo a função controller da visão geral
-	function VisaoGeralController($scope,GDoksFactory,$mdToast){
+	function VisaoGeralController($scope,GeProjFactory,$mdToast){
 		// Declarando variáveis do scope
 		$scope.progresso_geral = null;
 
 		// Carregando dados de visão geral
-		GDoksFactory.getVisaoGeral()
+		GeProjFactory.getVisaoGeral()
 		.success(function(response){
 			$scope.progresso_geral = Math.round(response.progresso_geral);
 			$scope.n_docs = response.n_docs;
@@ -25438,14 +25438,14 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 	}
 
 	// Definindo controller de docsParaValidar
-	function DocsParaValidarController($scope,GDoksFactory,$mdToast,$location){
+	function DocsParaValidarController($scope,GeProjFactory,$mdToast,$location){
 		// Declarando docsParaValidar
 		$scope.docsParaValidar = [];
 		$scope.maxDocsExibidos = 5;
 
 		// Carrtegando documentos para validar
 		(function(){
-			GDoksFactory.getDocumentosParaValidar()
+			GeProjFactory.getDocumentosParaValidar()
 			.success(function(response){
 				$scope.docsParaValidar = response.documentos.map(function(d){
 					d.validar=true;
@@ -25482,7 +25482,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 		}
 
 		$scope.baixarPDA = function(idPDA){
-			GDoksFactory.baixarPDA(idPDA);
+			GeProjFactory.baixarPDA(idPDA);
 		}
 
 		$scope.verTodos = function(){
@@ -25499,7 +25499,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 	var module = angular.module('Validacao',[]);
 
 	// Definindo a função controller
-	var ValidacaoController = function($scope,GDoksFactory,$mdToast,$location){
+	var ValidacaoController = function($scope,GeProjFactory,$mdToast,$location){
 
 		// Iniciando variáveis do escopo
 		$scope.documentos = [];
@@ -25507,7 +25507,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 
 		// Função que carrega documentos a validar do usuário atual
 		(function(){
-			GDoksFactory.getDocumentosParaValidar()
+			GeProjFactory.getDocumentosParaValidar()
 			.success(function(response){
 				$scope.documentos = response.documentos.map(function(d){
 					d.validar=true;
@@ -25544,7 +25544,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 		}
 
 		$scope.baixarPDA = function(idPDA){
-			GDoksFactory.baixarPDA(idPDA);
+			GeProjFactory.baixarPDA(idPDA);
 		}
 
 		$scope.toggleSelecionados = function(){
@@ -25586,7 +25586,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 			})
 
 			// Requisitando validação
-			GDoksFactory.validarProgressos(docsParaValidar)
+			GeProjFactory.validarProgressos(docsParaValidar)
 			.success(function(response){
 				// Escondendo o carregando
 				$scope.root.carregando = false;
@@ -25638,8 +25638,8 @@ var DOCSTATUS_VIRGEM = 'virgem';
 var DOCSTATUS_CHECKOUT = 'checkout';
 var DOCSTATUS_AGUARDANDO_VALIDACAO = 'paravalidacao';
 var DOCSTATUS_VALIDADO = 'validado';
-var DOCSTATUS_CONCLUIDO = 'concluido';;// Definindo Module WebGDoks
-var WebGDoks = angular.module('WebGDoks',
+var DOCSTATUS_CONCLUIDO = 'concluido';;// Definindo Module WebGeProj
+var WebGeProj = angular.module('WebGeProj',
 								[
 								'ngRoute',
 								'ngCookies',
@@ -25676,7 +25676,7 @@ var WebGDoks = angular.module('WebGDoks',
 								]);
 
 // Definindo Rotas
-WebGDoks.config(
+WebGeProj.config(
 	function ($routeProvider){
 		$routeProvider
 		.when(
@@ -25867,7 +25867,7 @@ WebGDoks.config(
 )
 
 // Configurando o Locale do DatePicker
-WebGDoks.config(function($mdDateLocaleProvider) {
+WebGeProj.config(function($mdDateLocaleProvider) {
     $mdDateLocaleProvider.formatDate = function(date) {
     	if(date){
     		var d = date.getDate();
@@ -25895,15 +25895,15 @@ WebGDoks.config(function($mdDateLocaleProvider) {
 });
 
 // Configurando cores
-WebGDoks.config(function($mdThemingProvider) {
+WebGeProj.config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
     .primaryPalette('blue')
     .accentPalette('orange',{'default':'800'});
 })
 
 // Definindo próprio controller
-WebGDoks.controller('RootController',RootController);
-function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMenu){
+WebGeProj.controller('RootController',RootController);
+function RootController($scope,$interval,$cookies,GeProjFactory,$mdSidenav,$mdMenu){
 
 	// definindo o objeto root.
 	$scope.root = {};
@@ -25923,14 +25923,14 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo função que carrega usuários do servidor
 	$scope.root.loadUsuarios = function(){
-		GDoksFactory.loadUsuarios()
+		GeProjFactory.loadUsuarios()
 			.success(
 				function(response){
 					// Carregando usuários
 					var usuarios = response.usuarios;
 
 					// Conectando-se a base de dados
-					var reqOpen = indexedDB.open("gdoks");
+					var reqOpen = indexedDB.open("geproj");
 					
 					reqOpen.onsuccess = function(evt){
 						// Capturando a conexão com a base
@@ -25966,14 +25966,14 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo função que carrega clientes do servidor
 	$scope.root.loadClientes = function(){
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 			.success(
 				function(response){
 					// Carregando usuários
 					var clientes = response.clientes;
 
 					// Conectando-se a base de dados
-					var reqOpen = indexedDB.open("gdoks");
+					var reqOpen = indexedDB.open("geproj");
 					
 					reqOpen.onsuccess = function(evt){
 						// Capturando a conexão com a base
@@ -26006,14 +26006,14 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo função que carrega projetos do servidor
 	$scope.root.loadProjetos = function(){
-		GDoksFactory.getProjetos()
+		GeProjFactory.getProjetos()
 		.success(
 			function(response){
 				// Carregando projetos
 				var projetos = response.projetos;
 
 				// Conectando-se a base de dados
-				var reqOpen = indexedDB.open("gdoks");
+				var reqOpen = indexedDB.open("geproj");
 				
 				reqOpen.onsuccess = function(evt){
 					// Capturando a conexão com a base
@@ -26049,14 +26049,14 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo função que carrega disciplinas do servidor
 	$scope.root.loadDisciplinas = function(){
-		GDoksFactory.getDisciplinas()
+		GeProjFactory.getDisciplinas()
 		.success(
 			function(response){
 				// Carregando disciplinas
 				var disciplinas = response.disciplinas;
 
 				// Conectando-se a base de dados
-				var reqOpen = indexedDB.open("gdoks");
+				var reqOpen = indexedDB.open("geproj");
 				
 				reqOpen.onsuccess = function(evt){
 					// Capturando a conexão com a base
@@ -26097,10 +26097,10 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo função que carrega telas do servidor
 	$scope.root.loadTelas = function(){
-		GDoksFactory.getTelas()
+		GeProjFactory.getTelas()
 		.success(function(response){
 			// abrindo db local
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				// Pondo telas na tabela
 				var telas = response.telas;
 				for (var i = telas.length - 1; i >= 0; i--) {
@@ -26113,7 +26113,7 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 	}
 
 	// Criando base de dados.
-	var reqOpen = indexedDB.open("gdoks");
+	var reqOpen = indexedDB.open("geproj");
 	
 	reqOpen.onerror = function(e){
 		console.log("Falha na abertura da base.");
@@ -26167,7 +26167,7 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 	// Definindo funções que renovam o token
 	var refreshToken = function(){
-		GDoksFactory.refreshToken()
+		GeProjFactory.refreshToken()
 		.success(
 			function(response){
 				var user = $cookies.getObject('user');
@@ -26180,7 +26180,7 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				console.warn('Token não foi renovado!');
 				console.warn(error);
 				$cookies.remove('user',{path:'/'});
-				indexedDB.deleteDatabase('gdoks');
+				indexedDB.deleteDatabase('geproj');
 				window.location="/";
 			}
 		);
@@ -26222,11 +26222,11 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 		},500);
 	}
 }
-;WebGDoks.factory('GDoksFactory',
+;WebGeProj.factory('GeProjFactory',
 	[
 		'$http','$cookies',
 		function($http,$cookies){
-			var GDoksFactory = {};
+			var GeProjFactory = {};
 
 			// Função auxiliar que retorna headers baseada no cooke user = = = = = = = = = = = = = = = = = = = = = = = = =
 			var buildHeaders = function(){
@@ -26235,83 +26235,83 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para mudar login e senha
-			GDoksFactory.mudaLoginSenha = function(novoLogin,novaSenha){
+			GeProjFactory.mudaLoginSenha = function(novoLogin,novaSenha){
 				return $http.post(API_ROOT+'/mudaLoginSenha',{'novoLogin':novoLogin,'novaSenha':novaSenha},buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.refreshToken = function(){
+			GeProjFactory.refreshToken = function(){
 				return $http.get(API_ROOT+'/refresh',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.loadUsuarios = function(){
+			GeProjFactory.loadUsuarios = function(){
 				return $http.get(API_ROOT+'/usuarios',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para atualizar o usuario enviado
-			GDoksFactory.atualizarUsuario = function(usuario){
+			GeProjFactory.atualizarUsuario = function(usuario){
 				return $http.put(API_ROOT+'/usuarios/'+usuario.id,usuario,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para adicionar novo usuario enviado
-			GDoksFactory.adicionarUsuario = function(usuario){
+			GeProjFactory.adicionarUsuario = function(usuario){
 				return $http.post(API_ROOT+'/usuarios',usuario,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getTelasDeUsuario = function(id_usuario){
+			GeProjFactory.getTelasDeUsuario = function(id_usuario){
 				return $http.get(API_ROOT+'/usuarios/'+id_usuario+'/telas',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.salvarTelasDeUsuario = function(id_usuario,telas){
+			GeProjFactory.salvarTelasDeUsuario = function(id_usuario,telas){
 				return $http.put(API_ROOT+'/usuarios/'+id_usuario+'/telas',telas,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDisciplinas = function(){
+			GeProjFactory.getDisciplinas = function(){
 				return $http.get(API_ROOT+'/disciplinas',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDisciplina = function(id_disciplina){
+			GeProjFactory.getDisciplina = function(id_disciplina){
 				return $http.get(API_ROOT+'/disciplinas/'+id_disciplina,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para atualizar o usuario enviado
-			GDoksFactory.atualizarDisciplina = function(disciplina){
+			GeProjFactory.atualizarDisciplina = function(disciplina){
 				return $http.put(API_ROOT+'/disciplinas/'+disciplina.id,disciplina,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para adicionar nova disciplina
-			GDoksFactory.adicionarDisciplina = function(disciplina){
+			GeProjFactory.adicionarDisciplina = function(disciplina){
 				return $http.post(API_ROOT+'/disciplinas',disciplina,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarSubdisciplina = function(subdisciplina){
+			GeProjFactory.atualizarSubdisciplina = function(subdisciplina){
 				return $http.put(API_ROOT+'/disciplinas/'+subdisciplina.id_disciplina+'/subs/'+subdisciplina.id,subdisciplina,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarSubdisciplina = function(subdisciplina){
+			GeProjFactory.adicionarSubdisciplina = function(subdisciplina){
 				return $http.post(API_ROOT+'/disciplinas/'+subdisciplina.id_disciplina+'/subs/',subdisciplina,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerSubdisciplina = function(subdisciplina){
+			GeProjFactory.removerSubdisciplina = function(subdisciplina){
 				return $http.delete(API_ROOT+'/disciplinas/'+subdisciplina.id_disciplina+'/subs/'+subdisciplina.id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.salvarEspecialistas = function(id_disciplina,ids_especialistas){
+			GeProjFactory.salvarEspecialistas = function(id_disciplina,ids_especialistas){
 				return $http.put(API_ROOT+'/disciplinas/'+id_disciplina+'/especialistas/',ids_especialistas,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarValidador = function(id_disciplina,id_usuario,tipo){
+			GeProjFactory.adicionarValidador = function(id_disciplina,id_usuario,tipo){
 				return $http.post(API_ROOT+'/disciplinas/'+id_disciplina+'/validadores/',{"idu":id_usuario,"tipo":tipo},buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerValidador = function(id_disciplina,id_usuario){
+			GeProjFactory.removerValidador = function(id_disciplina,id_usuario){
 				return $http.delete(API_ROOT+'/disciplinas/'+id_disciplina+'/validadores/'+id_usuario,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.salvarValidadores = function(id_disciplina,ids_validadores){
+			GeProjFactory.salvarValidadores = function(id_disciplina,ids_validadores){
 				return $http.put(API_ROOT+'/disciplinas/'+id_disciplina+'/validadores/',ids_validadores,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getProjetos = function(id_cliente){
+			GeProjFactory.getProjetos = function(id_cliente){
 				if(id_cliente == undefined){
 					return $http.get(API_ROOT+'/projetos',buildHeaders());
 				} else {
@@ -26319,112 +26319,112 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				}
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getProjetosDetalhados = function(listarInativos){
+			GeProjFactory.getProjetosDetalhados = function(listarInativos){
 				var i = (listarInativos === true)?1:0;
 				return $http.get(API_ROOT+'/projetos/detalhados?i='+i,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getProjeto = function(id){
+			GeProjFactory.getProjeto = function(id){
 				return $http.get(API_ROOT+'/projetos/'+id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarProjeto = function(projeto){
+			GeProjFactory.atualizarProjeto = function(projeto){
 				return $http.put(API_ROOT+'/projetos/'+projeto.id,projeto,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarProjeto = function(projeto){
+			GeProjFactory.adicionarProjeto = function(projeto){
 				return $http.post(API_ROOT+'/projetos',projeto,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarArea = function(area){
+			GeProjFactory.adicionarArea = function(area){
 				return $http.post(API_ROOT+'/projetos/'+area.id_projeto+'/areas/',area,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarArea = function(area){
+			GeProjFactory.atualizarArea = function(area){
 				return $http.put(API_ROOT+'/projetos/'+area.id_projeto+'/areas/'+area.id,area,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerArea = function(area){
+			GeProjFactory.removerArea = function(area){
 				return $http.delete(API_ROOT+'/projetos/'+area.id_projeto+'/areas/'+area.id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getAreas = function(id_projeto){
+			GeProjFactory.getAreas = function(id_projeto){
 				return $http.get(API_ROOT+'/projetos/'+id_projeto+'/areas',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarSubarea = function(subarea){
+			GeProjFactory.adicionarSubarea = function(subarea){
 				return $http.post(API_ROOT+'/subareas/',subarea,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarSubarea = function(subarea){
+			GeProjFactory.atualizarSubarea = function(subarea){
 				return $http.put(API_ROOT+'/subareas/'+subarea.id,subarea,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerSubarea = function(subarea){
+			GeProjFactory.removerSubarea = function(subarea){
 				return $http.delete(API_ROOT+'/subareas/'+subarea.id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getSubareas = function(id_projeto,id_area){
+			GeProjFactory.getSubareas = function(id_projeto,id_area){
 				return $http.get(API_ROOT+'/projetos/'+id_projeto+'/areas/'+id_area+'/subareas',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.salvarDAOs = function(){
+			GeProjFactory.salvarDAOs = function(){
 				// implementada em ProjetoDAOsControlller
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerDAO = function(dao){
+			GeProjFactory.removerDAO = function(dao){
 				return $http.delete(API_ROOT+'/projetos/'+dao.id_projeto+'/daos/'+dao.id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.alterarDocumento = function(documento){
+			GeProjFactory.alterarDocumento = function(documento){
 				return $http.put(API_ROOT+'/projetos/'+documento.id_projeto+'/documentos/'+documento.id,documento,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarDocumento = function(documento){
+			GeProjFactory.adicionarDocumento = function(documento){
 				return $http.post(API_ROOT+'/projetos/'+documento.id_projeto+'/documentos/',documento,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerDocumento = function(documento){
+			GeProjFactory.removerDocumento = function(documento){
 				return $http.delete(API_ROOT+'/projetos/'+documento.id_projeto+'/documentos/'+documento.id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getClientes = function(){
+			GeProjFactory.getClientes = function(){
 				return $http.get(API_ROOT+'/clientes',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getCliente = function(id){
+			GeProjFactory.getCliente = function(id){
 				return $http.get(API_ROOT+'/clientes/'+id,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarCliente = function(cliente){
+			GeProjFactory.atualizarCliente = function(cliente){
 				return $http.put(API_ROOT+'/clientes/'+cliente.id,cliente,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarCliente = function(cliente){
+			GeProjFactory.adicionarCliente = function(cliente){
 				return $http.post(API_ROOT+'/clientes',cliente,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDocumentosParaValidar = function(){
+			GeProjFactory.getDocumentosParaValidar = function(){
 				return $http.get(API_ROOT+'/documentos/paraValidar',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDocumentosDoProjeto = function(id_projeto){
+			GeProjFactory.getDocumentosDoProjeto = function(id_projeto){
 				return $http.get(API_ROOT+'/projetos/'+id_projeto+'/documentos/',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getGrdsDoProjeto = function(id_projeto){
+			GeProjFactory.getGrdsDoProjeto = function(id_projeto){
 				return $http.get(API_ROOT+'/projetos/'+id_projeto+'/grds/',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDocumentos = function(id_projeto){
+			GeProjFactory.getDocumentos = function(id_projeto){
 				return $http.get(API_ROOT+'/documentos',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDocumento = function(id_documento){
+			GeProjFactory.getDocumento = function(id_documento){
 				return $http.get(API_ROOT+'/documentos/'+id_documento,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.downloadArquivo = function(idArquivo){
+			GeProjFactory.downloadArquivo = function(idArquivo){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT+'/arquivos/'+idArquivo);
@@ -26449,31 +26449,31 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.validarProgresso = function(idDocumento,progresso){
+			GeProjFactory.validarProgresso = function(idDocumento,progresso){
 				return $http.post(API_ROOT+'/documentos/'+idDocumento+'/validacaoDeProgresso', progresso,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.validarProgressos = function(progressos){
+			GeProjFactory.validarProgressos = function(progressos){
 				return $http.post(API_ROOT+'/documentos/validarProgressos', progressos,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.lockDoc = function(idDoc){
+			GeProjFactory.lockDoc = function(idDoc){
 				return $http.get(API_ROOT+'/documentos/'+idDoc+'/lock',buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.delockDoc = function(idDoc){
+			GeProjFactory.delockDoc = function(idDoc){
 				return $http.get(API_ROOT+'/documentos/'+idDoc+'/delock',buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getAcoes = function(){
+			GeProjFactory.getAcoes = function(){
 				return $http.get(API_ROOT+'/acoes',buildHeaders());		
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getTelas = function(){
+			GeProjFactory.getTelas = function(){
 				return $http.get(API_ROOT+'/telas',buildHeaders());		
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getLogs = function(q){
+			GeProjFactory.getLogs = function(q){
 				var query = [];
 				if(!isNaN(q.uid)){query.push(q.uid)};
 				if(!isNaN(q.aid)){query.push(q.aid)};
@@ -26482,27 +26482,27 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				return $http.get(API_ROOT+'/logs/'+query.join('/'),buildHeaders());		
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getCargos = function(){
+			GeProjFactory.getCargos = function(){
 				return $http.get(API_ROOT+'/cargos',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarCargo = function(cargo){
+			GeProjFactory.atualizarCargo = function(cargo){
 				return $http.put(API_ROOT+'/cargos/'+cargo.id,cargo,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.inserirCargo = function(cargo){
+			GeProjFactory.inserirCargo = function(cargo){
 				return $http.post(API_ROOT+'/cargos',cargo,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.removerCargo = function(idCargo){
+			GeProjFactory.removerCargo = function(idCargo){
 				return $http.delete(API_ROOT+'/cargos/'+idCargo,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getTamanhosDePapel = function(){
+			GeProjFactory.getTamanhosDePapel = function(){
 				return $http.get(API_ROOT+'/tamanhosDePapel',buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.baixarPDA = function(id_pda){
+			GeProjFactory.baixarPDA = function(id_pda){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT+'/pdas/'+id_pda);
@@ -26519,7 +26519,7 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.baixarPDAParaRevisao = function(id_pda){
+			GeProjFactory.baixarPDAParaRevisao = function(id_pda){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT+'/pdas/checkout/'+id_pda);
@@ -26548,15 +26548,15 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				return token;
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.bloquearDocumentoParaRevisao = function(id_doc){
+			GeProjFactory.bloquearDocumentoParaRevisao = function(id_doc){
 				return $http.post(API_ROOT+'/documentos/'+id_doc+'/checkout',null,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.desbloquearDocumento = function(id_doc){
+			GeProjFactory.desbloquearDocumento = function(id_doc){
 				return $http.post(API_ROOT+'/documentos/'+id_doc+'/checkin',null,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.baixarRevisaoAtualizada = function(id_revisao){
+			GeProjFactory.baixarRevisaoAtualizada = function(id_revisao){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT+'/revisoes/'+id_revisao);
@@ -26573,27 +26573,27 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.adicionarGrd = function(grd){
+			GeProjFactory.adicionarGrd = function(grd){
 				return $http.post(API_ROOT+'/grds', grd,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.atualizarGrd = function(grd){
+			GeProjFactory.atualizarGrd = function(grd){
 				return $http.put(API_ROOT+'/grds/'+grd.id, grd,buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getGrd = function(id_grd){
+			GeProjFactory.getGrd = function(id_grd){
 				return $http.get(API_ROOT+'/grds/'+id_grd,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getCodigosEmi = function(){
+			GeProjFactory.getCodigosEmi = function(){
 				return $http.get(API_ROOT+'/emis',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getTiposDeDocumento = function(){
+			GeProjFactory.getTiposDeDocumento = function(){
 				return $http.get(API_ROOT+'/tiposDeDocumento',buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.viewGRD = function(id_grd){
+			GeProjFactory.viewGRD = function(id_grd){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT + '/grds/' + id_grd);
@@ -26618,7 +26618,7 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.downloadGRD = function(id_grd){
+			GeProjFactory.downloadGRD = function(id_grd){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT + '/grds/' + id_grd);
@@ -26642,7 +26642,7 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.buscarGRD = function(query){
+			GeProjFactory.buscarGRD = function(query){
 				
 				// Montando a query string com base no objeto query
 				var queryString = '';
@@ -26669,27 +26669,27 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				return $http.get(API_ROOT+'/grds/search/q?'+queryString,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.mailGRD = function(id_grd,mail){
+			GeProjFactory.mailGRD = function(id_grd,mail){
 				return $http.post(API_ROOT+'/grds/'+id_grd+'/mail',mail,buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.mailLinkGRD = function(id_grd,mail){
+			GeProjFactory.mailLinkGRD = function(id_grd,mail){
 				return $http.post(API_ROOT+'/grds/'+id_grd+'/link',mail,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.loadObservacoesDeGRD = function(id_grd){
+			GeProjFactory.loadObservacoesDeGRD = function(id_grd){
 				return $http.get(API_ROOT+'/grds/'+id_grd+'/obs',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.ftpGRD = function(id_grd){
+			GeProjFactory.ftpGRD = function(id_grd){
 				return $http.post(API_ROOT+'/grds/'+id_grd+'/ftp',null,buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.publicarGRD = function(id_grd){
+			GeProjFactory.publicarGRD = function(id_grd){
 				return $http.post(API_ROOT+'/grds/'+id_grd+'/publicar',null,buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.buscarDocumentos = function(query){
+			GeProjFactory.buscarDocumentos = function(query){
 				// Montando a query string com base no objeto query
 				var queryString = '';
 				for(var i in query){
@@ -26703,27 +26703,27 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				return $http.get(API_ROOT+'/documentos/search/q?'+queryString,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.updateEndFisico = function(doc){
+			GeProjFactory.updateEndFisico = function(doc){
 				return $http.put(API_ROOT+'/documentos/'+doc.id+'/revisoes/'+doc.rev_id+'/enderecoFisico', doc.end_fisico,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.avancarRevisao = function(doc){
+			GeProjFactory.avancarRevisao = function(doc){
 				return $http.get(API_ROOT+'/documentos/'+doc.id+'/avancarRevisao',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getHistProjetos = function(){
+			GeProjFactory.getHistProjetos = function(){
 			 	return $http.get(API_ROOT+'/historico/projetos',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getVisaoGeral = function(){
+			GeProjFactory.getVisaoGeral = function(){
 				return $http.get(API_ROOT+'/visaogeral',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getEstatisticasDeProjeto = function(id_projeto){
+			GeProjFactory.getEstatisticasDeProjeto = function(id_projeto){
 				return $http.get(API_ROOT+'/projetos/'+id_projeto+'/stats',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.baixarModeloParaImportacao = function(id_projeto){
+			GeProjFactory.baixarModeloParaImportacao = function(id_projeto){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT + '/projetos/'+id_projeto+'/modeloLdpParaImportacao');
@@ -26740,7 +26740,7 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.baixarLDP = function(idProjeto,busca){
+			GeProjFactory.baixarLDP = function(idProjeto,busca){
 
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
@@ -26766,7 +26766,7 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.emitirLDP = function(idProjeto,busca){
+			GeProjFactory.emitirLDP = function(idProjeto,busca){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT + '/projetos/' + idProjeto + '/ldp');
@@ -26797,31 +26797,31 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getConfiguracoes = function(){
+			GeProjFactory.getConfiguracoes = function(){
 				return $http.get(API_ROOT+'/configuracoes',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.putConfiguracoes = function(config){
+			GeProjFactory.putConfiguracoes = function(config){
 				return $http.put(API_ROOT+'/configuracoes',config,buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getDadosFinanceirosDoProjeto = function(id){
+			GeProjFactory.getDadosFinanceirosDoProjeto = function(id){
 				return $http.get(API_ROOT+'/projetos/'+id+'/dadosFinanceiros',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.salvaDadosFinanceirosDoProjeto = function(idProjeto,dadosFinanceiros){
+			GeProjFactory.salvaDadosFinanceirosDoProjeto = function(idProjeto,dadosFinanceiros){
 				return $http.put(API_ROOT+'/projetos/'+idProjeto+'/dadosFinanceiros',dadosFinanceiros,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getUltimasPropostas = function(id){
+			GeProjFactory.getUltimasPropostas = function(id){
 				return $http.get(API_ROOT+'/propostas/ultimas',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getProposta = function(id_proposta){
+			GeProjFactory.getProposta = function(id_proposta){
 				return $http.get(API_ROOT+'/propostas/'+id_proposta,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.downloadVersaoDeProposta = function(id_proposta,serial_versao){
+			GeProjFactory.downloadVersaoDeProposta = function(id_proposta,serial_versao){
 				// Criando um formulário para enviar a requisição pelo arquivo
 				var form = document.createElement("form");
 				form.setAttribute('action',API_ROOT + '/propostas/' + id_proposta + '/versoes/'+serial_versao);
@@ -26839,27 +26839,27 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.deleteVersao = function(id_proposta,serial_versao){
+			GeProjFactory.deleteVersao = function(id_proposta,serial_versao){
 				return $http.delete(API_ROOT+'/propostas/'+id_proposta+'/versoes/'+serial_versao, buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.aprovarVersao = function(id_proposta,serial_versao){
+			GeProjFactory.aprovarVersao = function(id_proposta,serial_versao){
 				return $http.post(API_ROOT+'/propostas/'+id_proposta+'/versoes/'+serial_versao+'/aprovar',null, buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.reprovarVersao = function(id_proposta,serial_versao){
+			GeProjFactory.reprovarVersao = function(id_proposta,serial_versao){
 				return $http.post(API_ROOT+'/propostas/'+id_proposta+'/versoes/'+serial_versao+'/reprovar',null, buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.deleteProposta = function(id_proposta){
+			GeProjFactory.deleteProposta = function(id_proposta){
 				return $http.delete(API_ROOT+'/propostas/'+id_proposta, buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.mailProposta = function(id_proposta,serial_versao,mail){
+			GeProjFactory.mailProposta = function(id_proposta,serial_versao,mail){
 				return $http.post(API_ROOT+'/propostas/'+id_proposta+'/versoes/'+serial_versao+'/enviar',mail,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.buscarProposta = function(busca){
+			GeProjFactory.buscarProposta = function(busca){
 				// Criando string de busca "qstring"
 				var parametros = []
 				for (i in busca) {
@@ -26874,25 +26874,25 @@ function RootController($scope,$interval,$cookies,GDoksFactory,$mdSidenav,$mdMen
 				return $http.get(API_ROOT+'/propostas/q?'+parametros.join('&'),buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.alterarProposta = function(proposta){
+			GeProjFactory.alterarProposta = function(proposta){
 				return $http.put(API_ROOT+'/propostas/'+proposta.id,proposta,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GDoksFactory.getPropostasDeCliente = function(id_cliente){
+			GeProjFactory.getPropostasDeCliente = function(id_cliente){
 				// Fazendo requisição de busca
 				return $http.get(API_ROOT+'/clientes/'+id_cliente+'/propostas?',buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			return GDoksFactory;
+			return GeProjFactory;
 		}
 	]
-);WebGDoks.directive('focus', function(){
+);WebGeProj.directive('focus', function(){
 	return function(scope, element){
 		element[0].focus();
 	};
 });
 
-WebGDoks.directive('format', ['$filter', function ($filter) {
+WebGeProj.directive('format', ['$filter', function ($filter) {
 	return {
 		require: '?ngModel',
 		link: function (scope, elem, attrs, ctrl) {
@@ -26915,7 +26915,7 @@ WebGDoks.directive('format', ['$filter', function ($filter) {
 	};
 }]);
 
-WebGDoks.directive('ngFileModel', ['$parse', function ($parse) {
+WebGeProj.directive('ngFileModel', ['$parse', function ($parse) {
 	return {
 		restrict: 'A',
 		link: function (scope, element, attrs) {
@@ -26949,7 +26949,7 @@ WebGDoks.directive('ngFileModel', ['$parse', function ($parse) {
 	};
 }]);
 
-WebGDoks.directive('capitalize', function() {
+WebGeProj.directive('capitalize', function() {
     return {
       require: 'ngModel',
       link: function(scope, element, attrs, modelCtrl) {
@@ -26968,7 +26968,7 @@ WebGDoks.directive('capitalize', function() {
     };
   });
 
-WebGDoks.directive("progresso", function (){
+WebGeProj.directive("progresso", function (){
 		return {
 			restrict: 'E',
 			scope: {
@@ -27188,7 +27188,7 @@ http://trix-editor.org/
 	module.controller('NovaPropostaController',NovaPropostaController);
 
 	// Definindo o controller
-	function PropostasController($scope,GDoksFactory,$mdToast,$location){
+	function PropostasController($scope,GeProjFactory,$mdToast,$location){
 
 		// Definindo variáveis do scope
 		$scope.clientes = null;
@@ -27200,7 +27200,7 @@ http://trix-editor.org/
 			id_cliente:null
 		}
 		// Carregando clientes da base de dados
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 		.success(function(response){
 			$scope.clientes = response.clientes;
 			parsePropostas();
@@ -27219,7 +27219,7 @@ http://trix-editor.org/
 		});
 
 		// Carregando propostas
-		GDoksFactory.getUltimasPropostas()
+		GeProjFactory.getUltimasPropostas()
 		.success(function(response){
 			$scope.propostas = response.propostas;
 			parsePropostas();
@@ -27251,7 +27251,7 @@ http://trix-editor.org/
 
 		// Função de busca
 		function buscar(){
-			GDoksFactory.buscarProposta($scope.busca)
+			GeProjFactory.buscarProposta($scope.busca)
 			.success(function(response){
 				$scope.propostas = response.propostas;
 				parsePropostas();
@@ -27280,7 +27280,7 @@ http://trix-editor.org/
 		}
 	}
 
-	function PropostaController($scope,GDoksFactory,Upload,$cookies,$routeParams,$location,$mdToast,$mdDialog){
+	function PropostaController($scope,GeProjFactory,Upload,$cookies,$routeParams,$location,$mdToast,$mdDialog){
 
 		// Lendo id da proposta do routParam
 		var id_proposta = $routeParams.id;
@@ -27290,7 +27290,7 @@ http://trix-editor.org/
 		$scope.clientes = null;
 
 		// Carregando clientes da base de dados
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 		.success(function(response){
 			$scope.clientes = response.clientes;
 			parseProposta();
@@ -27324,7 +27324,7 @@ http://trix-editor.org/
 
 			// Carregando configurações para gerar ou não código automaticamente
 			$scope.geraCodigosAutomaticamente = false;
-			GDoksFactory.getConfiguracoes().
+			GeProjFactory.getConfiguracoes().
 			success(function(response){
 				$scope.geraCodigosAutomaticamente = (response.config.GERAR_CODIGOS_DE_PROPOSTAS_AUTOMATICAMENTE.valor === true);
 			})
@@ -27340,7 +27340,7 @@ http://trix-editor.org/
 
 		} else {
 			// Carregando proposta da base de dados
-			GDoksFactory.getProposta(id_proposta)
+			GeProjFactory.getProposta(id_proposta)
 			.success(function(response){
 				$scope.proposta = response.proposta;
 				parseProposta();
@@ -27469,7 +27469,7 @@ http://trix-editor.org/
 		}
 
 		function deleteVersao(serial){
-			GDoksFactory.deleteVersao($scope.proposta.id,serial)
+			GeProjFactory.deleteVersao($scope.proposta.id,serial)
 			.success(function(response){
 				var v = $scope.proposta.versoes;
 				v.splice(v.findIndex(function(a){return a.serial==this},serial),1);
@@ -27489,7 +27489,7 @@ http://trix-editor.org/
 		}
 
 		$scope.deleteProposta = function(){
-			GDoksFactory.deleteProposta($scope.proposta.id)
+			GeProjFactory.deleteProposta($scope.proposta.id)
 			.success(function(response){
 				$location.url('/propostas');
 			})
@@ -27508,7 +27508,7 @@ http://trix-editor.org/
 		}
 
 		$scope.downloadVersaoDeProposta = function(serial){
-			GDoksFactory.downloadVersaoDeProposta($scope.proposta.id,serial);
+			GeProjFactory.downloadVersaoDeProposta($scope.proposta.id,serial);
 		}
 
 		$scope.onAprovarVersaoClick = function(evt,serial){
@@ -27536,7 +27536,7 @@ http://trix-editor.org/
 		}
 
 		function aprovarVersao(serial){
-			GDoksFactory.aprovarVersao($scope.proposta.id,serial)
+			GeProjFactory.aprovarVersao($scope.proposta.id,serial)
 			.success(function(response){
 				for (var i = $scope.proposta.versoes.length - 1; i >= 0; i--) {
 					$scope.proposta.versoes[i].aprovacao = null;
@@ -27573,7 +27573,7 @@ http://trix-editor.org/
 		}
 
 		function reprovarVersao(serial){
-			GDoksFactory.reprovarVersao($scope.proposta.id,serial)
+			GeProjFactory.reprovarVersao($scope.proposta.id,serial)
 			.success(function(response){
 				$scope.proposta.versoes.find(function(a){return a.serial == this},serial).aprovacao = null;
 			})
@@ -27615,13 +27615,13 @@ http://trix-editor.org/
 			}
 		}
 
-		function enviarPropostaDialogController($scope,parentScope,versao,GDoksFactory,$cookies,$mdToast)
+		function enviarPropostaDialogController($scope,parentScope,versao,GeProjFactory,$cookies,$mdToast)
 		{
 			// Definindo variável que manterá as configurações
 			var config = null;
 
 			// Carregando configurações do servidor
-			GDoksFactory.getConfiguracoes()
+			GeProjFactory.getConfiguracoes()
 			.success(function(response){
 				config = response.config;
 				$scope.mail = setUpMail();
@@ -27704,7 +27704,7 @@ http://trix-editor.org/
 				// mostra carregando
 				parentScope.root.carregando == true;
 
-				GDoksFactory.mailProposta(parentScope.proposta.id,versao.serial,$scope.mail)
+				GeProjFactory.mailProposta(parentScope.proposta.id,versao.serial,$scope.mail)
 				.success(function(response){
 					// Esconde carregando
 					parentScope.root.carregando = false;
@@ -27757,7 +27757,7 @@ http://trix-editor.org/
 
 		$scope.onSalvarClick = function(){
 			
-			GDoksFactory.alterarProposta($scope.proposta)
+			GeProjFactory.alterarProposta($scope.proposta)
 			.success(function(){
 				// Retornando Toast para usuário
 				$mdToast.show(
@@ -27778,7 +27778,7 @@ http://trix-editor.org/
 		}
 	}
 
-	function NovaPropostaController($scope,GDoksFactory,Upload,$cookies,$routeParams,$location,$mdToast){
+	function NovaPropostaController($scope,GeProjFactory,Upload,$cookies,$routeParams,$location,$mdToast){
 		
 		// Definindo proposta vazia
 		$scope.proposta = {
@@ -27790,7 +27790,7 @@ http://trix-editor.org/
 		}
 
 		// Carregando clientes
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 		.success(function(response){
 			$scope.clientes = response.clientes;
 		})
@@ -27806,7 +27806,7 @@ http://trix-editor.org/
 
 		// Carregando configurações para gerar ou não código automaticamente
 		$scope.geraCodigosAutomaticamente = false;
-		GDoksFactory.getConfiguracoes().
+		GeProjFactory.getConfiguracoes().
 		success(function(response){
 			$scope.geraCodigosAutomaticamente = (response.config.GERAR_CODIGOS_DE_PROPOSTAS_AUTOMATICAMENTE.valor === true);
 		})

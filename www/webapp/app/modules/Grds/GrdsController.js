@@ -3,7 +3,7 @@
 	var GrdsModule = angular.module('Grds',[]);
 
 	// Criando função controller de Grds
-	var GrdsController = function($scope, $location,GDoksFactory){
+	var GrdsController = function($scope, $location,GeProjFactory){
 
 		// Iniciando as variáveis
 		$scope.clientes = [];
@@ -30,7 +30,7 @@
 		// FUNÇÕES DE COMUNICAÇÃO COM O SERVIDOR = = = = = = = = = = = = = = = = = = = = = = = =
 		function buscar(q){
 			$scope.root.carregando = true;
-			GDoksFactory.buscarGRD(q).success(function(response){
+			GeProjFactory.buscarGRD(q).success(function(response){
 				$scope.root.carregando = false;
 				$scope.resultados = response.result;
 				$scope.nPaginas = response.nPaginas;
@@ -107,7 +107,7 @@
 		// FUNÇÕES DE CARGA DE DADOS = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		// função que carrega clientes da base local
 		function loadClientes(){
-			indexedDB.open('gdoks').onsuccess= function(evt){
+			indexedDB.open('geproj').onsuccess= function(evt){
 				evt.target.result.transaction('clientes').objectStore('clientes').getAll().onsuccess = function(evt){
 					$scope.clientes = evt.target.result;
 				}
@@ -116,7 +116,7 @@
 
 		// Função que carrega projetos da base local
 		function loadProjetos(){
-			indexedDB.open('gdoks').onsuccess= function(evt){
+			indexedDB.open('geproj').onsuccess= function(evt){
 				evt.target.result.transaction('projetos').objectStore('projetos').getAll().onsuccess = function(evt){
 					projetos = evt.target.result;
 					$scope.projetosListados = projetos;
@@ -126,9 +126,9 @@
 			}
 		}
 
-		// Função que carrega configurações do GDoks
+		// Função que carrega configurações do GeProj
 		function loadConfig(){
-			GDoksFactory.getConfiguracoes()
+			GeProjFactory.getConfiguracoes()
 			.success(function(response){
 				$scope.somenteConcluidosPodemSerAdd = response.config.SOMENTE_DOC_CONCLUIDOS_SAO_EMITIDOS.valor;
 			})
@@ -151,7 +151,7 @@
 	}
 
 	// Criando função controller de Grds
-	var GrdController = function($scope,$location,GDoksFactory,$routeParams,$mdToast,$mdDialog){
+	var GrdController = function($scope,$location,GeProjFactory,$routeParams,$mdToast,$mdDialog){
 
 		// Lendo id da url
 		var id_grd = $routeParams.id;
@@ -184,7 +184,7 @@
 
 		// Carregando clientes
 		$scope.clientes = [];
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 		.success(function(response){
 			$scope.clientes = response.clientes;
 
@@ -203,9 +203,9 @@
 			);
 		});
 
-		// Carregando configurações do GDoks
+		// Carregando configurações do GeProj
 		var config = null;
-		GDoksFactory.getConfiguracoes().
+		GeProjFactory.getConfiguracoes().
 		success(function(response){
 			config = response.config;
 		})
@@ -225,7 +225,7 @@
 			$scope.root.carregando = true;
 
 			// Carrega os projetos daquele cliente
-			GDoksFactory.getProjetos($scope.grd.cliente.id)
+			GeProjFactory.getProjetos($scope.grd.cliente.id)
 			.success(function(response){
 
 				// Esconde carregando
@@ -292,7 +292,7 @@
 			delete grd.projeto;
 
 			if($scope.grd.id == undefined || $scope.grd.id==0){
-				GDoksFactory.adicionarGrd(grd)
+				GeProjFactory.adicionarGrd(grd)
 				.success(function(response){
 					// Esconde carregando
 					$scope.root.carregando = false;
@@ -323,7 +323,7 @@
 					$scope.root.carregando = false;
 				});
 			} else {
-				GDoksFactory.atualizarGrd(grd)
+				GeProjFactory.atualizarGrd(grd)
 				.success(function(response){
 					// Esconde carregando
 					$scope.root.carregando = false;
@@ -371,12 +371,12 @@
 
 		// Baixa o pda mais atual do documento
 		$scope.baixarPda = function(id_pda){
-			GDoksFactory.baixarPDA(id_pda);
+			GeProjFactory.baixarPDA(id_pda);
 		}
 
 		// Baixa último pda de uma revisão
 		$scope.baixarRevisaoAtualizada = function(id_revisao){
-			GDoksFactory.baixarRevisaoAtualizada(id_revisao);
+			GeProjFactory.baixarRevisaoAtualizada(id_revisao);
 		}
 
 		// Função que abre diálogo para alterar observações de uma grd
@@ -745,7 +745,7 @@
 				parentScope.root.carregando = true;
 
 				// Fazendo requisição
-				GDoksFactory.updateEndFisico(doc)
+				GeProjFactory.updateEndFisico(doc)
 				.success(function(response){
 					// Escondendo carregando
 					parentScope.root.carregando = false;
@@ -782,11 +782,11 @@
 
 		// Função executada quando se clica no burão para visualizar o GRD
 		$scope.onVisualizarGrdClick = function(){
-			GDoksFactory.viewGRD($scope.grd.id);
+			GeProjFactory.viewGRD($scope.grd.id);
 		}
 
 		$scope.onBaixarGrdEmZipClick = function(){
-			GDoksFactory.downloadGRD($scope.grd.id);
+			GeProjFactory.downloadGRD($scope.grd.id);
 		}
 
 		$scope.confirmFtpUploadController = function(evt){
@@ -804,7 +804,7 @@
 					$scope.root.carregando = true;
 
 					// Fazendo requisição de envio
-					GDoksFactory.ftpGRD($scope.grd.id)
+					GeProjFactory.ftpGRD($scope.grd.id)
 					.success(function(response){
 						// Esconde carregando
 						$scope.root.carregando = false;
@@ -854,7 +854,7 @@
 					$scope.root.carregando = true;
 
 					// Fazendo requisição de envio
-					GDoksFactory.publicarGRD($scope.grd.id)
+					GeProjFactory.publicarGRD($scope.grd.id)
 					.success(function(response){
 						// Esconde carregando
 						$scope.root.carregando = false;
@@ -904,7 +904,7 @@
 				});
 		}
 
-		function enviarLinkViaEmailDialogController($scope,parentScope,config,GDoksFactory,$cookies){
+		function enviarLinkViaEmailDialogController($scope,parentScope,config,GeProjFactory,$cookies){
 
 			// Amarrando a grd deste scope com o parentScope
 			$scope.grd = parentScope.grd;
@@ -979,7 +979,7 @@
 				// mostra carregando
 				parentScope.root.carregando == true;
 
-				GDoksFactory.mailLinkGRD($scope.grd.id,$scope.mail)
+				GeProjFactory.mailLinkGRD($scope.grd.id,$scope.mail)
 				.success(function(response){
 					// Esconde carregando
 					parentScope.root.carregando = false;
@@ -1040,7 +1040,7 @@
 
 			// Função que carrega códigos EMI
 			function loadCodigosEmi(){
-				GDoksFactory.getCodigosEmi()
+				GeProjFactory.getCodigosEmi()
 				.success(function(response){
 					// Setando codigos emi no scope
 					$scope.codigosEmi = response.codigosEmi;
@@ -1070,7 +1070,7 @@
 
 			// Função que carrega Tipos de Documento
 			function loadTiposDeDocumento(){
-				GDoksFactory.getTiposDeDocumento()
+				GeProjFactory.getTiposDeDocumento()
 				.success(function(response){
 					// Setando codigos emi no scope
 					$scope.tiposDeDocumento = response.tiposDeDocumento;
@@ -1113,7 +1113,7 @@
 						$scope.grd.id_cliente = id_cliente;
 
 						// Carregando os projetos deste cliente
-						GDoksFactory.getProjetos(id_cliente)
+						GeProjFactory.getProjetos(id_cliente)
 						.success(function(response){
 							$scope.projetos = response.projetos;
 
@@ -1137,7 +1137,7 @@
 						$scope.root.carregado = true;
 
 						// Carregando GRD do servidor
-						GDoksFactory.getGrd(id)
+						GeProjFactory.getGrd(id)
 						.success(function(response){
 
 							// Esconde carregando
@@ -1162,7 +1162,7 @@
 							// Verificando se a grd é de um projeto ativo;
 							if($scope.grd.projeto_ativo == 1) {
 								// Projeto ativo. Carregando o projeto da base local
-								indexedDB.open('gdoks').onsuccess = function(evt){
+								indexedDB.open('geproj').onsuccess = function(evt){
 									evt.target.result.transaction('projetos').objectStore('projetos').getAll().onsuccess = function(evt){
 										// Levantando os projetos do cliente
 										$scope.projetos = evt.target.result.filter(function(a){return a.id_cliente==this},$scope.grd.id_cliente);
@@ -1221,7 +1221,7 @@
 			// Função que carrega documentos de um projeto e põe no scope.
 			// Só funciona direito se códigos emi e tipos de documento já tiverem sido carregados
 			function loadDocumentosDeProjeto(id_projeto){
-				GDoksFactory.getDocumentosDoProjeto(id_projeto)
+				GeProjFactory.getDocumentosDoProjeto(id_projeto)
 				.success(function(response){
 					
 					// Declarando variáveis locais
@@ -1272,7 +1272,7 @@
 
 			// Função que carrega disciplinas
 			function loadDisciplinas(){
-				GDoksFactory.getDisciplinas()
+				GeProjFactory.getDisciplinas()
 				.success(function(response){
 					$scope.disciplinas = response.disciplinas;
 				})
@@ -1292,7 +1292,7 @@
 
 			// Função que carrega áreas do projeto
 			function loadAreasDeProjeto(id_projeto){
-				GDoksFactory.getAreas(id_projeto)
+				GeProjFactory.getAreas(id_projeto)
 				.success(function(response){
 					$scope.areas = response.areas;
 				})
@@ -1311,7 +1311,7 @@
 			}
 
 			function loadObservacoes(){
-				GDoksFactory.loadObservacoesDeGRD($scope.grd.id)
+				GeProjFactory.loadObservacoesDeGRD($scope.grd.id)
 				.success(function(response){
 					$scope.grd.observacoes = response.observacoes;
 
@@ -1325,7 +1325,7 @@
 					}
 
 					// Parsing nomes dos usuários
-					indexedDB.open('gdoks').onsuccess = function(evt){
+					indexedDB.open('geproj').onsuccess = function(evt){
 						var os = evt.target.result.transaction('usuarios').objectStore('usuarios');
 						var obs;
 						for (var i = $scope.grd.observacoes.length - 1; i >= 0; i--) {

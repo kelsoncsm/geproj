@@ -4,7 +4,7 @@
 	angular.module('Projetos').controller('ProjetosDocumentosController',ProjetosDocumentosController);
 	
 	// Definindo o controller
-	function ProjetosDocumentosController($scope,GDoksFactory,$mdExpansionPanel,$mdDialog,$mdToast,Upload,$cookies,$timeout){
+	function ProjetosDocumentosController($scope,GeProjFactory,$mdExpansionPanel,$mdDialog,$mdToast,Upload,$cookies,$timeout){
 
 		// Definindo criticas
 		$scope.criticas = [];
@@ -55,7 +55,7 @@
 					$scope.root.carregando = true;
 
 					documento.id_projeto = $scope.projeto.id;
-					GDoksFactory.removerDocumento(documento)
+					GeProjFactory.removerDocumento(documento)
 					.success(function(response){
 
 						// Esconde carregando
@@ -92,7 +92,7 @@
 			);
 		};
 
-		function dialogController($scope,disciplinas,id_doc,documentos,cargos,parentScope,copy,GDoksFactory){
+		function dialogController($scope,disciplinas,id_doc,documentos,cargos,parentScope,copy,GeProjFactory){
 
 			// Copiando as disciplinas para o scope
 			$scope.disciplinas = disciplinas;
@@ -176,7 +176,7 @@
 				// Mostra carregando
 				parentScope.carregando = true;
 
-				GDoksFactory.getDocumento(id_doc)
+				GeProjFactory.getDocumento(id_doc)
 				.success(function(response){
 					
 					// Esconde carregando
@@ -352,7 +352,7 @@
 				// Verificando se é inserção de documento ou atualização pelo id
 				if(doc.id == 0){
 					// Inserir novo documento
-					GDoksFactory.adicionarDocumento(doc)
+					GeProjFactory.adicionarDocumento(doc)
 					.success(function(response){
 						// Esconde carregando
 						parentScope.root.carregando = false;
@@ -390,7 +390,7 @@
 					});
 				} else {
 					// Atualizar documento existente
-					GDoksFactory.alterarDocumento(doc)
+					GeProjFactory.alterarDocumento(doc)
 					.success(function(response){
 						// Esconde carregando
 						parentScope.root.carregando = false;
@@ -442,7 +442,7 @@
 		}
 
 		$scope.baixarModeloParaImportacao = function(){
-			GDoksFactory.baixarModeloParaImportacao($scope.projeto.id);
+			GeProjFactory.baixarModeloParaImportacao($scope.projeto.id);
 		}
 
 		//$scope.UploadXlsx = function($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event){

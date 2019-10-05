@@ -5,7 +5,7 @@
 		$uri = 'http://';
 	}
 	$uri .= $_SERVER['HTTP_HOST'];
-	header('Location: '.$uri.'/gdoks/www/');
+	header('Location: '.$uri.'/geproj/www/');
 	exit;
 ?>
-Something is wrong with the XAMPP installation :-(
+

@@ -2,11 +2,11 @@
 	
 	var modCargos = angular.module('Cargos',[]);
 
-	var CargosController = function($scope,$mdDialog,GDoksFactory,$mdToast){
+	var CargosController = function($scope,$mdDialog,GeProjFactory,$mdToast){
 
 		$scope.cargos = [];
 
-		GDoksFactory.getCargos().success(function(response){
+		GeProjFactory.getCargos().success(function(response){
 			for (var i = response.cargos.length - 1; i >= 0; i--) {
 				response.cargos[i].valor_hh *= 1;
 			}
@@ -35,7 +35,7 @@
 							parentScope.root.carregando = true;
 
 							if(cargo.id == 0){
-								GDoksFactory.inserirCargo(cargo)
+								GeProjFactory.inserirCargo(cargo)
 								.success(function(response){
 									// Esconde carregando
 									parentScope.root.carregando = false;
@@ -68,7 +68,7 @@
 									);
 								});
 							} else {
-								GDoksFactory.atualizarCargo(cargo)
+								GeProjFactory.atualizarCargo(cargo)
 								.success(function(response){
 									// Esconde carregando
 									parentScope.root.carregando = false;
@@ -137,7 +137,7 @@
 
 			$mdDialog.show(confirm).then(
 				function() {
-					GDoksFactory.removerCargo(idCargo)
+					GeProjFactory.removerCargo(idCargo)
 					.success(function(response){
 						$scope.cargos = $scope.cargos.filter(function(c){return c.id!= this},idCargo);
 						$mdToast.show(

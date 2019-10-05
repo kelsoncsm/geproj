@@ -9,7 +9,7 @@
 	module.filter('daysFromNow',daysFromNow);
 	
 	// Definindo função controller
-	function DocumentosController($scope,GDoksFactory,$mdToast,$location,$cookies){
+	function DocumentosController($scope,GeProjFactory,$mdToast,$location,$cookies){
 		
 		// Definindo 'agora'
 		$scope.agora = new Date();
@@ -38,7 +38,7 @@
 
 		// Função que carrega clientes
 		function carregaClientes(){
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				evt.target.result.transaction("clientes").objectStore("clientes").getAll().onsuccess = function(evt){
 					$scope.$apply(function(){
 						$scope.clientes = evt.target.result;
@@ -49,7 +49,7 @@
 
 		// Função que carrega projetos
 		function carregaProjetos(){
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				evt.target.result.transaction("projetos").objectStore("projetos").getAll().onsuccess = function(evt){
 					$scope.$apply(function(){
 						projetos = evt.target.result;
@@ -61,7 +61,7 @@
 
 		// função que carrega áreas de um projeto
 		function carregaAreas(id_projeto){
-			GDoksFactory.getAreas(id_projeto)
+			GeProjFactory.getAreas(id_projeto)
 			.success(function(response){
 				$scope.areas = response.areas;
 			})
@@ -81,7 +81,7 @@
 
 		// função que carrega subáreas de uma area
 		function carregaSubareas(id_projeto,id_area){
-			GDoksFactory.getSubareas(id_projeto,id_area)
+			GeProjFactory.getSubareas(id_projeto,id_area)
 			.success(function(response){
 				$scope.subareas = response.subareas;
 			})
@@ -101,7 +101,7 @@
 
 		// Função que carrega as disciplinas e subdisciplinas (base do cliente)
 		function carregaDisciplinas(){
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				evt.target.result.transaction("disciplinas").objectStore("disciplinas").getAll().onsuccess = function(evt){
 					$scope.disciplinas = evt.target.result;
 				}
@@ -141,11 +141,11 @@
 		}
 
 		$scope.onBaixarLdpClick = function(){
-			GDoksFactory.baixarLDP($scope.busca.id_projeto,$scope.busca);
+			GeProjFactory.baixarLDP($scope.busca.id_projeto,$scope.busca);
 		}
 
 		$scope.onEmitirLdpClick = function(){
-			GDoksFactory.emitirLDP($scope.busca.id_projeto,$scope.busca);	
+			GeProjFactory.emitirLDP($scope.busca.id_projeto,$scope.busca);	
 		}
 
 		$scope.onOpenClick = function(id){
@@ -195,7 +195,7 @@
 			$scope.root.carregando = true;
 
 			// Mandando fazer busca
-			GDoksFactory.buscarDocumentos($scope.busca)
+			GeProjFactory.buscarDocumentos($scope.busca)
 			.success(function(response){
 				// Esconde Carregando
 				$scope.root.carregando = false;

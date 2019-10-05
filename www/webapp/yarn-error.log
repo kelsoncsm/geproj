@@ -15,9 +15,9 @@ Platform:
 
 npm manifest: 
   {
-    "name": "GDoks",
+    "name": "GeProj",
     "version": "1.0.0",
-    "description": "GDoks WebApp - Gestão Eletrônica de documentos",
+    "description": "GeProj WebApp - Gestão Eletrônica de documentos",
     "main": "index.js",
     "author": "Sérgio Moura",
     "license": "MIT",

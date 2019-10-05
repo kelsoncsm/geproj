@@ -13,11 +13,11 @@
 	require('db.php');
 	require('definicoes_de_acoes.php');
 	require('response.php');
-	require('GDoks/GDoks.php');
-	require('GDoks/Buscador.php');
-	require('GDoks/Grd.php');
-	require('GDoks/ModeloLDP.php');
-	require('GDoks/Crypter.php');
+	require('GeProj/GeProj.php');
+	require('GeProj/Buscador.php');
+	require('GeProj/Grd.php');
+	require('GeProj/ModeloLDP.php');
+	require('GeProj/Crypter.php');
 
 	// Definindo o timezone padrão
 	date_default_timezone_set('America/Sao_Paulo');
@@ -82,10 +82,10 @@
 		// Definindo tamanho máximo do parâmetro
 		$param_maxlen = 256;
 		if($parametros == ''){
-			$sql = 'INSERT INTO gdoks_log (id_usuario,id_acao,data) values (?,?,now())';
+			$sql = 'INSERT INTO log (id_usuario,id_acao,data) values (?,?,now())';
 			$result = $db->query($sql,'ii',$idUsuario,$idAcao);
 		} else {
-			$sql = 'INSERT INTO gdoks_log (id_usuario,id_acao,data,parametros) values (?,?,now(),?)';
+			$sql = 'INSERT INTO log (id_usuario,id_acao,data,parametros) values (?,?,now(),?)';
 			$result = $db->query($sql,'iis',$idUsuario,$idAcao,substr($parametros, 0,$param_maxlen));
 		}
 	}
@@ -94,15 +94,15 @@
 	function addInHistProj($id_projeto,$id_usuario,$db,$config){
 
 		// Diminuindo um na ordem de todos os do histórico de projetos
-		$sql = 'UPDATE gdoks_hist_prjs SET ordem=ordem-1 WHERE id_usuario=?';
+		$sql = 'UPDATE hist_prjs SET ordem=ordem-1 WHERE id_usuario=?';
 		$db->query($sql,'i',$id_usuario);
 
 		// Deletando todos os registro do histórico que tenham ordem menor que 1
-		$sql = 'DELETE FROM gdoks_hist_prjs WHERE ordem<1 AND id_usuario=?';
+		$sql = 'DELETE FROM hist_prjs WHERE ordem<1 AND id_usuario=?';
 		$db->query($sql,'i',$id_usuario);
 
 		//admin@ezparts.com Pondo o novo elemento no histórico com ordem MAX_HIST_PRJS
-		$sql = 'REPLACE INTO gdoks_hist_prjs (id_projeto,id_usuario,ordem) VALUES (?,?,?)';
+		$sql = 'REPLACE INTO hist_prjs (id_projeto,id_usuario,ordem) VALUES (?,?,?)';
 		$db->query($sql,'iii',$id_projeto,$id_usuario,$config->MAX_HIST_PRJS->valor);
 	};
 
@@ -149,7 +149,7 @@
 
 	// Carregando configurações da empresa
 	try {
-		$config = GDoks::getConf($empresa)	;
+		$config = GeProj::getConf($empresa)	;
 	} catch (Exception $e) {
 		http_response_code(401);
 		$response = new response(1,$e->getMessage());
@@ -184,7 +184,7 @@
 							   login,
 							   email
 						FROM
-							gdoks_usuarios
+							usuarios
 						WHERE login=?
 						  AND senha=PASSWORD(?)
 						  AND id_empresa=?
@@ -198,7 +198,7 @@
 					$token = uniqid('',true);
 					
 					// atualizando o token na base de dados
-					$db->query('update gdoks_usuarios set token=?, validade_do_token=? where id=?','ssi',$token,Date('Y-m-d H:i:s',time()+TOKEN_DURARION),$rs[0]['id']);
+					$db->query('update usuarios set token=?, validade_do_token=? where id=?','ssi',$token,Date('Y-m-d H:i:s',time()+TOKEN_DURARION),$rs[0]['id']);
 					
 					// Arrumando dados do usuário
 					$user = new stdClass();
@@ -210,8 +210,8 @@
 
 					// Levantando o nome da empresa para enviar para o usuário
 					$sql = 'SELECT a.nome AS nome_empresa
-							FROM gdoks_empresas a
-							INNER JOIN gdoks_usuarios b ON a.id=b.id_empresa
+							FROM empresas a
+							INNER JOIN usuarios b ON a.id=b.id_empresa
 							WHERE b.id=?';
 					$user->nome_empresa = $db->query($sql,'i',$rs[0]['id'])[0]['nome_empresa'];
 
@@ -249,7 +249,7 @@
 		
 			// LOGIN REFRESH ROUTE DEFINITION - - - - - - - - -
 			$app->get('/refresh',function() use ($app,$db,$token){
-				$rs = $db->query('select id from gdoks_usuarios where token=? and validade_do_token>now()','s',$token);
+				$rs = $db->query('select id from usuarios where token=? and validade_do_token>now()','s',$token);
 				if(sizeof($rs) == 0){
 					http_response_code(401);
 					$response = new response(1,'Não renovou token: '.$token);
@@ -259,7 +259,7 @@
 					$new_token = uniqid('',true);
 					$id = $rs[0]['id'];
 					try {
-						$db->query('update gdoks_usuarios set token=?, validade_do_token=? where id=?','ssi',$new_token,Date('Y-m-d H:i:s',time()+TOKEN_DURARION),$id);
+						$db->query('update usuarios set token=?, validade_do_token=? where id=?','ssi',$new_token,Date('Y-m-d H:i:s',time()+TOKEN_DURARION),$id);
 						$app->response->setStatus(200);
 						$response = new response(0,'ok');
 						$response->token = $new_token;
@@ -279,7 +279,7 @@
 				$data = json_decode($app->request->getBody());
 				
 				// Verificando se o token existe e se ele ainda é válido.
-				$rs = $db->query('select id from gdoks_usuarios where token=? and validade_do_token>now()','s',$token);
+				$rs = $db->query('select id from usuarios where token=? and validade_do_token>now()','s',$token);
 				if(sizeof($rs)==0){
 					// Retonando não autorizado
 					http_response_code(401);
@@ -291,7 +291,7 @@
 					$id = $rs[0]['id'];
 					if($data->novaSenha == ''){
 						// Altera só o login sem alterar senha.
-						$sql = "UPDATE gdoks_usuarios set login=? WHERE id=?";
+						$sql = "UPDATE usuarios set login=? WHERE id=?";
 						try {
 							$db->query($sql,'si',$data->novoLogin,$id);
 							$response = new response(0,'ok');
@@ -306,7 +306,7 @@
 						if($ok){registrarAcao($db,$id,ACAO_ALTEROU_DADOS_PESSOAIS);};
 					} else {
 						// Altera login e senha.
-						$sql = "UPDATE gdoks_usuarios set login=?,senha=PASSWORD(?) WHERE id=?";
+						$sql = "UPDATE usuarios set login=?,senha=PASSWORD(?) WHERE id=?";
 						try {
 							$db->query($sql,'ssi',$data->novoLogin,$data->novaSenha,$id);
 							$response = new response(0,'ok');
@@ -332,10 +332,10 @@
 						       a.email,
 						       a.ativo,
 						       a.sigla
-						FROM gdoks_usuarios a
+						FROM usuarios a
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?) b ON a.id_empresa=b.id_empresa
 							ORDER by a.nome';
 				$response = new response(0,'ok');
@@ -346,8 +346,8 @@
 			$app->get('/usuarios/:id_usuario/telas',function($id_usuario) use ($app,$db,$token){
 				// Verificando se o usuário logado e o usuário em questão são da mesma empresa
 				$sql = 'SELECT count(*) AS ok
-						FROM gdoks_usuarios a
-						INNER JOIN gdoks_usuarios b ON a.token=?
+						FROM usuarios a
+						INNER JOIN usuarios b ON a.token=?
 						AND b.id=?
 						AND a.id_empresa=b.id_empresa';
 				$ok = $db->query($sql,'si',$token,$id_usuario)[0]['ok']==1;
@@ -355,12 +355,12 @@
 				if($ok){
 					// levantando telas do usuário
 					$sql = 'SELECT id_tela AS id
-							FROM gdoks_usuarios_x_telas
+							FROM usuarios_x_telas
 							WHERE id_usuario=?';
 					$telas = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_usuario));
 
 					// levantando opções de tela do usuário
-					$sql = 'SELECT id_opcao as id,valor FROM gdoks_usuarios_x_opcoes_de_tela WHERE id_usuario=? AND id_tela=?';
+					$sql = 'SELECT id_opcao as id,valor FROM usuarios_x_opcoes_de_tela WHERE id_usuario=? AND id_tela=?';
 					foreach ($telas as $tela) {
 						$tela->opcoes = $db->query($sql,'ii',$id_usuario,$tela->id);
 					}
@@ -383,24 +383,24 @@
 				
 				// Verificando se o usuário logado e o usuário em questão são da mesma empresa
 				$sql = 'SELECT count(*) AS ok
-						FROM gdoks_usuarios a
-						INNER JOIN gdoks_usuarios b ON a.token=?
+						FROM usuarios a
+						INNER JOIN usuarios b ON a.token=?
 						AND b.id=?
 						AND a.id_empresa=b.id_empresa';
 				$ok = $db->query($sql,'si',$token,$id_usuario)[0]['ok']==1;
 
 				if($ok){
 					// Removendo telas antigas do usuário
-					$sql = 'DELETE from gdoks_usuarios_x_telas WHERE id_usuario=?';
+					$sql = 'DELETE from usuarios_x_telas WHERE id_usuario=?';
 					$db->query($sql,'i',$id_usuario);
 					
 					// Inserindo novas telas para o usuário
-					$sql_1 = 'INSERT INTO gdoks_usuarios_x_telas (id_tela,id_usuario) VALUES (?,?)';
+					$sql_1 = 'INSERT INTO usuarios_x_telas (id_tela,id_usuario) VALUES (?,?)';
 					foreach ($telas as $tela) {
 						$db->query($sql_1,'ii',$tela->id,$id_usuario);
 						
 						// Inserindo as opcoes de tela
-						$sql_2 = 'INSERT INTO gdoks_usuarios_x_opcoes_de_tela (id_tela,id_usuario,id_opcao,valor) VALUES (?,?,?,?)';
+						$sql_2 = 'INSERT INTO usuarios_x_opcoes_de_tela (id_tela,id_usuario,id_opcao,valor) VALUES (?,?,?,?)';
 						foreach ($tela->opcoes as $opcao) {
 							$db->query($sql_2,'iiii',$tela->id,$id_usuario,$opcao->id,$opcao->valor);
 						}
@@ -428,12 +428,12 @@
 						FROM (
 							SELECT
 								id,id_empresa
-							FROM gdoks_usuarios
+							FROM usuarios
 							WHERE token=? AND validade_do_token>now()) A INNER JOIN 
 								(
 							SELECT
 								id_empresa
-							FROM gdoks_usuarios
+							FROM usuarios
 								WHERE id=?) B on A.id_empresa=B.id_empresa;';
 				$rs = $db->query($sql,'si',$token,$id)[0];
 				$ok = $rs['ok'];
@@ -445,7 +445,7 @@
 					if(!isset($usuario->senha1) || $usuario->senha1 == ''){
 
 						// NÃO alterar senha do usuário
-						$sql = 'UPDATE gdoks_usuarios SET nome=?,email=?,login=?,ativo=?,sigla=? WHERE id=?';
+						$sql = 'UPDATE usuarios SET nome=?,email=?,login=?,ativo=?,sigla=? WHERE id=?';
 						try {
 							$db->query($sql,'sssisi',$usuario->nome,$usuario->email,$usuario->login,$usuario->ativo,$usuario->sigla,$usuario->id);	
 							$response = new response(0,'Usuário alterado com sucesso.');
@@ -460,7 +460,7 @@
 						registrarAcao($db,$id,ACAO_ALTEROU_DADOS_DE_USUARIO,$usuario->nome.','.$usuario->email.','.$usuario->login.','.($usuario->ativo==true?1:0));
 					} else {
 						// Alterar a senha do usuário
-						$sql = 'UPDATE gdoks_usuarios SET nome=?, email=?, login=?, senha=PASSWORD(?), ativo=?, sigla=? WHERE id=?';
+						$sql = 'UPDATE usuarios SET nome=?, email=?, login=?, senha=PASSWORD(?), ativo=?, sigla=? WHERE id=?';
 						try {
 							$db->query($sql,'ssssisi',$usuario->nome,$usuario->email,$usuario->login,$usuario->senha1,$usuario->ativo,$usuario->sigla,$usuario->id);	
 							$response = new response(0,'Usuário alterado com sucesso.');
@@ -489,7 +489,7 @@
 				$sql = 'SELECT
 							id,id_empresa
 						FROM 
-							gdoks_usuarios
+							usuarios
 						WHERE
 							token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token)[0];
@@ -497,7 +497,7 @@
 				$id = $rs['id'];
 
 				// Inserindo novo usuário.
-				$sql = 'INSERT INTO gdoks_usuarios (nome,email,login,senha,id_empresa,ativo,sigla) VALUES (?,?,?,PASSWORD(?),?,?,?)';
+				$sql = 'INSERT INTO usuarios (nome,email,login,senha,id_empresa,ativo,sigla) VALUES (?,?,?,PASSWORD(?),?,?,?)';
 				try {
 					$db->query($sql,'ssssiis',$usuario->nome,$usuario->email,$usuario->login,$usuario->senha1,$id_empresa,$usuario->ativo,$usuario->sigla);
 					$response = new response(0,'Usuário criado com sucesso.');
@@ -518,7 +518,7 @@
 			$app->get('/visaogeral',function() use ($app,$db,$token){
 				// Verificando se o token do usuário é válido
 				$sql = 'SELECT id
-						FROM gdoks_usuarios
+						FROM usuarios
 						WHERE token=?
 						  AND validade_do_token>NOW()';
 				$rs = $db->query($sql,'s',$token);
@@ -537,14 +537,14 @@
 						FROM
 						  (SELECT a.id,
 						          max(e.id) AS id_revisao
-						   FROM gdoks_documentos a
-						   INNER JOIN gdoks_subareas b ON a.id_subarea=b.id
-						   INNER JOIN gdoks_areas c ON b.id_area=c.id
-						   INNER JOIN gdoks_projetos d ON c.id_projeto=d.id
-						   LEFT JOIN gdoks_revisoes e ON e.id_documento=a.id
+						   FROM documentos a
+						   INNER JOIN subareas b ON a.id_subarea=b.id
+						   INNER JOIN areas c ON b.id_area=c.id
+						   INNER JOIN projetos d ON c.id_projeto=d.id
+						   LEFT JOIN revisoes e ON e.id_documento=a.id
 						   WHERE d.ativo
 						   GROUP BY a.id) A
-						INNER JOIN gdoks_revisoes B ON A.id_revisao=B.id;';
+						INNER JOIN revisoes B ON A.id_revisao=B.id;';
 				try {
 					$n_docs = ($db->query($sql))[0]['n_docs'];
 				} catch (Exception $e) {
@@ -559,14 +559,14 @@
 						FROM
 						  (SELECT a.id,
 						          max(e.id) AS id_revisao
-						   FROM gdoks_documentos a
-						   INNER JOIN gdoks_subareas b ON a.id_subarea=b.id
-						   INNER JOIN gdoks_areas c ON b.id_area=c.id
-						   INNER JOIN gdoks_projetos d ON c.id_projeto=d.id
-						   LEFT JOIN gdoks_revisoes e ON e.id_documento=a.id
+						   FROM documentos a
+						   INNER JOIN subareas b ON a.id_subarea=b.id
+						   INNER JOIN areas c ON b.id_area=c.id
+						   INNER JOIN projetos d ON c.id_projeto=d.id
+						   LEFT JOIN revisoes e ON e.id_documento=a.id
 						   WHERE d.ativo
 						   GROUP BY a.id) A
-						INNER JOIN gdoks_revisoes B ON A.id_revisao=B.id;';
+						INNER JOIN revisoes B ON A.id_revisao=B.id;';
 
 				try {
 					$progresso_total = ($db->query($sql))[0]['progresso_total'];
@@ -582,14 +582,14 @@
 						FROM
 						  (SELECT a.id,
 						          max(e.id) AS id_revisao
-						   FROM gdoks_documentos a
-						   INNER JOIN gdoks_subareas b ON a.id_subarea=b.id
-						   INNER JOIN gdoks_areas c ON b.id_area=c.id
-						   INNER JOIN gdoks_projetos d ON c.id_projeto=d.id
-						   LEFT JOIN gdoks_revisoes e ON e.id_documento=a.id
+						   FROM documentos a
+						   INNER JOIN subareas b ON a.id_subarea=b.id
+						   INNER JOIN areas c ON b.id_area=c.id
+						   INNER JOIN projetos d ON c.id_projeto=d.id
+						   LEFT JOIN revisoes e ON e.id_documento=a.id
 						   WHERE d.ativo AND a.idu_checkout IS NOT NULL
 						   GROUP BY a.id) A
-						INNER JOIN gdoks_revisoes B ON A.id_revisao=B.id
+						INNER JOIN revisoes B ON A.id_revisao=B.id
 						WHERE B.progresso_validado=100;';
 
 				try {
@@ -603,11 +603,11 @@
 
 				// Levantando a quantidade de documentos em revisao
 				$sql = 'SELECT count(*) n_docs_em_revisao
-						FROM gdoks_documentos a
-						INNER JOIN gdoks_subareas b ON a.id_subarea=b.id
-						INNER JOIN gdoks_areas c ON b.id_area=c.id
-						INNER JOIN gdoks_projetos d ON c.id_projeto=d.id
-						LEFT JOIN gdoks_revisoes e ON e.id_documento=a.id
+						FROM documentos a
+						INNER JOIN subareas b ON a.id_subarea=b.id
+						INNER JOIN areas c ON b.id_area=c.id
+						INNER JOIN projetos d ON c.id_projeto=d.id
+						LEFT JOIN revisoes e ON e.id_documento=a.id
 						WHERE d.ativo
 						  AND a.idu_checkout IS NOT NULL
 						  AND e.progresso_validado<100';
@@ -633,7 +633,7 @@
 				$intervalos = Array();
 
 				// Construindo vetor de intervalos
-				$sql = 'SELECT count(*) as n_grds from gdoks_grds WHERE datahora_enviada>=? AND  datahora_enviada<?';
+				$sql = 'SELECT count(*) as n_grds from grds WHERE datahora_enviada>=? AND  datahora_enviada<?';
 				for ($i=0; $i < $n_intervalos; $i++) { 
 					$intervalo = new stdClass();
 					$intervalo->i = $data_inicial->format('Y-m-d');
@@ -664,10 +664,10 @@
 						       a.nome,
 						       a.sigla,
 						       a.ativa
-						FROM gdoks_disciplinas a
+						FROM disciplinas a
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?) b ON a.id_empresa=b.id_empresa
 							ORDER by a.nome';
 				$disciplinas = array_map(function($a){return (object)$a;}, $db->query($sql,'s',$token));
@@ -678,9 +678,9 @@
 						       a.nome,
 						       a.sigla,
 						       a.ativa
-						FROM gdoks_subdisciplinas a
-						INNER JOIN gdoks_disciplinas b ON a.id_disciplina=b.id
-						INNER JOIN gdoks_usuarios c ON c.id_empresa=b.id_empresa
+						FROM subdisciplinas a
+						INNER JOIN disciplinas b ON a.id_disciplina=b.id
+						INNER JOIN usuarios c ON c.id_empresa=b.id_empresa
 						WHERE c.token=?';
 				$subdisciplinas = array_map(function($a){return (object)$a;}, $db->query($sql,'s',$token));
 
@@ -706,9 +706,9 @@
 				// carregando especialistas das disciplinas
 				$sql = 'SELECT a.id_disciplina,
 						       a.id_usuario as id
-						FROM gdoks_especialistas a
-						INNER JOIN gdoks_disciplinas b ON a.id_disciplina=b.id
-						INNER JOIN gdoks_usuarios c ON c.id_empresa=b.id_empresa
+						FROM especialistas a
+						INNER JOIN disciplinas b ON a.id_disciplina=b.id
+						INNER JOIN usuarios c ON c.id_empresa=b.id_empresa
 						WHERE c.token=?';
 				$especialistas = array_map(function($a){return (object)$a;}, $db->query($sql,'s',$token));
 
@@ -726,9 +726,9 @@
 				// Carregando validadores
 				$sql = 'SELECT a.id_disciplina,
 						       a.id_usuario as id
-						FROM gdoks_validadores a
-						INNER JOIN gdoks_disciplinas b ON a.id_disciplina=b.id
-						INNER JOIN gdoks_usuarios c ON c.id_empresa=b.id_empresa
+						FROM validadores a
+						INNER JOIN disciplinas b ON a.id_disciplina=b.id
+						INNER JOIN usuarios c ON c.id_empresa=b.id_empresa
 						WHERE c.token=?';
 				$validadores = array_map(function($a){return (object)$a;}, $db->query($sql,'s',$token));
 
@@ -760,19 +760,19 @@
 						FROM
 						  ( SELECT id,
 						           id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  ( SELECT id_empresa
-						   FROM gdoks_disciplinas
+						   FROM disciplinas
 						   WHERE id=?) B ON A.id_empresa=B.id_empresa;';
 				$rs = $db->query($sql,'si',$token,$id)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id'];
 				if($ok == 1){
 					// Tudo ok! A disciplina a ser alterada é do mesmo cliente do usuário
-					$sql = 'UPDATE gdoks_disciplinas SET nome=?,sigla=?,ativa=? WHERE id=?';
+					$sql = 'UPDATE disciplinas SET nome=?,sigla=?,ativa=? WHERE id=?';
 					try {
 						$db->query($sql,'ssii',$disciplina->nome,$disciplina->sigla,$disciplina->ativa,$id);
 						$response = new response(0,'Disciplina alterada com sucesso.');
@@ -799,7 +799,7 @@
 				$sql = 'SELECT
 							id,id_empresa
 						FROM 
-							gdoks_usuarios
+							usuarios
 						WHERE
 							token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token)[0];
@@ -807,7 +807,7 @@
 				$id = $rs['id'];
 
 				// Inserindo nova disciplina.
-				$sql = 'INSERT INTO gdoks_disciplinas (nome,sigla,id_empresa,ativa) VALUES (?,?,?,?)';
+				$sql = 'INSERT INTO disciplinas (nome,sigla,id_empresa,ativa) VALUES (?,?,?,?)';
 				try {
 					$db->query($sql,'ssii',$disciplina->nome,$disciplina->sigla,$id_empresa,$disciplina->ativa);
 					$response = new response(0,'Disciplina criada com sucesso.');
@@ -834,12 +834,12 @@
 						FROM
 						  ( SELECT id,
 						           id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  ( SELECT id_empresa
-						   FROM gdoks_disciplinas
+						   FROM disciplinas
 						   WHERE id=?) B ON A.id_empresa=B.id_empresa;';
 				
 				$rs = $db->query($sql,'si',$token,$id)[0];
@@ -853,7 +853,7 @@
 							       nome,
 							       sigla,
 							       ativa
-							FROM gdoks_disciplinas
+							FROM disciplinas
 							WHERE
 								id = ?
 							ORDER by nome';
@@ -865,7 +865,7 @@
 							       nome,
 							       sigla,
 							       ativa
-							FROM gdoks_subdisciplinas
+							FROM subdisciplinas
 							WHERE
 								id_disciplina = ?
 							ORDER by nome';
@@ -873,7 +873,7 @@
 
 					// Levantando especialistas na disciplina
 					$sql = 'SELECT id_usuario
-							FROM gdoks_especialistas
+							FROM especialistas
 							WHERE id_disciplina=?';
 					$disciplina->especialistas = Array();
 					$rs = $db->query($sql,'i',$id_disciplina);
@@ -884,7 +884,7 @@
 					// Levantando usuários validadores desta disciplina
 					$sql = 'SELECT id_usuario AS id,
 							       tipo
-							FROM gdoks_validadores
+							FROM validadores
 							WHERE id_disciplina=?';
 
 					$disciplina->validadores = $db->query($sql,'i',$id_disciplina);
@@ -926,20 +926,20 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_disciplinas d
-						   INNER JOIN gdoks_subdisciplinas s ON d.id=s.id_disciplina
+						   FROM disciplinas d
+						   INNER JOIN subdisciplinas s ON d.id=s.id_disciplina
 						   AND s.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_sub)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A subdisciplina a ser alterada é do mesmo cliente do usuário
-					$sql = 'UPDATE gdoks_subdisciplinas SET nome=?,sigla=?,ativa=? WHERE id=?';
+					$sql = 'UPDATE subdisciplinas SET nome=?,sigla=?,ativa=? WHERE id=?';
 					try {
 						$db->query($sql,'ssii',$subdisciplina->nome,$subdisciplina->sigla,$subdisciplina->ativa,$id_sub);
 						$response = new response(0,'Subdisciplina alterada com sucesso.');
@@ -970,18 +970,18 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_disciplinas d WHERE d.id=?) B ON A.id_empresa=B.id_empresa';
+						   FROM disciplinas d WHERE d.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_disciplina)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A subdisciplina a ser adicionada é do mesmo cliente do usuário
-					$sql = 'INSERT INTO gdoks_subdisciplinas (nome,sigla,ativa,id_disciplina) VALUES (?,?,?,?)';
+					$sql = 'INSERT INTO subdisciplinas (nome,sigla,ativa,id_disciplina) VALUES (?,?,?,?)';
 					try {
 						$db->query($sql,'ssii',$subdisciplina->nome,$subdisciplina->sigla,$subdisciplina->ativa,$id_disciplina);
 						$response = new response(0,'Subdisciplina adicionada com sucesso.');
@@ -1012,7 +1012,7 @@
 						       sigla,
 						       ativa,
 						       id_disciplina
-						FROM gdoks_subdisciplinas
+						FROM subdisciplinas
 						WHERE id=?';
 				$subdisciplina = (object)$db->query($sql,'i',$id_sub)[0];
 
@@ -1022,20 +1022,20 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_disciplinas d
-						   INNER JOIN gdoks_subdisciplinas s ON d.id=s.id_disciplina
+						   FROM disciplinas d
+						   INNER JOIN subdisciplinas s ON d.id=s.id_disciplina
 						   AND s.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_sub)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A subdisciplina a ser adicionada é do mesmo cliente do usuário
-					$sql = 'DELETE FROM gdoks_subdisciplinas WHERE id=?';
+					$sql = 'DELETE FROM subdisciplinas WHERE id=?';
 					try {
 						$db->query($sql,'i',$id_sub);
 						$response = new response(0,'Subdisciplina removida com sucesso.');
@@ -1066,12 +1066,12 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_disciplinas
+						   FROM disciplinas
 						   WHERE id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_disciplina)[0];
 				$ok = $rs['ok'];
@@ -1079,11 +1079,11 @@
 				if($ok == 1){
 					try {
 						// Removendo especialistas antigos
-						$sql = "DELETE FROM gdoks_especialistas WHERE id_disciplina=?";
+						$sql = "DELETE FROM especialistas WHERE id_disciplina=?";
 						$db->query($sql,'i',$id_disciplina);
 
 						// Inserindo novos especialistas
-						$sql = "INSERT INTO gdoks_especialistas (id_disciplina,id_usuario) VALUES (?,?)";
+						$sql = "INSERT INTO especialistas (id_disciplina,id_usuario) VALUES (?,?)";
 						foreach ($ids_especialistas as $id_especialista) {
 							$db->query($sql,'ii',$id_disciplina,$id_especialista);
 						}
@@ -1117,23 +1117,23 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_disciplinas
+						   FROM disciplinas
 						   WHERE id=?) B ON A.id_empresa=B.id_empresa
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE id=?) C ON C.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'sii',$token,$id_disciplina,$id_especialista)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A subdisciplina a ser adicionada é do mesmo cliente do usuário
-					$sql = 'INSERT INTO gdoks_especialistas (id_usuario,id_disciplina) VALUES (?,?)';
+					$sql = 'INSERT INTO especialistas (id_usuario,id_disciplina) VALUES (?,?)';
 					try {
 						$db->query($sql,'ii',$id_especialista,$id_disciplina);
 						$response = new response(0,'Especialista adicionado com sucesso.');
@@ -1164,23 +1164,23 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_disciplinas
+						   FROM disciplinas
 						   WHERE id=?) B ON A.id_empresa=B.id_empresa
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE id=?) C ON C.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'sii',$token,$id_disciplina,$id_especialista)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A subdisciplina a ser adicionada é do mesmo cliente do usuário
-					$sql = 'DELETE FROM gdoks_especialistas WHERE id_usuario=? AND id_disciplina=?';
+					$sql = 'DELETE FROM especialistas WHERE id_usuario=? AND id_disciplina=?';
 					try {
 						$db->query($sql,'ii',$id_especialista,$id_disciplina);
 						$response = new response(0,'Especialista removido com sucesso.');
@@ -1211,12 +1211,12 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_disciplinas
+						   FROM disciplinas
 						   WHERE id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_disciplina)[0];
 				$ok = $rs['ok'];
@@ -1224,11 +1224,11 @@
 				if($ok == 1){
 					try {
 						// Removendo validadores antigos
-						$sql = "DELETE FROM gdoks_validadores WHERE id_disciplina=?";
+						$sql = "DELETE FROM validadores WHERE id_disciplina=?";
 						$db->query($sql,'i',$id_disciplina);
 
 						// Inserindo novos validadores
-						$sql = "INSERT INTO gdoks_validadores (id_disciplina,id_usuario) VALUES (?,?)";
+						$sql = "INSERT INTO validadores (id_disciplina,id_usuario) VALUES (?,?)";
 						foreach ($ids_validadores as $id_validador) {
 							$db->query($sql,'ii',$id_disciplina,$id_validador);
 						}
@@ -1263,23 +1263,23 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_disciplinas
+						   FROM disciplinas
 						   WHERE id=?) B ON A.id_empresa=B.id_empresa
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE id=?) C ON C.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'sii',$token,$id_disciplina,$id_validador)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A subdisciplina a ser adicionada é do mesmo cliente do usuário
-					$sql = 'INSERT INTO gdoks_validadores (id_usuario,id_disciplina) VALUES (?,?)';
+					$sql = 'INSERT INTO validadores (id_usuario,id_disciplina) VALUES (?,?)';
 					try {
 						$db->query($sql,'ii',$id_validador,$id_disciplina);
 						$response = new response(0,'Validador adicionado com sucesso.');
@@ -1310,23 +1310,23 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_disciplinas
+						   FROM disciplinas
 						   WHERE id=?) B ON A.id_empresa=B.id_empresa
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE id=?) C ON C.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'sii',$token,$id_disciplina,$id_validador)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A subdisciplina a ser adicionada é do mesmo cliente do usuário
-					$sql = 'DELETE FROM gdoks_validadores WHERE id_usuario=? AND id_disciplina=?';
+					$sql = 'DELETE FROM validadores WHERE id_usuario=? AND id_disciplina=?';
 					try {
 						$db->query($sql,'ii',$id_validador,$id_disciplina);
 						$response = new response(0,'Validador removido com sucesso.');
@@ -1359,8 +1359,8 @@
 									p.codigo,
 									p.ativo,
 									p.id_cliente
-							FROM gdoks_usuarios u
-							INNER JOIN gdoks_projetos p ON p.id_empresa=u.id_empresa
+							FROM usuarios u
+							INNER JOIN projetos p ON p.id_empresa=u.id_empresa
 							WHERE u.token=? and p.ativo and p.id_cliente=?';
 					
 					// Realizando consulta
@@ -1379,8 +1379,8 @@
 									p.codigo,
 									p.ativo,
 									p.id_cliente
-							FROM gdoks_usuarios u
-							INNER JOIN gdoks_projetos p ON p.id_empresa=u.id_empresa
+							FROM usuarios u
+							INNER JOIN projetos p ON p.id_empresa=u.id_empresa
 							WHERE u.token=? and p.ativo';
 					
 					// Realizando consulta
@@ -1418,12 +1418,12 @@
 						          count(d.id) AS n_docs,
 						          e.id AS id_cliente,
 						          e.nome_fantasia AS nome_cliente
-						   FROM gdoks_projetos a
-						   LEFT JOIN gdoks_areas b ON a.id=b.id_projeto
-						   LEFT JOIN gdoks_subareas c ON b.id=c.id_area
-						   LEFT JOIN gdoks_documentos d ON c.id=d.id_subarea
-						   INNER JOIN gdoks_clientes e ON a.id_cliente=e.id
-						   INNER JOIN gdoks_usuarios u ON a.id_empresa=u.id_empresa
+						   FROM projetos a
+						   LEFT JOIN areas b ON a.id=b.id_projeto
+						   LEFT JOIN subareas c ON b.id=c.id_area
+						   LEFT JOIN documentos d ON c.id=d.id_subarea
+						   INNER JOIN clientes e ON a.id_cliente=e.id
+						   INNER JOIN usuarios u ON a.id_empresa=u.id_empresa
 						   WHERE
 						   		u.token=?
 						   		AND $condicao_inativos
@@ -1437,10 +1437,10 @@
 						     (SELECT c.id_projeto,
 						             count(a.id) AS n_docs,
 						             sum(d.progresso_validado) AS sum_progressos
-						      FROM gdoks_documentos a
-						      INNER JOIN gdoks_subareas b ON b.id=a.id_subarea
-						      INNER JOIN gdoks_areas c ON c.id=b.id_area
-						      INNER JOIN gdoks_revisoes d ON a.id=d.id_documento
+						      FROM documentos a
+						      INNER JOIN subareas b ON b.id=a.id_subarea
+						      INNER JOIN areas c ON c.id=b.id_area
+						      INNER JOIN revisoes d ON a.id=d.id_documento
 						      GROUP BY id_projeto) Y) B ON A.id=B.id_projeto";
 
 				$response = new response(0,'ok');
@@ -1458,12 +1458,12 @@
 						FROM
 						  ( SELECT id,
 						           id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  ( SELECT id_empresa
-						   FROM gdoks_projetos
+						   FROM projetos
 						   WHERE id=?) B ON A.id_empresa=B.id_empresa;';
 			
 				$rs = $db->query($sql,'si',$token,$id)[0];
@@ -1486,22 +1486,22 @@
 							    a.ativo,
 								a.id_versao_de_proposta
 							FROM
-								gdoks_projetos a
-								INNER JOIN gdoks_clientes b on a.id_cliente=b.id
-							    INNER JOIN gdoks_usuarios c on a.id_responsavel=c.id
+								projetos a
+								INNER JOIN clientes b on a.id_cliente=b.id
+							    INNER JOIN usuarios c on a.id_responsavel=c.id
 							WHERE a.id=?";
 					$projeto = (object)$db->query($sql,'i',$id_projeto)[0];
 					
 					// Levantando áreas do projeto
-					$sql = "SELECT id,codigo,nome FROM gdoks_areas WHERE id_projeto=?";
+					$sql = "SELECT id,codigo,nome FROM areas WHERE id_projeto=?";
 					$projeto->areas = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_projeto));
 					
 					// Levantando subáreas do projeto
-					$sql = "SELECT a.id,a.codigo,a.nome,a.id_area FROM gdoks_subareas a INNER JOIN gdoks_areas b ON a.id_area=b.id WHERE b.id_projeto=?";
+					$sql = "SELECT a.id,a.codigo,a.nome,a.id_area FROM subareas a INNER JOIN areas b ON a.id_area=b.id WHERE b.id_projeto=?";
 					$projeto->subareas = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_projeto));
 
 					// levantando DAOs do projeto
-					$sql = 'SELECT id,nome,nome_cliente,tipo,tamanho FROM gdoks_daos WHERE id_projeto=?';
+					$sql = 'SELECT id,nome,nome_cliente,tipo,tamanho FROM daos WHERE id_projeto=?';
 					$projeto->daos = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_projeto));
 
 					// Levantando documentos do projeto -> feita em outra requisição a /projetos/:id_projeto/documentos/
@@ -1533,8 +1533,8 @@
 
 				// Definindo a consulta para saber da permissão do usuário em visualizar dados financeiros
 				$sql = 'SELECT b.valor
-						FROM gdoks_usuarios a
-						INNER JOIN gdoks_usuarios_x_opcoes_de_tela b ON a.id=b.id_usuario
+						FROM usuarios a
+						INNER JOIN usuarios_x_opcoes_de_tela b ON a.id=b.id_usuario
 						WHERE a.token=?
 						  AND b.id_opcao=?
 						  AND b.valor=1;';
@@ -1546,7 +1546,7 @@
 					// Carregando dados financeiros de projeto
 					$sql = 'SELECT forma_de_cobranca,
 							       valor
-							FROM gdoks_projetos
+							FROM projetos
 							WHERE id=?;';
 					$rs = $db->query($sql,'i',$id_projeto);
 
@@ -1581,8 +1581,8 @@
 
 				// Definindo a consulta para saber da permissão do usuário em visualizar dados financeiros
 				$sql = 'SELECT b.valor
-						FROM gdoks_usuarios a
-						INNER JOIN gdoks_usuarios_x_opcoes_de_tela b ON a.id=b.id_usuario
+						FROM usuarios a
+						INNER JOIN usuarios_x_opcoes_de_tela b ON a.id=b.id_usuario
 						WHERE a.token=?
 						  AND b.id_opcao=?
 						  AND b.valor=1;';
@@ -1599,17 +1599,17 @@
 					exit(1);
 				} else {
 					// Levantando o id do usuário a partir do token
-					$sql = 'SELECT id FROM gdoks_usuarios WHERE token=?';
+					$sql = 'SELECT id FROM usuarios WHERE token=?';
 					$idu = $db->query($sql,'s',$token)[0]['id'];
 
 					if($perm_alterarFormaDeCobranca){
-						$sql = 'UPDATE gdoks_projetos SET forma_de_cobranca=? WHERE id=?';
+						$sql = 'UPDATE projetos SET forma_de_cobranca=? WHERE id=?';
 						$db->query($sql,'ii',$dadosFinanceiros->forma_de_cobranca->id,$id_projeto);
 						registrarAcao($db,$idu,ACAO_ALTEROU_FP_DO_PROJETO,$id_projeto.','.$dadosFinanceiros->forma_de_cobranca->id);
 					}
 
 					if($perm_alterarValorDeProjeto){
-						$sql = 'UPDATE gdoks_projetos SET valor=? WHERE id=?';
+						$sql = 'UPDATE projetos SET valor=? WHERE id=?';
 						$db->query($sql,'di',$dadosFinanceiros->valor,$id_projeto);
 						registrarAcao($db,$idu,ACAO_ALTEROU_VALOR_DO_PROJETO,$id_projeto.','.$dadosFinanceiros->valor);
 					}
@@ -1639,12 +1639,12 @@
 						FROM (
 							SELECT
 								id,id_empresa
-							FROM gdoks_usuarios
+							FROM usuarios
 							WHERE token=? AND validade_do_token>now()) A INNER JOIN 
 								(
 							SELECT
 								id_empresa
-							FROM gdoks_projetos
+							FROM projetos
 								WHERE id=?) B on A.id_empresa=B.id_empresa;';
 				$rs = $db->query($sql,'si',$token,$id)[0];
 				$ok = $rs['ok'];
@@ -1652,7 +1652,7 @@
 
 				// Indo adiante
 				if($ok == 1) {
-					$sql = "UPDATE gdoks_projetos
+					$sql = "UPDATE projetos
 							SET	
 								nome=?,
          						codigo=?,
@@ -1704,7 +1704,7 @@
 				// Determinando o id do usuário e o id da empresa a qual ele pertence
 				$sql = 'SELECT id,
 						       id_empresa
-						FROM gdoks_usuarios
+						FROM usuarios
 						WHERE token=?
 						  AND validade_do_token>now()';
 				$query = $db->query($sql,'s',$token);
@@ -1727,7 +1727,7 @@
 						preg_match('/\$i\([0-9]+\)/',$novo_codigo,$m);
 						if(sizeof($m)==1){
 							// Determinando sequencial no ano corrente
-							$sql='SELECT count(*) as n FROM gdoks_projetos WHERE year(data_registro)=year(now());';
+							$sql='SELECT count(*) as n FROM projetos WHERE year(data_registro)=year(now());';
 							$n = $db->query($sql)[0]['n'] + 1;
 
 							// Determinando o tamanho da string sequencial definida no cod de substituição
@@ -1747,7 +1747,7 @@
 
 					$id_usuario = $query[0]['id'];
 					$id_empresa = $query[0]['id_empresa'];
-					$sql = "INSERT INTO gdoks_projetos (
+					$sql = "INSERT INTO projetos (
 								nome,
 								codigo,
 								id_cliente,
@@ -1823,20 +1823,20 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos p
-						   INNER JOIN gdoks_areas a ON p.id=a.id_projeto
+						   FROM projetos p
+						   INNER JOIN areas a ON p.id=a.id_projeto
 						   AND a.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_area)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A area a ser alterada é do mesmo cliente do usuário
-					$sql = 'UPDATE gdoks_areas SET nome=?,codigo=? WHERE id=?';
+					$sql = 'UPDATE areas SET nome=?,codigo=? WHERE id=?';
 					try {
 						$db->query($sql,'ssi',$area->nome,$area->codigo,$id_area);
 						$response = new response(0,'Área alterada com sucesso.');
@@ -1867,18 +1867,18 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos d WHERE d.id=?) B ON A.id_empresa=B.id_empresa';
+						   FROM projetos d WHERE d.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_projeto)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A area a ser adicionada é do mesmo cliente do usuário
-					$sql = 'INSERT INTO gdoks_areas (nome,codigo,id_projeto) VALUES (?,?,?)';
+					$sql = 'INSERT INTO areas (nome,codigo,id_projeto) VALUES (?,?,?)';
 					try {
 						$db->query($sql,'ssi',$area->nome,$area->codigo,$id_projeto);
 						$response = new response(0,'Area adicionada com sucesso.');
@@ -1909,18 +1909,18 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos d WHERE d.id=?) B ON A.id_empresa=B.id_empresa';
+						   FROM projetos d WHERE d.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_projeto)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! Levantando áreas do projeto
-					$sql = 'SELECT id,nome,codigo FROM gdoks_areas WHERE id_projeto=? ';
+					$sql = 'SELECT id,nome,codigo FROM areas WHERE id_projeto=? ';
 					try {
 						$areas = array_map(function($a){
 							$a = (object)$a;
@@ -1939,8 +1939,8 @@
 							       a.nome,
 							       a.codigo,
 							       a.id_area
-							FROM gdoks_subareas a
-							INNER JOIN gdoks_areas b ON a.id_area=b.id
+							FROM subareas a
+							INNER JOIN areas b ON a.id_area=b.id
 							AND b.id_projeto=?';
 					try {
 						$subareas = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_projeto));
@@ -1986,18 +1986,18 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos d WHERE d.id=?) B ON A.id_empresa=B.id_empresa';
+						   FROM projetos d WHERE d.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_projeto)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Preparando select
-					$sql = 'SELECT id,nome,codigo FROM gdoks_subareas WHERE id_area=? ';
+					$sql = 'SELECT id,nome,codigo FROM subareas WHERE id_area=? ';
 					try {
 						$response = new response(0,'ok');
 						$response->subareas = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_area));
@@ -2024,7 +2024,7 @@
 						       nome,
 						       codigo,
 						       id_projeto
-						FROM gdoks_areas
+						FROM areas
 						WHERE id=?';
 				$area = $db->query($sql,'i',$id_area)[0];
 
@@ -2034,20 +2034,20 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos p
-						   INNER JOIN gdoks_areas a ON p.id=a.id_projeto
+						   FROM projetos p
+						   INNER JOIN areas a ON p.id=a.id_projeto
 						   AND a.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_area)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A subdisciplina a ser adicionada é do mesmo cliente do usuário
-					$sql = 'DELETE FROM gdoks_areas WHERE id=?';
+					$sql = 'DELETE FROM areas WHERE id=?';
 					try {
 						$db->query($sql,'i',$id_area);
 						$response = new response(0,'Área removida com sucesso.');
@@ -2076,12 +2076,12 @@
 						FROM (
 							SELECT
 								id,id_empresa
-							FROM gdoks_usuarios
+							FROM usuarios
 							WHERE token=? AND validade_do_token>now()) A INNER JOIN 
 								(
 							SELECT
 								id_empresa
-							FROM gdoks_projetos
+							FROM projetos
 								WHERE id=?) B on A.id_empresa=B.id_empresa;';
 				$rs = $db->query($sql,'si',$token,$id_projeto)[0];
 				$ok = $rs['ok'];
@@ -2150,7 +2150,7 @@
 
 									// Registrando informações na base
 									$registradoNaBase = false;
-									$sql = "INSERT INTO gdoks_daos (nome,nome_unico,nome_cliente,tipo,tamanho,id_projeto)
+									$sql = "INSERT INTO daos (nome,nome_unico,nome_cliente,tipo,tamanho,id_projeto)
 											VALUES (?,?,?,?,?,?)";
 									try {
 										$db->query($sql,'ssssii',
@@ -2180,7 +2180,7 @@
 									array_push($erros, $erro);
 
 									// removendo registro na base de dados
-									$sql = "DELETE from gdoks_daos WHERE id=?";
+									$sql = "DELETE from daos WHERE id=?";
 									$db->query($sql,'i',$db->insert_id);
 								}
 							} catch (Exception $e2) {
@@ -2228,7 +2228,7 @@
 				$sql = 'SELECT id,
 						       nome,
 						       nome_unico
-						FROM gdoks_daos
+						FROM daos
 						WHERE id=?';
 				$dao = (object)($db->query($sql,'i',$id_dao)[0]);
 
@@ -2239,13 +2239,13 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos p
-						   INNER JOIN gdoks_daos a ON p.id=a.id_projeto
+						   FROM projetos p
+						   INNER JOIN daos a ON p.id=a.id_projeto
 						   AND a.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_dao)[0];
 				$ok = $rs['ok'];
@@ -2254,7 +2254,7 @@
 
 				if($ok == 1){
 					// Tudo ok! A dao a ser removida é do mesmo cliente do usuário
-					$sql = 'DELETE FROM gdoks_daos WHERE id=?';
+					$sql = 'DELETE FROM daos WHERE id=?';
 					$removeuDaBase = false;
 					try {
 						$db->query($sql,'i',$id_dao);
@@ -2315,15 +2315,15 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos p
-						   INNER JOIN gdoks_areas a on a.id_projeto=p.id
-						   INNER JOIN gdoks_subareas s on s.id_area=a.id
-						   INNER JOIN gdoks_documentos d ON s.id=d.id_subarea
+						   FROM projetos p
+						   INNER JOIN areas a on a.id_projeto=p.id
+						   INNER JOIN subareas s on s.id_area=a.id
+						   INNER JOIN documentos d ON s.id=d.id_subarea
 						   AND d.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_documento)[0];
 				$ok = $rs['ok'];
@@ -2331,7 +2331,7 @@
 
 				if($ok == 1){
 					// Tudo ok! O documento a ser alterado é da mesma empresa do usuário
-					$sql = 'UPDATE gdoks_documentos SET nome=?,codigo=?,codigo_cliente=?,codigo_alternativo=?,id_subarea=?,id_subdisciplina=? WHERE id=?';
+					$sql = 'UPDATE documentos SET nome=?,codigo=?,codigo_cliente=?,codigo_alternativo=?,id_subarea=?,id_subdisciplina=? WHERE id=?';
 					try {
 						$db->query($sql,'ssssiii',$documento->nome,$documento->codigo,$documento->codigo_cliente,$documento->codigo_alternativo,$documento->id_subarea,$documento->id_subdisciplina,$id_documento);
 						$response = new response(0,'Documento alterado com sucesso.');
@@ -2343,27 +2343,27 @@
 						return;
 					}
 					// Removendo dependências antigas
-					$sql = 'DELETE FROM gdoks_documentos_x_dependencias WHERE id_documento=?';
+					$sql = 'DELETE FROM documentos_x_dependencias WHERE id_documento=?';
 					$db->query($sql,'i',$documento->id);
 
 					// Inserindo novas dependencia
-					$sql = 'INSERT INTO gdoks_documentos_x_dependencias (id_documento,id_dependencia) VALUES (?,?)';
+					$sql = 'INSERT INTO documentos_x_dependencias (id_documento,id_dependencia) VALUES (?,?)';
 					foreach ($documento->dependencias as $dp) {
 						$db->query($sql,'ii',$documento->id,$dp);
 					}
 
 					// Removendo horas a serem gastas em documento
-					$sql = 'DELETE FROM gdoks_hhemdocs WHERE id_doc=?';
+					$sql = 'DELETE FROM hhemdocs WHERE id_doc=?';
 					$db->query($sql,'i',$documento->id);
 
 					// Inserindo novas horas a serem gastas em documento
-					$sql = 'INSERT INTO gdoks_hhemdocs (id_doc,id_cargo,hh) VALUES (?,?,?)';
+					$sql = 'INSERT INTO hhemdocs (id_doc,id_cargo,hh) VALUES (?,?,?)';
 					foreach ($documento->hhs as $hh) {
 						$db->query($sql,'iii',$documento->id,$hh->id_cargo,$hh->hh);
 					}
 
 					// Atualizando a data limite da última revisão
-					$sql = "UPDATE gdoks_revisoes set data_limite=? WHERE id_documento=? and serial=?";
+					$sql = "UPDATE revisoes set data_limite=? WHERE id_documento=? and serial=?";
 					$db->query($sql,'sii',$documento->revisoes[0]->data_limite,$documento->id,$documento->revisoes[0]->serial);
 
 					// removendo dependencias e hhs do objeto para salvar no log
@@ -2399,12 +2399,12 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos d WHERE d.id=?) B ON A.id_empresa=B.id_empresa';
+						   FROM projetos d WHERE d.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_projeto)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
@@ -2414,7 +2414,7 @@
 					// Tudo ok! A documento a ser adicionada é do mesmo cliente do usuário
 
 					// Salvando o documento
-					$sql = 'INSERT INTO gdoks_documentos (nome,codigo,codigo_cliente,codigo_alternativo,id_subarea,id_subdisciplina) VALUES (?,?,?,?,?,?)';
+					$sql = 'INSERT INTO documentos (nome,codigo,codigo_cliente,codigo_alternativo,id_subarea,id_subdisciplina) VALUES (?,?,?,?,?,?)';
 					try {
 
 						// Salvando documento
@@ -2434,18 +2434,18 @@
 					}
 
 					// Salvando vínculos de dependencia
-					$sql = 'INSERT INTO gdoks_documentos_x_dependencias (id_documento,id_dependencia) VALUES (?,?)';
+					$sql = 'INSERT INTO documentos_x_dependencias (id_documento,id_dependencia) VALUES (?,?)';
 					foreach ($documento->dependencias as $id_dependencia) {
 						try {
 							$db->query($sql,'ii',$newId,$id_dependencia);
 						} catch (Exception $e2) {
 
 							// Removendo dependências inseridas
-							$sql = 'DELETE FROM gdoks_documentos_x_dependencias WHERE id_documento=?';
+							$sql = 'DELETE FROM documentos_x_dependencias WHERE id_documento=?';
 							$db->query($sql,'i',$newId);
 
 							// Removendo documento
-							$sql='DELETE FROM gdoks_documentos WHERE id=?';
+							$sql='DELETE FROM documentos WHERE id=?';
 							$db->query($sql,'i',$newId);
 
 							// Retornando erro ao usuário
@@ -2457,22 +2457,22 @@
 					}
 
 					// salvando horas de trabalho para este documento
-					$sql = 'INSERT INTO gdoks_hhemdocs (id_doc,id_cargo,hh) VALUES (?,?,?)';
+					$sql = 'INSERT INTO hhemdocs (id_doc,id_cargo,hh) VALUES (?,?,?)';
 					foreach ($documento->hhs as $hh) {
 						try {
 							$db->query($sql,'iii',$newId,$hh->id_cargo,$hh->hh);
 						} catch (Exception $e3) {
 
 							// Removendo hhs
-							$sql='DELETE FROM gdoks_hhemdocs WHERE id_doc=?';
+							$sql='DELETE FROM hhemdocs WHERE id_doc=?';
 							$db->query($sql,'i',$newId);
 							
 							// Removendo dependências inseridas
-							$sql = 'DELETE FROM gdoks_documentos_x_dependencias WHERE id_documento=?';
+							$sql = 'DELETE FROM documentos_x_dependencias WHERE id_documento=?';
 							$db->query($sql,'i',$newId);
 
 							// Removendo documento
-							$sql='DELETE FROM gdoks_documentos WHERE id=?';
+							$sql='DELETE FROM documentos WHERE id=?';
 							$db->query($sql,'i',$newId);
 
 							// Retornando erro ao usuário
@@ -2484,21 +2484,21 @@
 					}
 
 					// Criando a primeira revisão do documento
-					$sql = "INSERT INTO gdoks_revisoes (serial,id_documento,data_limite,progresso_validado,progresso_a_validar,ua) VALUES (0,?,?,0,0,NULL)";
+					$sql = "INSERT INTO revisoes (serial,id_documento,data_limite,progresso_validado,progresso_a_validar,ua) VALUES (0,?,?,0,0,NULL)";
 					try {
 						$db->query($sql,'is',$newId,$documento->revisoes[0]->data_limite);
 					} catch (Exception $e){
 						
 						// Removendo hhs
-						$sql='DELETE FROM gdoks_hhemdocs WHERE id_doc=?';
+						$sql='DELETE FROM hhemdocs WHERE id_doc=?';
 						$db->query($sql,'i',$newId);
 						
 						// Removendo dependências inseridas
-						$sql = 'DELETE FROM gdoks_documentos_x_dependencias WHERE id_documento=?';
+						$sql = 'DELETE FROM documentos_x_dependencias WHERE id_documento=?';
 						$db->query($sql,'i',$newId);
 
 						// Removendo documento
-						$sql='DELETE FROM gdoks_documentos WHERE id=?';
+						$sql='DELETE FROM documentos WHERE id=?';
 						$db->query($sql,'i',$newId);
 
 						// Retornando erro ao usuário
@@ -2543,7 +2543,7 @@
 						       nome,
 						       id_subarea,
 						       id_subdisciplina
-						FROM gdoks_documentos
+						FROM documentos
 						WHERE id=?';
 				$rs = $db->query($sql,'i',$id_documento);
 				if(sizeof($rs) == 0){
@@ -2560,15 +2560,15 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos p
-						   INNER JOIN gdoks_areas a ON p.id=a.id_projeto
-						   INNER JOIN gdoks_subareas s ON s.id_area=a.id
-						   INNER JOIN gdoks_documentos d ON d.id_subarea = s.id
+						   FROM projetos p
+						   INNER JOIN areas a ON p.id=a.id_projeto
+						   INNER JOIN subareas s ON s.id_area=a.id
+						   INNER JOIN documentos d ON d.id_subarea = s.id
 						   AND d.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_documento)[0];
 				$ok = $rs['ok'];
@@ -2581,7 +2581,7 @@
 				}
 
 				// Verificando se o documento possui algum PDA
-				$sql = 'SELECT count(*) as nPdas FROM gdoks_revisoes a INNER JOIN gdoks_pdas b ON (a.id=b.id_revisao AND a.id_documento=?)';
+				$sql = 'SELECT count(*) as nPdas FROM revisoes a INNER JOIN pdas b ON (a.id=b.id_revisao AND a.id_documento=?)';
 				$nPdas = $db->query($sql,'i',$id_documento)[0]['nPdas'];
 				if($nPdas > 0){
 					http_response_code(401);
@@ -2591,7 +2591,7 @@
 				}
 
 				// Tudo ok! O Documento a ser removido é do mesmo cliente do usuário
-				$sql = 'DELETE FROM gdoks_documentos WHERE id=?';
+				$sql = 'DELETE FROM documentos WHERE id=?';
 				try {
 					$db->query($sql,'i',$id_documento);
 					$response = new response(0,'Documento removido com sucesso.');
@@ -2616,12 +2616,12 @@
 						FROM
 						  ( SELECT id,
 						           id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  ( SELECT id_empresa
-						   FROM gdoks_projetos
+						   FROM projetos
 						   WHERE id=?) B ON A.id_empresa=B.id_empresa;';
 			
 				$ok = $db->query($sql,'si',$token,$id_projeto)[0]['ok'];
@@ -2662,11 +2662,11 @@
 							          c.id AS id_disciplina,
 							          e.codigo AS cod_area,
 							          e.id AS id_area
-							   FROM gdoks_documentos a
-							   INNER JOIN gdoks_subdisciplinas b ON a.id_subdisciplina=b.id
-							   INNER JOIN gdoks_disciplinas c ON b.id_disciplina=c.id
-							   INNER JOIN gdoks_subareas d ON a.id_subarea=d.id
-							   INNER JOIN gdoks_areas e ON d.id_area=e.id
+							   FROM documentos a
+							   INNER JOIN subdisciplinas b ON a.id_subdisciplina=b.id
+							   INNER JOIN disciplinas c ON b.id_disciplina=c.id
+							   INNER JOIN subareas d ON a.id_subarea=d.id
+							   INNER JOIN areas e ON d.id_area=e.id
 							   WHERE e.id_projeto=?) M
 							LEFT JOIN
 							  (SELECT X.id_documento,
@@ -2680,16 +2680,16 @@
 							     (SELECT id_documento,
 							     		 end_fisico,
 							             max(serial) AS rev_serial
-							      FROM gdoks_revisoes
+							      FROM revisoes
 							      GROUP BY id_documento) X
 							   INNER JOIN
 							     (SELECT data_limite,id,id_documento,serial,progresso_validado AS progresso
-							      FROM gdoks_revisoes) Y ON X.id_documento=Y.id_documento
+							      FROM revisoes) Y ON X.id_documento=Y.id_documento
 							   AND X.rev_serial=Y.serial
 							   LEFT JOIN
 							     (SELECT id_revisao,
 							             max(id) AS ultimo_pda
-							      FROM gdoks_pdas
+							      FROM pdas
 							      GROUP BY id_revisao) Z ON Y.id=Z.id_revisao) N ON M.id=N.id_documento';
 					$documentos = array_map(
 						function($a){
@@ -2704,10 +2704,10 @@
 					$sql = 'SELECT
 						a.id,a.serial, a.id_documento
 					FROM 
-						gdoks_revisoes a
-					    inner join gdoks_documentos b on a.id_documento=b.id
-					    inner join gdoks_subareas c on b.id_subarea=c.id
-					    inner join gdoks_areas d on c.id_area=d.id
+						revisoes a
+					    inner join documentos b on a.id_documento=b.id
+					    inner join subareas c on b.id_subarea=c.id
+					    inner join areas d on c.id_area=d.id
 					WHERE d.id_projeto=?
 					ORDER BY id_documento';
 					$revisoes = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_projeto));
@@ -2725,12 +2725,12 @@
 					$sql = 'SELECT
 								f.id_documento,f.id_dependencia
 							FROM
-								gdoks_documentos a
-								INNER JOIN gdoks_subdisciplinas b ON a.id_subdisciplina=b.id
-								INNER JOIN gdoks_disciplinas c on b.id_disciplina=c.id
-								INNER JOIN gdoks_subareas d on a.id_subarea=d.id
-								INNER JOIN gdoks_areas e on d.id_area=e.id
-								INNER JOIN gdoks_documentos_x_dependencias f on f.id_documento=a.id
+								documentos a
+								INNER JOIN subdisciplinas b ON a.id_subdisciplina=b.id
+								INNER JOIN disciplinas c on b.id_disciplina=c.id
+								INNER JOIN subareas d on a.id_subarea=d.id
+								INNER JOIN areas e on d.id_area=e.id
+								INNER JOIN documentos_x_dependencias f on f.id_documento=a.id
 							WHERE
 								e.id_projeto=?';
 					$dependencias = $db->query($sql,'i',$id_projeto);
@@ -2753,12 +2753,12 @@
 					$sql = 'SELECT
 								f.id_doc,f.id_cargo,f.hh
 							FROM
-								gdoks_documentos a
-								INNER JOIN gdoks_subdisciplinas b ON a.id_subdisciplina=b.id
-								INNER JOIN gdoks_disciplinas c on b.id_disciplina=c.id
-								INNER JOIN gdoks_subareas d on a.id_subarea=d.id
-								INNER JOIN gdoks_areas e on d.id_area=e.id
-								INNER JOIN gdoks_hhemdocs f on f.id_doc=a.id
+								documentos a
+								INNER JOIN subdisciplinas b ON a.id_subdisciplina=b.id
+								INNER JOIN disciplinas c on b.id_disciplina=c.id
+								INNER JOIN subareas d on a.id_subarea=d.id
+								INNER JOIN areas e on d.id_area=e.id
+								INNER JOIN hhemdocs f on f.id_doc=a.id
 							WHERE
 								e.id_projeto=?';
 					$hhs = $db->query($sql,'i',$id_projeto);
@@ -2800,12 +2800,12 @@
 						FROM
 						  ( SELECT id,
 						           id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  ( SELECT id_empresa
-						   FROM gdoks_projetos
+						   FROM projetos
 						   WHERE id=?) B ON A.id_empresa=B.id_empresa;';
 			
 				$ok = $db->query($sql,'si',$token,$id_projeto)[0]['ok'];
@@ -2822,9 +2822,9 @@
 							    count(*) as nDocs
 							    
 							FROM
-								gdoks_grds a
-							    INNER JOIN gdoks_grds_x_revisoes b on a.id=b.id_grd
-							    LEFT JOIN gdoks_usuarios c on c.id=a.idu_remetente
+								grds a
+							    INNER JOIN grds_x_revisoes b on a.id=b.id_grd
+							    LEFT JOIN usuarios c on c.id=a.idu_remetente
 							WHERE a.id_projeto=?
 							GROUP BY
 								a.id,
@@ -2899,12 +2899,12 @@
 						FROM (
 							SELECT
 								id,id_empresa
-							FROM gdoks_usuarios
+							FROM usuarios
 							WHERE token=? AND validade_do_token>now()) A INNER JOIN 
 								(
 							SELECT
 								id_empresa
-							FROM gdoks_projetos
+							FROM projetos
 								WHERE id=?) B on A.id_empresa=B.id_empresa;';
 				$rs = $db->query($sql,'si',$token,$id_projeto)[0];
 				$ok = $rs['ok'];
@@ -2977,7 +2977,7 @@
 							}
 
 							// Verificando se o código já existe
-							$sql = 'SELECT id FROM gdoks_documentos WHERE codigo=?';
+							$sql = 'SELECT id FROM documentos WHERE codigo=?';
 							$rs = $db->query($sql,'s',$doc->codigo);
 							if(sizeof($rs) >0){
 								array_push($critica, 'Já existe um documento com este código.');
@@ -3000,7 +3000,7 @@
 							// Validando disciplina
 							$disciplina = $sheet_documentos->getCell($col_disciplina.$i)->getValue();
 							$sigla_disciplina = explode(' - ', $disciplina)[0];
-							$sql = 'SELECT id FROM gdoks_disciplinas WHERE sigla=?';
+							$sql = 'SELECT id FROM disciplinas WHERE sigla=?';
 							$rs = $db->query($sql,'s',$sigla_disciplina);
 							if(sizeof($rs) == 0){
 								array_push($critica, 'Disciplina inexistente: "'.$disciplina.'"');
@@ -3012,7 +3012,7 @@
 							// Validando subdisciplina
 							$subdisciplina = $sheet_documentos->getCell($col_subdisciplina.$i)->getValue();
 							$sigla_subdisciplina = explode(' - ', $subdisciplina)[0];
-							$sql = 'SELECT id FROM gdoks_subdisciplinas WHERE sigla=? AND id_disciplina=?';
+							$sql = 'SELECT id FROM subdisciplinas WHERE sigla=? AND id_disciplina=?';
 							$rs = $db->query($sql,'si',$sigla_subdisciplina,$doc->disciplina);
 							if(sizeof($rs) == 0){
 								array_push($critica, 'Subdisciplina inexistente ou não pertence a disciplina: "'.$subdisciplina.'"');
@@ -3034,11 +3034,11 @@
 								$doc->area = 0;
 								$oQueFazer = $acao_naoCrieSubarea;
 							} else {
-								$sql = 'SELECT id FROM gdoks_areas WHERE id_projeto=? AND codigo=?';
+								$sql = 'SELECT id FROM areas WHERE id_projeto=? AND codigo=?';
 								$rs = $db->query($sql,'is',$id_projeto,$area);
 								if(sizeof($rs) == 0){
 									// Área inexistente. Criando e recuperando id.
-									$sql = 'INSERT INTO gdoks_areas (codigo, id_projeto) VALUES (?,?)';
+									$sql = 'INSERT INTO areas (codigo, id_projeto) VALUES (?,?)';
 									try {
 										$db->query($sql,'si',$area,$id_projeto);
 										$doc->area = $db->insert_id;
@@ -3060,7 +3060,7 @@
 								array_push($critica, 'Código de subárea vazio');
 							} else {
 								if($oQueFazer == $acao_crieSubarea){
-									$sql = 'INSERT INTO gdoks_subareas (codigo,id_area) VALUES (?,?)';
+									$sql = 'INSERT INTO subareas (codigo,id_area) VALUES (?,?)';
 									try {
 										$db->query($sql,'si',$subarea,$doc->area);
 										$doc->subarea = $db->insert_id;
@@ -3069,11 +3069,11 @@
 										$doc->subarea = 0;
 									}
 								} elseif($oQueFazer == $acao_testeExistenciaDeSubarea){
-									$sql = 'SELECT id FROM gdoks_subareas WHERE codigo=? AND id_area=?';
+									$sql = 'SELECT id FROM subareas WHERE codigo=? AND id_area=?';
 									$rs = $db->query($sql,'si',$subarea,$doc->area);
 									if(sizeof($rs) == 0){
 										// Subárea inexistente. Criando subarea
-										$sql = 'INSERT INTO gdoks_subareas (codigo,id_area) VALUES (?,?)';
+										$sql = 'INSERT INTO subareas (codigo,id_area) VALUES (?,?)';
 										try {
 											$db->query($sql,'si',$subarea,$doc->area);
 											$doc->subarea = $db->insert_id;
@@ -3104,12 +3104,12 @@
 						// Verificando se houve criticas
 						if(sizeof($critica) == 0) {
 							// Inserindo documento na base
-							$sql = 'INSERT INTO gdoks_documentos (nome,codigo,codigo_alternativo,id_subarea,id_subdisciplina) VALUES (?,?,?,?,?)';
+							$sql = 'INSERT INTO documentos (nome,codigo,codigo_alternativo,id_subarea,id_subdisciplina) VALUES (?,?,?,?,?)';
 							$db->query($sql,'sssii',$doc->titulo,$doc->codigo,$doc->codAlt,$doc->subarea,$doc->subdisciplina);
 							$doc->id = $db->insert_id;
 
 							// Criando revisão do documento
-							$sql = 'INSERT INTO gdoks_revisoes (serial,id_documento,data_limite,progresso_validado,progresso_a_validar) VALUES (0,?,?,0,0)';
+							$sql = 'INSERT INTO revisoes (serial,id_documento,data_limite,progresso_validado,progresso_a_validar) VALUES (0,?,?,0,0)';
 							$db->query($sql,'is',$doc->id,$doc->data_limite);
 						} else {
 							$aux = new stdClass();
@@ -3137,7 +3137,7 @@
 
 				// Levantando o id do usuário caso ele esteja logado. caso contrário retorna 401
 				$sql = 'SELECT id
-						FROM gdoks_usuarios
+						FROM usuarios
 						WHERE token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token);
 
@@ -3188,23 +3188,23 @@
 						          d.id AS id_subdisciplina,
 						          d.nome AS nome_subdisciplina,
 						          SUM(i.hh) AS hh
-						   FROM gdoks_usuarios a
-						   INNER JOIN gdoks_especialistas b ON a.id=b.id_usuario
+						   FROM usuarios a
+						   INNER JOIN especialistas b ON a.id=b.id_usuario
 						   INNER JOIN
 						     (SELECT a.id AS id_disciplina, a.nome AS nome_disciplina, !isnull(b.id_usuario) AS ehEspecialista, !isnull(c.id_usuario) AS ehValidador
-						      FROM gdoks_disciplinas a
-						      LEFT JOIN gdoks_especialistas b ON (a.id=b.id_disciplina
+						      FROM disciplinas a
+						      LEFT JOIN especialistas b ON (a.id=b.id_disciplina
 						                                          AND b.id_usuario=?)
-						      LEFT JOIN gdoks_validadores c ON (a.id=c.id_disciplina
+						      LEFT JOIN validadores c ON (a.id=c.id_disciplina
 						                                        AND c.id_usuario=?)
 						      WHERE !(isnull(b.id_usuario)
 						              AND isnull(c.id_usuario))) c ON b.id_disciplina=c.id_disciplina
-						   INNER JOIN gdoks_subdisciplinas d ON d.id_disciplina=c.id_disciplina
-						   INNER JOIN gdoks_documentos e ON e.id_subdisciplina=d.id
-						   INNER JOIN gdoks_subareas f ON f.id=e.id_subarea
-						   INNER JOIN gdoks_areas g ON g.id=f.id_area
-						   INNER JOIN gdoks_projetos h ON h.id=g.id_projeto
-						   LEFT JOIN gdoks_hhemdocs i ON i.id_doc=e.id
+						   INNER JOIN subdisciplinas d ON d.id_disciplina=c.id_disciplina
+						   INNER JOIN documentos e ON e.id_subdisciplina=d.id
+						   INNER JOIN subareas f ON f.id=e.id_subarea
+						   INNER JOIN areas g ON g.id=f.id_area
+						   INNER JOIN projetos h ON h.id=g.id_projeto
+						   LEFT JOIN hhemdocs i ON i.id_doc=e.id
 						   WHERE a.id=?
 						   GROUP BY e.id,
 						            e.nome,
@@ -3227,9 +3227,9 @@
 						   FROM
 						     (SELECT max(id) AS id_revisao,
 						             id_documento
-						      FROM gdoks_revisoes
+						      FROM revisoes
 						      GROUP BY id_documento) X
-						   INNER JOIN gdoks_revisoes Y ON X.id_revisao=Y.id) revs ON revs.id_documento=docs.id';
+						   INNER JOIN revisoes Y ON X.id_revisao=Y.id) revs ON revs.id_documento=docs.id';
 					try {
 						$rs = $db->query($sql,'iii',$idu,$idu,$idu);	
 					} catch (Exception $e) {
@@ -3249,7 +3249,7 @@
 
 			$app->get('/documentos/paraValidar',function() use ($app,$db,$token){
 				// Verificando se o token é válido
-				$sql = 'SELECT id FROM gdoks_usuarios WHERE token=? AND validade_do_token>NOW()';
+				$sql = 'SELECT id FROM usuarios WHERE token=? AND validade_do_token>NOW()';
 				$rs = $db->query($sql,'s',$token);
 				if(sizeof($rs)==0){
 					// Token expirou
@@ -3273,10 +3273,10 @@
 						          c.sigla AS sigla_disciplina,
 						          b.id AS id_subdisciplina,
 						          b.nome AS nome_subdisciplina
-						   FROM gdoks_documentos a
-						   INNER JOIN gdoks_subdisciplinas b ON a.id_subdisciplina=b.id
-						   INNER JOIN gdoks_disciplinas c ON b.id_disciplina=c.id
-						   INNER JOIN gdoks_validadores d ON c.id=d.id_disciplina
+						   FROM documentos a
+						   INNER JOIN subdisciplinas b ON a.id_subdisciplina=b.id
+						   INNER JOIN disciplinas c ON b.id_disciplina=c.id
+						   INNER JOIN validadores d ON c.id=d.id_disciplina
 						   AND d.id_usuario=?) X
 						INNER JOIN
 						  (SELECT X.id_pda,
@@ -3293,11 +3293,11 @@
 						      FROM
 						        (SELECT max(a.id) AS id_pda,
 						                a.id_revisao
-						         FROM gdoks_pdas a
+						         FROM pdas a
 						         GROUP BY a.id_revisao) I
-						      INNER JOIN gdoks_pdas K ON I.id_pda=K.id) X
-						   INNER JOIN gdoks_revisoes Y ON X.id_revisao=Y.id
-						   INNER JOIN gdoks_usuarios Z ON X.idu=Z.id
+						      INNER JOIN pdas K ON I.id_pda=K.id) X
+						   INNER JOIN revisoes Y ON X.id_revisao=Y.id
+						   INNER JOIN usuarios Z ON X.idu=Z.id
 						   WHERE Y.progresso_a_validar>0) Y ON X.id=Y.id_documento';
 				$documentos = array_map(function($d){return (object)$d;}, $db->query($sql,'i',$idu));
 
@@ -3313,7 +3313,7 @@
 
 				// Levantando o id do usuário caso ele esteja logado. caso contrário retorna 401
 				$sql = 'SELECT id
-						FROM gdoks_usuarios
+						FROM usuarios
 						WHERE token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token);
 
@@ -3355,15 +3355,15 @@
 							    i.nome_fantasia as fantasia_cliente
 
 							FROM
-								gdoks_documentos a
-							    INNER JOIN gdoks_subdisciplinas b ON a.id_subdisciplina=b.id
-							    INNER JOIN gdoks_disciplinas c ON b.id_disciplina=c.id
-							    INNER JOIN gdoks_subareas d ON a.id_subarea=d.id
-							    INNER JOIN gdoks_areas e ON d.id_area=e.id
-							    INNER JOIN gdoks_projetos g ON g.id=e.id_projeto
-                                LEFT JOIN gdoks_hhemdocs f ON f.id_doc=a.id
-                                LEFT JOIN gdoks_usuarios h ON h.id=a.idu_checkout
-								INNER JOIN gdoks_clientes i ON i.id=g.id_cliente
+								documentos a
+							    INNER JOIN subdisciplinas b ON a.id_subdisciplina=b.id
+							    INNER JOIN disciplinas c ON b.id_disciplina=c.id
+							    INNER JOIN subareas d ON a.id_subarea=d.id
+							    INNER JOIN areas e ON d.id_area=e.id
+							    INNER JOIN projetos g ON g.id=e.id_projeto
+                                LEFT JOIN hhemdocs f ON f.id_doc=a.id
+                                LEFT JOIN usuarios h ON h.id=a.idu_checkout
+								INNER JOIN clientes i ON i.id=g.id_cliente
 							WHERE
 								a.id=?
 							GROUP BY
@@ -3397,12 +3397,12 @@
 							       ehValidador
 							FROM
 							  (SELECT count(*) AS ehEspecialista
-							   FROM gdoks_especialistas
+							   FROM especialistas
 							   WHERE id_usuario=?
 							     AND id_disciplina=?) a
 							INNER JOIN
 							  (SELECT count(*) AS ehValidador
-							   FROM gdoks_validadores
+							   FROM validadores
 							   WHERE id_usuario=?
 							     AND id_disciplina=?) b ON TRUE';
 					try {
@@ -3433,7 +3433,7 @@
 							    progresso_validado,
 							    progresso_a_validar,
 							    ua
-							FROM gdoks_revisoes
+							FROM revisoes
 							WHERE id_documento=?
 							ORDER BY serial desc';
 					try {
@@ -3453,8 +3453,8 @@
 							    a.id_revisao,
 							    a.progresso_total
 							FROM
-								gdoks_pdas a
-							    INNER JOIN gdoks_revisoes b on a.id_revisao=b.id
+								pdas a
+							    INNER JOIN revisoes b on a.id_revisao=b.id
 							WHERE b.id_documento=?
 							ORDER BY a.id DESC';
 					$pdas = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_doc));
@@ -3469,10 +3469,10 @@
 							    a.tamanho,
 							    b.id_pda
 							FROM
-								gdoks_arquivos a
-							    INNER JOIN gdoks_pdas_x_arquivos b on b.id_arquivo=a.id
-							    INNER JOIN gdoks_pdas c on c.id=b.id_pda
-							    INNER JOIN gdoks_revisoes d on c.id_revisao=d.id
+								arquivos a
+							    INNER JOIN pdas_x_arquivos b on b.id_arquivo=a.id
+							    INNER JOIN pdas c on c.id=b.id_pda
+							    INNER JOIN revisoes d on c.id_revisao=d.id
 							WHERE
 								d.id_documento=?';
 					$arquivos = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_doc));
@@ -3509,9 +3509,9 @@
 							       c.codigo,
 							       a.id AS id_rev,
        								a.serial AS serial_rev
-							FROM gdoks_revisoes a
-							INNER JOIN gdoks_grds_x_revisoes b ON b.id_revisao = a.id
-							INNER JOIN gdoks_grds c ON c.id = b.id_grd
+							FROM revisoes a
+							INNER JOIN grds_x_revisoes b ON b.id_revisao = a.id
+							INNER JOIN grds c ON c.id = b.id_grd
 							WHERE a.id_documento=?
 							ORDER BY c.id DESC';
 					$grds = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_doc));
@@ -3520,11 +3520,11 @@
 					$doc->grds = $grds;
 
 					// Levantando ids de documentos dos quais este documento depende
-					$sql='SELECT id_dependencia FROM gdoks_documentos_x_dependencias WHERE id_documento=?';
+					$sql='SELECT id_dependencia FROM documentos_x_dependencias WHERE id_documento=?';
 					$doc->dependencias = array_map(function($a){return $a['id_dependencia'];},$db->query($sql,'i',$id_doc));
 
 					// Levantando trabalho do qual esse documento precisa
-					$sql = 'SELECT id_cargo,hh FROM gdoks_hhemdocs WHERE id_doc=?';
+					$sql = 'SELECT id_cargo,hh FROM hhemdocs WHERE id_doc=?';
 					$doc->hhs = array_map(function($a){return (object)$a;},$db->query($sql,'i',$id_doc));
 
 					// Enviando resposta ao usuário
@@ -3539,7 +3539,7 @@
 			$app->post('/documentos/:id_doc/checkout',function($id_doc) use ($app,$db,$token,$empresa) {
 				
 				// Levantando o id do usuário
-				$sql = 'SELECT id from gdoks_usuarios where token=? and validade_do_token > now()';
+				$sql = 'SELECT id from usuarios where token=? and validade_do_token > now()';
 				$rs = $db->query($sql,'s',$token);
 				if(sizeof($rs) == 0){
 					http_response_code(401);
@@ -3552,10 +3552,10 @@
 
 				// Verificando se ele é especialista da disciplina do documento
 				$sql = 'SELECT count(*) AS especialista
-						FROM gdoks_documentos a
-						INNER JOIN gdoks_subdisciplinas b ON a.id_subdisciplina=b.id
-						INNER JOIN gdoks_disciplinas c ON b.id_disciplina=c.id
-						INNER JOIN gdoks_especialistas d ON d.id_disciplina=c.id
+						FROM documentos a
+						INNER JOIN subdisciplinas b ON a.id_subdisciplina=b.id
+						INNER JOIN disciplinas c ON b.id_disciplina=c.id
+						INNER JOIN especialistas d ON d.id_disciplina=c.id
 						WHERE a.id=?
 						  AND d.id_usuario=?';
 				$ehEspecialista = (($db->query($sql,'ii',$id_doc,$idu))[0]['especialista'] == 1);
@@ -3571,8 +3571,8 @@
 						       a.datahora_do_checkout,
 						       b.sigla
 						FROM
-							gdoks_documentos a
-							LEFT JOIN gdoks_usuarios b on a.idu_checkout=b.id
+							documentos a
+							LEFT JOIN usuarios b on a.idu_checkout=b.id
 						WHERE a.id=?';
 				$rs = $db->query($sql,'i',$id_doc);
 				$documento_liberado = is_null($rs[0]['idu_checkout']);
@@ -3587,7 +3587,7 @@
 					exit(1);
 				} else {
 					// Bloqueando o documento para usuário revisar
-					$sql = 'UPDATE gdoks_documentos SET idu_checkout=?,datahora_do_checkout=now() WHERE id=?';
+					$sql = 'UPDATE documentos SET idu_checkout=?,datahora_do_checkout=now() WHERE id=?';
 					$db->query($sql,'ii',$idu,$id_doc);
 
 					// Retornando sucesso
@@ -3603,7 +3603,7 @@
 			$app->post('/documentos/:id_doc/checkin',function($id_doc) use ($app,$db,$token,$empresa) {
 				
 				// Levantando o id do usuário
-				$sql = 'SELECT id from gdoks_usuarios where token=? and validade_do_token > now()';
+				$sql = 'SELECT id from usuarios where token=? and validade_do_token > now()';
 				$rs = $db->query($sql,'s',$token);
 				if(sizeof($rs) == 0){
 					http_response_code(401);
@@ -3614,7 +3614,7 @@
 				$idu = 1*$rs[0]['id'];
 
 				// Verificando se ele é que bloqueado e levantando o bloqueador
-				$sql = 'SELECT idu_checkout FROM gdoks_documentos WHERE id=?';
+				$sql = 'SELECT idu_checkout FROM documentos WHERE id=?';
 				$idu_checkout = $db->query($sql,'i',$id_doc)[0]['idu_checkout'];
 
 				// Verificando se o documento está de fato bloqueado
@@ -3634,7 +3634,7 @@
 				}
 
 				// Tudo ok... desbloqueando o documento!
-				$sql = 'UPDATE gdoks_documentos SET idu_checkout=null,datahora_do_checkout=null WHERE id=?';
+				$sql = 'UPDATE documentos SET idu_checkout=null,datahora_do_checkout=null WHERE id=?';
 				$db->query($sql,'i',$id_doc);
 
 				// Retornando sucesso
@@ -3654,7 +3654,7 @@
 				$obs = isset($_POST['update']['observacoes']) ? $_POST['update']['observacoes'] : '';
 				
 				// Levantando o idu do token, se ele ainda for válido
-				$sql = 'SELECT id,id_empresa FROM gdoks_usuarios WHERE token=? AND validade_do_token>NOW()';
+				$sql = 'SELECT id,id_empresa FROM usuarios WHERE token=? AND validade_do_token>NOW()';
 				$rs = $db->query($sql,'s',$token);
 				if(sizeof($rs) == 0){
 					// Token expirou
@@ -3673,9 +3673,9 @@
 						       a.idu_checkout,
 						       b.id as id_revisao,
 						       count(c.id) AS nAtualizacoes
-						FROM gdoks_documentos a
-						INNER JOIN gdoks_revisoes b ON a.id=b.id_documento
-						LEFT JOIN gdoks_pdas c ON b.id = c.id_revisao
+						FROM documentos a
+						INNER JOIN revisoes b ON a.id=b.id_documento
+						LEFT JOIN pdas c ON b.id = c.id_revisao
 						WHERE a.id=?
 						GROUP BY a.id,
 						         a.codigo,
@@ -3698,10 +3698,10 @@
 							a.progresso_validado,
 							d.id_projeto
 						FROM
-							gdoks_revisoes a
-							inner join gdoks_documentos b on a.id_documento=b.id
-						    inner join gdoks_subareas c on c.id=b.id_subarea
-						    inner join gdoks_areas d on c.id_area=d.id
+							revisoes a
+							inner join documentos b on a.id_documento=b.id
+						    inner join subareas c on c.id=b.id_subarea
+						    inner join areas d on c.id_area=d.id
 						WHERE id_documento=?
 						ORDER BY id DESC LIMIT 1';
 				$rs = $db->query($sql,'i',$id_doc);
@@ -3710,7 +3710,7 @@
 				$id_projeto = $rs[0]['id_projeto'];
 				
 				// Criando pda e determinando seu id
-				$sql = "INSERT INTO gdoks_pdas (progresso_total,id_revisao,idu,datahora,obs) VALUES (?,?,?,NOW(),?)";
+				$sql = "INSERT INTO pdas (progresso_total,id_revisao,idu,datahora,obs) VALUES (?,?,?,NOW(),?)";
 				$db->query($sql,'iiis',$progresso_total,$id_revisao,$idu,$obs);
 				$id_pda = $db->insert_id;
 
@@ -3727,8 +3727,8 @@
 						// salvando no fs
 						move_uploaded_file($_FILES['profiles']['tmp_name'][$i]['file'], $caminho_completo);
 
-						// criando registro na gdoks_arquivos
-						$sql = "INSERT INTO gdoks_arquivos (caminho,nome_cliente,datahora_upload,idu,tamanho,tamanho_do_papel,nPaginas) VALUES (?,?,NOW(),?,?,?,?)";
+						// criando registro na arquivos
+						$sql = "INSERT INTO arquivos (caminho,nome_cliente,datahora_upload,idu,tamanho,tamanho_do_papel,nPaginas) VALUES (?,?,NOW(),?,?,?,?)";
 						$db->query($sql,'ssiiii',
 								$caminho_completo,
 								$item->nome,
@@ -3739,8 +3739,8 @@
 							);
 						$id_arquivo = $db->insert_id;
 
-						// criando registro na gdoks_pdas_x_arquivos
-						$sql = 'INSERT INTO gdoks_pdas_x_arquivos (id_pda,id_arquivo) VALUES (?,?)';
+						// criando registro na pdas_x_arquivos
+						$sql = 'INSERT INTO pdas_x_arquivos (id_pda,id_arquivo) VALUES (?,?)';
 						$db->query($sql,'ii',$id_pda,$id_arquivo);
 					}
 
@@ -3748,18 +3748,18 @@
 					if($item->tipo == 'antigoNaoAtualizar' && $item->acao==1){
 						// determinando o id do arquivo (o mais atual com este nome para este documento)
 						$sql = "SELECT a.id FROM
-									gdoks_arquivos a
-								    inner join gdoks_pdas_x_arquivos b on a.id=b.id_arquivo
-								    inner join gdoks_pdas c on c.id=b.id_pda
-								    inner join gdoks_revisoes d on d.id=c.id_revisao
+									arquivos a
+								    inner join pdas_x_arquivos b on a.id=b.id_arquivo
+								    inner join pdas c on c.id=b.id_pda
+								    inner join revisoes d on d.id=c.id_revisao
 								WHERE a.nome_cliente=? and d.id_documento=?
 								ORDER BY id_pda DESC
 								LIMIT 1";
 						$rs = $db->query($sql,'si',$item->nome,$id_doc);
 						$id_arquivo = $rs[0]['id'];
 
-						// criando registro na gdoks_pdas_x_arquivos
-						$sql = 'INSERT INTO gdoks_pdas_x_arquivos (id_pda,id_arquivo) VALUES (?,?)';
+						// criando registro na pdas_x_arquivos
+						$sql = 'INSERT INTO pdas_x_arquivos (id_pda,id_arquivo) VALUES (?,?)';
 						$db->query($sql,'ii',$id_pda,$id_arquivo);
 					}
 
@@ -3770,11 +3770,11 @@
 				}
 
 				// Atualizando dados na tabela de revisoes (progresso a validar e ua)
-				$sql = 'UPDATE gdoks_revisoes SET progresso_a_validar= (? - progresso_validado), ua=NOW() WHERE id=?';
+				$sql = 'UPDATE revisoes SET progresso_a_validar= (? - progresso_validado), ua=NOW() WHERE id=?';
 				$db->query($sql,'ii',$progresso_total,$id_revisao);
 
 				// Setando como null idu_checkout e datahora_de_checkout
-				$sql = 'UPDATE gdoks_documentos SET idu_checkout=null,datahora_do_checkout=null WHERE id=?';
+				$sql = 'UPDATE documentos SET idu_checkout=null,datahora_do_checkout=null WHERE id=?';
 				$db->query($sql,'i',$id_doc);
 
 				// registrando no log a ação
@@ -3785,7 +3785,7 @@
 				$response->flush();
 
 				// disparando ações pós atualização de documento
-				GDoks::onDocumentUpdate($id_doc,$empresa);
+				GeProj::onDocumentUpdate($id_doc,$empresa);
 			});
 
 			$app->post('/documentos/:id_doc/validacaoDeProgresso',function($id_doc) use ($app,$db,$token){
@@ -3795,7 +3795,7 @@
 				$progresso = 1*$app->request->getBody();
 
 				// verificando se o token é válido e descobrindo id do usuário
-				$sql = 'SELECT id FROM gdoks_usuarios WHERE token=? AND validade_do_token>NOW()';
+				$sql = 'SELECT id FROM usuarios WHERE token=? AND validade_do_token>NOW()';
 				$rs = $db->query($sql,'s',$token);
 				if(sizeof($rs) == 0){
 					http_response_code(401);
@@ -3807,9 +3807,9 @@
 
 				// verificando se o usuário é validador da disciplina do documento
 				$sql = 'SELECT count(*) ehValidador
-						FROM gdoks_documentos a
-						INNER JOIN gdoks_subdisciplinas b ON a.id_subdisciplina=b.id
-						INNER JOIN gdoks_validadores c ON c.id_disciplina=b.id_disciplina
+						FROM documentos a
+						INNER JOIN subdisciplinas b ON a.id_subdisciplina=b.id
+						INNER JOIN validadores c ON c.id_disciplina=b.id_disciplina
 						WHERE a.id=?
 						  AND c.id_usuario=?';
 				$rs = $db->query($sql,'ii',$id_doc,$idu);
@@ -3822,8 +3822,8 @@
 				// determinando o id da última revisão e o id do último pda
 				$sql = 'SELECT a.id AS id_revisao,
 						       b.id AS id_pda
-						FROM gdoks_revisoes a
-						LEFT JOIN gdoks_pdas b ON a.id=b.id_revisao
+						FROM revisoes a
+						LEFT JOIN pdas b ON a.id=b.id_revisao
 						AND a.id_documento=?
 						ORDER BY b.id DESC LIMIT 1';
 				$rs = $db->query($sql,'i',$id_doc);
@@ -3831,19 +3831,19 @@
 				$id_pda = $rs[0]['id_pda'];
 
 				// validando progresso 1: TABELA DE REVISÕES
-				$sql = 'UPDATE gdoks_revisoes SET progresso_validado = progresso_validado + ?,progresso_a_validar = 0 WHERE id=?';
+				$sql = 'UPDATE revisoes SET progresso_validado = progresso_validado + ?,progresso_a_validar = 0 WHERE id=?';
 				$db->query($sql,'ii',$progresso,$id_revisao);
 
 				// levantando novo progresso total validado
 				$sql = 'SELECT progresso_validado,id
-						FROM gdoks_revisoes
+						FROM revisoes
 						WHERE id=?';
 				$rs = $db->query($sql,'i',$id_revisao);
 				$progresso_validado = $rs[0]['progresso_validado'];
 				$id_revisao = $rs[0]['id'];
 
 				// validando progresso 2: TABELA DE PDAS
-				$sql = 'UPDATE gdoks_pdas SET progresso_total=?,idu_validador=?,datahora_validacao=now() WHERE id=?';
+				$sql = 'UPDATE pdas SET progresso_total=?,idu_validador=?,datahora_validacao=now() WHERE id=?';
 				$db->query($sql,'iii',$progresso_validado,$idu,$id_pda);
 
 				// registrando no log
@@ -3856,7 +3856,7 @@
 
 			$app->post('/documentos/validarProgressos',function() use ($app,$db,$token){
 				// Verificando se o token é válido
-				$sql = 'SELECT id FROM gdoks_usuarios WHERE token=? AND validade_do_token>NOW()';
+				$sql = 'SELECT id FROM usuarios WHERE token=? AND validade_do_token>NOW()';
 				$rs = $db->query($sql,'s',$token);
 				if(sizeof($rs)==0){
 					// Token expirou
@@ -3875,7 +3875,7 @@
 				// Atualizando documentos
 				foreach ($documentos as $doc) {
 					// Atualizando pda
-					$sql = 'UPDATE gdoks_pdas
+					$sql = 'UPDATE pdas
 							SET progresso_total=?,
 				                idu_validador=?,
 				                datahora_validacao=NOW()
@@ -3883,7 +3883,7 @@
 					$db->query($sql,'iii',$doc->progresso_a_validar+$doc->progresso_validado,$idu,$doc->id_pda);
 
 					// Atualizando revisão
-					$sql = 'UPDATE gdoks_revisoes
+					$sql = 'UPDATE revisoes
 							SET progresso_a_validar=0,
 							    progresso_validado=?,
 							    ua=now()
@@ -3941,15 +3941,15 @@
 				$endereco = $app->request->getBody();
 
 				// Validando consistência: se drevisão é do documento
-				$sql = 'SELECT count(*) as n FROM gdoks_revisoes WHERE id=? and id_documento=?';	
+				$sql = 'SELECT count(*) as n FROM revisoes WHERE id=? and id_documento=?';	
 				$ok = ($db->query($sql,'ii',$id_rev,$id_doc)[0]['n'] == 1);
 				if($ok){
 					try {
 						if(trim($endereco) == ''){
-							$sql = 'UPDATE gdoks_revisoes SET end_fisico=null WHERE id=?';
+							$sql = 'UPDATE revisoes SET end_fisico=null WHERE id=?';
 							$db->query($sql,'i',$id_rev);
 						} else {
-							$sql = 'UPDATE gdoks_revisoes SET end_fisico=? WHERE id=?';
+							$sql = 'UPDATE revisoes SET end_fisico=? WHERE id=?';
 							$db->query($sql,'si',$endereco,$id_rev);
 						}
 					} catch (Exception $e) {
@@ -3974,13 +3974,13 @@
 				$id_doc = 1*$id_doc;
 
 				// Levantando o serial atual
-				$sql = "SELECT data_limite, max(serial)+1 as novoSerial FROM gdoks_revisoes WHERE id_documento=? GROUP BY data_limite";
+				$sql = "SELECT data_limite, max(serial)+1 as novoSerial FROM revisoes WHERE id_documento=? GROUP BY data_limite";
 				$rs = $db->query($sql,'i',$id_doc);
 				$novoSerial = $rs[0]['novoSerial'];
 				$dataLimite = $rs[0]['data_limite'];
 
 				// Criando nova revisão
-				$sql = "INSERT INTO gdoks_revisoes (serial,id_documento,data_limite) VALUES (?,?,?)";
+				$sql = "INSERT INTO revisoes (serial,id_documento,data_limite) VALUES (?,?,?)";
 				$db->query($sql,'iis',$novoSerial,$id_doc,$dataLimite);
 
 				// Retornando resposta ao cliente
@@ -4000,7 +4000,7 @@
 
 				// Levantando o id do usuário caso ele esteja logado. caso contrário retorna 401
 				$sql = 'SELECT id
-						FROM gdoks_usuarios
+						FROM usuarios
 						WHERE token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token);
 
@@ -4014,7 +4014,7 @@
 					$idu = $rs[0]['id'];
 
 					// levantando o caminnho do arquivo
-					$sql = 'SELECT caminho,nome_cliente FROM gdoks_arquivos WHERE id=?';
+					$sql = 'SELECT caminho,nome_cliente FROM arquivos WHERE id=?';
 					$fileInfo = $db->query($sql,'i',$id)[0];
 					$caminho = 	$fileInfo['caminho'];
 					$nome_cliente = $fileInfo['nome_cliente'];
@@ -4055,10 +4055,10 @@
 						       a.contato_telefone,
 						       a.endereco,
                                (!isnull(ftp_host) and !isnull(ftp_usuario) and !isnull(ftp_senha)) as ftp_configurado
-						FROM gdoks_clientes a
+						FROM clientes a
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?) b ON a.id_empresa=b.id_empresa
 							ORDER by a.nome';
 				$response = new response(0,'ok');
@@ -4079,10 +4079,10 @@
 						       a.ftp_usuario,
 						       a.login,
 						       a.endereco
-						FROM gdoks_clientes a
+						FROM clientes a
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?) b ON a.id_empresa=b.id_empresa
 						WHERE a.id=?
 							ORDER by a.nome';
@@ -4102,9 +4102,9 @@
 						a.codigo,
 						MAX(c.id) as id_projeto_associado
 					FROM
-						gdoks_propostas a
-						inner join gdoks_versoes_de_propostas b on a.id=b.id_proposta
-						left join gdoks_projetos c on b.id=c.id_versao_de_proposta
+						propostas a
+						inner join versoes_de_propostas b on a.id=b.id_proposta
+						left join projetos c on b.id=c.id_versao_de_proposta
 					WHERE
 						a.id_cliente=?
 					GROUP BY a.id, a.codigo';
@@ -4123,8 +4123,8 @@
 						a.emissao,
 						a.aprovacao,
 						a.nome_cliente
-					FROM gdoks_versoes_de_propostas a
-						INNER JOIN gdoks_propostas b on a.id_proposta=b.id
+					FROM versoes_de_propostas a
+						INNER JOIN propostas b on a.id_proposta=b.id
 					WHERE b.id_cliente=?';
 				$versoes = array_map(function($a){return (object)$a;},$db->query($sql,'i',$id_cliente));
 
@@ -4172,12 +4172,12 @@
 						FROM (
 							SELECT
 								id,id_empresa
-							FROM gdoks_usuarios
+							FROM usuarios
 							WHERE token=? AND validade_do_token>now()) A INNER JOIN 
 								(
 							SELECT
 								id_empresa
-							FROM gdoks_clientes
+							FROM clientes
 								WHERE id=?) B on A.id_empresa=B.id_empresa;';
 				$rs = $db->query($sql,'si',$token,$id);
 				$ok = (sizeof($rs) > 0);
@@ -4192,7 +4192,7 @@
 						// Verificando se o cliente está com a senha de login setada
 						if(empty($cliente->senha) || is_null($cliente->senha) || $cliente->senha==''){
 							// Fazendo alteração sem alteração de senha FTP nem login
-							$sql = "UPDATE gdoks_clientes
+							$sql = "UPDATE clientes
 									SET	
 										nome=?,
 		         						nome_fantasia=?,
@@ -4216,7 +4216,7 @@
 							}
 						} else {
 							// Fazendo alteração sem alteração de senha FTP mas alterando login
-							$sql = "UPDATE gdoks_clientes
+							$sql = "UPDATE clientes
 									SET	
 										nome=?,
 		         						nome_fantasia=?,
@@ -4246,7 +4246,7 @@
 						// Verificando se o cliente está com a senha de login setada
 						if(empty($cliente->senha) || is_null($cliente->senha) || $cliente->senha==''){
 							// Fazendo alteração da senha FTP inclusive, mas não altera senha de acesso
-							$sql = "UPDATE gdoks_clientes
+							$sql = "UPDATE clientes
 									SET	
 										nome=?,
 		         						nome_fantasia=?,
@@ -4271,7 +4271,7 @@
 							}
 
 						} else {
-							$sql = "UPDATE gdoks_clientes
+							$sql = "UPDATE clientes
 									SET	
 										nome=?,
 		         						nome_fantasia=?,
@@ -4327,7 +4327,7 @@
 				$sql = 'SELECT
 							id,id_empresa
 						FROM 
-							gdoks_usuarios
+							usuarios
 						WHERE
 							token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token)[0];
@@ -4338,7 +4338,7 @@
 				if(empty($cliente->ftp_senha) || is_null($cliente->ftp_senha) || $cliente->ftp_senha==''){
 
 					// Inserindo novo cliente sem senha ftp.
-					$sql = 'INSERT INTO gdoks_clientes (nome,nome_fantasia,cpf,cnpj,contato_nome,contato_email,contato_telefone,id_empresa,registrado_em,endereco,ftp_host,ftp_usuario) VALUES (?,?,?,?,?,?,?,?,NOW(),?,?,?)';
+					$sql = 'INSERT INTO clientes (nome,nome_fantasia,cpf,cnpj,contato_nome,contato_email,contato_telefone,id_empresa,registrado_em,endereco,ftp_host,ftp_usuario) VALUES (?,?,?,?,?,?,?,?,NOW(),?,?,?)';
 					try {
 						$db->query($sql,'sssssssisss',$cliente->nome,$cliente->nome_fantasia,$cliente->cpf,$cliente->cnpj,$cliente->contato_nome,$cliente->contato_email,$cliente->contato_telefone,$id_empresa,$cliente->endereco,$cliente->ftp_host,$cliente->ftp_usuario);
 						$response = new response(0,'Cliente adicionado com sucesso.');
@@ -4352,7 +4352,7 @@
 					}
 				} else {
 					// Inserindo novo cliente com senha ftp.
-					$sql = 'INSERT INTO gdoks_clientes (nome,nome_fantasia,cpf,cnpj,contato_nome,contato_email,contato_telefone,id_empresa,registrado_em,endereco,ftp_host,ftp_usuario,ftp_senha) VALUES (?,?,?,?,?,?,?,?,NOW(),?,?,?,AES_ENCRYPT(?,UNHEX(SHA2(?,512))))';
+					$sql = 'INSERT INTO clientes (nome,nome_fantasia,cpf,cnpj,contato_nome,contato_email,contato_telefone,id_empresa,registrado_em,endereco,ftp_host,ftp_usuario,ftp_senha) VALUES (?,?,?,?,?,?,?,?,NOW(),?,?,?,AES_ENCRYPT(?,UNHEX(SHA2(?,512))))';
 					try {
 						$db->query($sql,'sssssssisssss',$cliente->nome,$cliente->nome_fantasia,$cliente->cpf,$cliente->cnpj,$cliente->contato_nome,$cliente->contato_email,$cliente->contato_telefone,$id_empresa,$cliente->endereco,$cliente->ftp_host,$cliente->ftp_usuario,$cliente->ftp_senha,AES_KEY);
 						$response = new response(0,'Cliente adicionado com sucesso.');
@@ -4375,7 +4375,7 @@
 				$sql = 'SELECT id,
 						       nome,
 						       descricao
-						FROM gdoks_acoes';
+						FROM acoes';
 				$response = new response(0,'ok');
 				$response->acoes = $db->query($sql);
 				$response->flush();
@@ -4395,7 +4395,7 @@
 						       id_acao,
 						       parametros,
 						       data
-						FROM gdoks_log
+						FROM log
 						WHERE data>=? and data<=? and $condicaoUid and $condicaoAid
 						ORDER BY data desc
 						";
@@ -4412,10 +4412,10 @@
 				$sql = 'SELECT a.id,
 						       a.nome,
 						       a.valor_hh
-						FROM gdoks_cargos a
+						FROM cargos a
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?) b ON a.id_empresa=b.id_empresa
 							ORDER by a.nome';
 				$response = new response(0,'ok');
@@ -4428,10 +4428,10 @@
 				$sql = 'SELECT a.id,
 						       a.nome,
 						       a.valor_hh
-						FROM gdoks_cargos a
+						FROM cargos a
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?) b ON a.id_empresa=b.id_empresa
 						WHERE a.id=?';
 				$response = new response(0,'ok');
@@ -4456,12 +4456,12 @@
 						FROM (
 							SELECT
 								id,id_empresa
-							FROM gdoks_usuarios
+							FROM usuarios
 							WHERE token=? AND validade_do_token>now()) A INNER JOIN 
 								(
 							SELECT
 								id_empresa
-							FROM gdoks_cargos
+							FROM cargos
 								WHERE id=?) B on A.id_empresa=B.id_empresa;';
 				$rs = $db->query($sql,'si',$token,$id);
 				$ok = (sizeof($rs) > 0);
@@ -4469,7 +4469,7 @@
 
 				// Indo adiante
 				if($ok) {
-					$sql = "UPDATE gdoks_cargos
+					$sql = "UPDATE cargos
 							SET	
 								nome=?,
          						valor_hh=?
@@ -4503,7 +4503,7 @@
 				$sql = 'SELECT
 							id,id_empresa
 						FROM 
-							gdoks_usuarios
+							usuarios
 						WHERE
 							token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token)[0];
@@ -4511,7 +4511,7 @@
 				$id = $rs['id'];
 
 				// Inserindo novo cliente.
-				$sql = 'INSERT INTO gdoks_cargos (nome,valor_hh,id_empresa) VALUES (?,?,?)';
+				$sql = 'INSERT INTO cargos (nome,valor_hh,id_empresa) VALUES (?,?,?)';
 				try {
 					$db->query($sql,'sdi',$cargo->nome,$cargo->valor_hh,$id_empresa);
 					$response = new response(0,'Cargo criado com sucesso.');
@@ -4537,12 +4537,12 @@
 						FROM (
 							SELECT
 								id,id_empresa
-							FROM gdoks_usuarios
+							FROM usuarios
 							WHERE token=? AND validade_do_token>now()) A INNER JOIN 
 								(
 							SELECT
 								id_empresa
-							FROM gdoks_cargos
+							FROM cargos
 								WHERE id=?) B on A.id_empresa=B.id_empresa;';
 				$rs = $db->query($sql,'si',$token,$id);
 				$ok = (sizeof($rs) > 0);
@@ -4550,7 +4550,7 @@
 
 				// Indo adiante
 				if($ok) {
-					$sql = "DELETE FROM gdoks_cargos WHERE id=?";
+					$sql = "DELETE FROM cargos WHERE id=?";
                     try {
                     	$db->query($sql,'i',$idCargo);
                     } catch (Exception $e) {
@@ -4595,21 +4595,21 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos p
-						   INNER JOIN gdoks_areas a ON p.id=a.id_projeto
-						   INNER JOIN gdoks_subareas s ON s.id_area=a.id
+						   FROM projetos p
+						   INNER JOIN areas a ON p.id=a.id_projeto
+						   INNER JOIN subareas s ON s.id_area=a.id
 						   AND s.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_subarea)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A subarea a ser alterada é do mesmo cliente do usuário
-					$sql = 'UPDATE gdoks_subareas SET nome=?,codigo=?,id_area=? WHERE id=?';
+					$sql = 'UPDATE subareas SET nome=?,codigo=?,id_area=? WHERE id=?';
 					try {
 						$db->query($sql,'ssii',$subarea->nome,$subarea->codigo,$subarea->area->id,$id_subarea);
 						$response = new response(0,'Área alterada com sucesso.');
@@ -4638,20 +4638,20 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos d
-						   	INNER JOIN gdoks_areas e on d.id=e.id_projeto
+						   FROM projetos d
+						   	INNER JOIN areas e on d.id=e.id_projeto
 						   WHERE e.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$subarea->area->id)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A area a ser adicionada é do mesmo cliente do usuário
-					$sql = 'INSERT INTO gdoks_subareas (nome,codigo,id_area) VALUES (?,?,?)';
+					$sql = 'INSERT INTO subareas (nome,codigo,id_area) VALUES (?,?,?)';
 					try {
 						$db->query($sql,'ssi',$subarea->nome,$subarea->codigo,$subarea->area->id);
 						$response = new response(0,'Subárea adicionada com sucesso.');
@@ -4680,7 +4680,7 @@
 						       nome,
 						       codigo,
 						       id_area
-						FROM gdoks_subareas
+						FROM subareas
 						WHERE id=?';
 				$subarea = $db->query($sql,'i',$id_subarea)[0];
 
@@ -4690,21 +4690,21 @@
 						FROM
 						  (SELECT id,
 						          id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?
 						     AND validade_do_token>now()) A
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_projetos p
-						   INNER JOIN gdoks_areas a ON p.id=a.id_projeto
-						   INNER JOIN gdoks_subareas s on s.id_area=a.id
+						   FROM projetos p
+						   INNER JOIN areas a ON p.id=a.id_projeto
+						   INNER JOIN subareas s on s.id_area=a.id
 						   AND s.id=?) B ON A.id_empresa=B.id_empresa';
 				$rs = $db->query($sql,'si',$token,$id_subarea)[0];
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 				if($ok == 1){
 					// Tudo ok! A subdisciplina a ser adicionada é do mesmo cliente do usuário
-					$sql = 'DELETE FROM gdoks_subareas WHERE id=?';
+					$sql = 'DELETE FROM subareas WHERE id=?';
 					try {
 						$db->query($sql,'i',$id_subarea);
 						$response = new response(0,'Sub-área removida com sucesso.');
@@ -4730,10 +4730,10 @@
 						       x.nome,
 						       x.altura as a,
 						       x.largura as l
-						FROM gdoks_tamanhos_de_papel x
+						FROM tamanhos_de_papel x
 						INNER JOIN
 						  (SELECT id_empresa
-						   FROM gdoks_usuarios
+						   FROM usuarios
 						   WHERE token=?) b ON x.id_empresa=b.id_empresa
 							ORDER by x.nome';
 				$response = new response(0,'ok');
@@ -4750,7 +4750,7 @@
 				// verificando se o token é valido e lendo o idu do usuário
 				$sql = 'SELECT
 							id
-						FROM gdoks_usuarios
+						FROM usuarios
 						WHERE token=? AND validade_do_token>NOW()';
 				$rs = $db->query($sql,'s',$token);
 
@@ -4763,8 +4763,8 @@
 				} else {
 					// Levantando todos os arquivos do pda
 					$sql = 'SELECT caminho,nome_cliente
-							FROM gdoks_pdas_x_arquivos a
-							INNER JOIN gdoks_arquivos b ON a.id_arquivo=b.id
+							FROM pdas_x_arquivos a
+							INNER JOIN arquivos b ON a.id_arquivo=b.id
 							WHERE a.id_pda=?';
 					$rs = $db->query($sql,'s',$id_pda);
 					$caminhos = $rs;
@@ -4830,7 +4830,7 @@
 				// verificando se o token é valido e lendo o idu do usuário
 				$sql = 'SELECT
 							id
-						FROM gdoks_usuarios
+						FROM usuarios
 						WHERE token=? AND validade_do_token>NOW()';
 				$rs = $db->query($sql,'s',$token);
 				
@@ -4846,8 +4846,8 @@
 
 					// Levantando todos os documentos do pda
 					$sql = 'SELECT caminho,nome_cliente
-							FROM gdoks_pdas_x_arquivos a
-							INNER JOIN gdoks_arquivos b ON a.id_arquivo=b.id
+							FROM pdas_x_arquivos a
+							INNER JOIN arquivos b ON a.id_arquivo=b.id
 							WHERE a.id_pda=?';
 					$rs = $db->query($sql,'s',$id_pda);
 					$arquivos = $rs;
@@ -4894,13 +4894,13 @@
 						
 					// Descobrindo qual o id_doc do pda
 					$sql = 'SELECT id_documento
-							FROM gdoks_pdas a
-							INNER JOIN gdoks_revisoes b ON a.id_revisao=b.id
+							FROM pdas a
+							INNER JOIN revisoes b ON a.id_revisao=b.id
 							WHERE a.id=?';
 					$id_doc = $db->query($sql,'i',$id_pda)[0]['id_documento'];
 					
 					// Registrando o checkout
-					$sql = 'UPDATE gdoks_documentos SET idu_checkout=?,datahora_do_checkout=NOW() WHERE id=?';
+					$sql = 'UPDATE documentos SET idu_checkout=?,datahora_do_checkout=NOW() WHERE id=?';
 					$db->query($sql,'ii',$idu,$id_doc);
 
 					// Registrando no log
@@ -4918,7 +4918,7 @@
 				// verificando se o token é valido e lendo o idu do usuário
 				$sql = 'SELECT
 							id
-						FROM gdoks_usuarios
+						FROM usuarios
 						WHERE token=? AND validade_do_token>NOW()';
 				$rs = $db->query($sql,'s',$token);
 
@@ -4934,11 +4934,11 @@
 							       nome_cliente
 							FROM
 							  ( SELECT id
-							   FROM gdoks_pdas a
+							   FROM pdas a
 							   WHERE a.id_revisao=?
 							   ORDER BY id DESC LIMIT 0,1) X
-							INNER JOIN gdoks_pdas_x_arquivos Y ON X.id=Y.id_pda
-							INNER JOIN gdoks_arquivos Z ON Y.id_arquivo=Z.id';
+							INNER JOIN pdas_x_arquivos Y ON X.id=Y.id_pda
+							INNER JOIN arquivos Z ON Y.id_arquivo=Z.id';
 					$rs = $db->query($sql,'i',$id_revisao);
 					$caminhos = $rs;
 					
@@ -5005,7 +5005,7 @@
 				$sql = 'SELECT
 							id,id_empresa
 						FROM 
-							gdoks_usuarios
+							usuarios
 						WHERE
 							token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token)[0];
@@ -5013,7 +5013,7 @@
 				$id = $rs['id'];
 
 				// Verificando se o projeto é da empresa atual e se ele está ativo
-				$sql = 'SELECT count(*) as ok, ativo FROM gdoks_projetos WHERE id=? AND id_empresa=?';
+				$sql = 'SELECT count(*) as ok, ativo FROM projetos WHERE id=? AND id_empresa=?';
 				$rs = $db->query($sql,'ii',$grd->id_projeto,$id_empresa);
 				
 				// Bloqueando para não alterar dados de outra empresa
@@ -5036,12 +5036,12 @@
 				$grd->obs = (isset($grd->obs)?$grd->obs:'');
 
 				// Determinando o código da nova GRD
-				$sql = 'SELECT ifnull(1*MAX(replace(codigo,"GRD-'.date('Y').'-",""))+1,1) as n FROM gdoks001.gdoks_grds WHERE CODIGO LIKE "GRD-'.date('Y').'-%"';
+				$sql = 'SELECT ifnull(1*MAX(replace(codigo,"GRD-'.date('Y').'-",""))+1,1) as n FROM GeProj001.grds WHERE CODIGO LIKE "GRD-'.date('Y').'-%"';
 				$n = $db->query($sql)[0]['n'];
 				$newCodigo = 'GRD-'.date('Y').'-'.str_pad($n, 6, "0", STR_PAD_LEFT);
 				
 				// Inserindo nova grd.
-				$sql = 'INSERT INTO gdoks_grds (id_projeto,codigo,obs,datahora_registro) VALUES (?,?,?,NOW())';
+				$sql = 'INSERT INTO grds (id_projeto,codigo,obs,datahora_registro) VALUES (?,?,?,NOW())';
 				try {
 					$db->query($sql,'iss',$grd->id_projeto,$newCodigo,$grd->obs);
 					$newId = $db->insert_id;
@@ -5053,7 +5053,7 @@
 				}
 
 				// Inserindo revisões na GRD
-				$sql = 'INSERT INTO gdoks_grds_x_revisoes (id_grd,id_revisao,id_codEMI,id_tipo,nFolhas,nVias) VALUES (?,?,?,?,?,?)';
+				$sql = 'INSERT INTO grds_x_revisoes (id_grd,id_revisao,id_codEMI,id_tipo,nFolhas,nVias) VALUES (?,?,?,?,?,?)';
 				foreach ($grd->docs as $d) {
 					$db->query($sql,'iiiiii',$newId,$d->rev_id,$d->id_codEMI,$d->id_tipo,$d->nFolhas,$d->nVias);
 				}
@@ -5084,7 +5084,7 @@
 				$sql = 'SELECT
 							id,id_empresa
 						FROM 
-							gdoks_usuarios
+							usuarios
 						WHERE
 							token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token)[0];
@@ -5092,7 +5092,7 @@
 				$id = $rs['id'];
 
 				// Verificando se o projeto é da empresa atual e se o projeto está ativo
-				$sql = 'SELECT count(*) as ok,ativo FROM gdoks_projetos WHERE id=? AND id_empresa=?';
+				$sql = 'SELECT count(*) as ok,ativo FROM projetos WHERE id=? AND id_empresa=?';
 				$rs = $db->query($sql,'ii',$grd->id_projeto,$id_empresa);
 				
 				// Bloquando caso projeto não seja da empresa do usuário
@@ -5112,7 +5112,7 @@
 				}
 
 				// Bloqueando caso o novo projeto da GRD esteja inativo
-				$sql = 'SELECT ativo FROM gdoks_projetos WHERE id=?';
+				$sql = 'SELECT ativo FROM projetos WHERE id=?';
 				if(($db->query($sql,'i',$grd->id_projeto))[0]['ativo'] == 0){
 					http_response_code(401);
 					$response = new response(1,'Não altera GRD para um projeto inativo.');
@@ -5124,7 +5124,7 @@
 				$grd->obs = (isset($grd->obs)?$grd->obs:'');
 				
 				// Atualizando a grd.
-				$sql = 'UPDATE gdoks_grds SET id_projeto=?,obs=?,datahora_registro=now() WHERE id=?';
+				$sql = 'UPDATE grds SET id_projeto=?,obs=?,datahora_registro=now() WHERE id=?';
 				try {
 					$db->query($sql,'isi',$grd->id_projeto,$grd->obs,$grd->id);
 				} catch (Exception $e) {
@@ -5135,11 +5135,11 @@
 				}
 
 				// Removendo documentos(revisoes) da GRD
-				$sql = 'DELETE FROM gdoks_grds_x_revisoes WHERE id_grd=?';
+				$sql = 'DELETE FROM grds_x_revisoes WHERE id_grd=?';
 				$db->query($sql,'i',$grd->id);
 
 				// Inserindo revisões na GRD
-				$sql = 'INSERT INTO gdoks_grds_x_revisoes (id_grd,id_revisao,id_codEMI,id_tipo,nFolhas,nVias) VALUES (?,?,?,?,?,?)';
+				$sql = 'INSERT INTO grds_x_revisoes (id_grd,id_revisao,id_codEMI,id_tipo,nFolhas,nVias) VALUES (?,?,?,?,?,?)';
 				foreach ($grd->docs as $d) {
 					$db->query($sql,'iiiiii',$grd->id,$d->rev_id,$d->id_codEMI,$d->id_tipo,$d->nFolhas,$d->nVias);
 				}
@@ -5183,9 +5183,9 @@
 							       c.datahora_enviada,
 							       b.id_cliente,
 							       b.ativo as projeto_ativo
-							FROM gdoks_usuarios a
-							INNER JOIN gdoks_projetos b ON a.id_empresa=b.id_empresa
-							INNER JOIN gdoks_grds c ON c.id_projeto=b.id
+							FROM usuarios a
+							INNER JOIN projetos b ON a.id_empresa=b.id_empresa
+							INNER JOIN grds c ON c.id_projeto=b.id
 							WHERE token=?
 							  AND validade_do_token>now()
 							  AND c.id=?';
@@ -5204,15 +5204,15 @@
 								       b.id_documento,
        								   b.serial as serial_revisao
 								FROM
-									gdoks_grds_x_revisoes a
-								    INNER JOIN gdoks_revisoes b on b.id=a.id_revisao
+									grds_x_revisoes a
+								    INNER JOIN revisoes b on b.id=a.id_revisao
 								WHERE id_grd=?';
 						
 						// Atribuindo revisões a grd
 						$grd->docs = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$grd->id));
 						
 						// Caso o projeto esteja inativo, levantando as informações deste projeto para enviar junto com a GRD
-						$sql = 'SELECT id,codigo,nome,id_cliente,ativo FROM gdoks_projetos WHERE id=?';
+						$sql = 'SELECT id,codigo,nome,id_cliente,ativo FROM projetos WHERE id=?';
 						$grd->projeto = (object)$db->query($sql,'i',$grd->id_projeto)[0];
 
 						// Enviando resposta para cliente
@@ -5312,9 +5312,9 @@
 							c.nome as cliente_nome';
 
 				// Definindo tabelas a consultar
-				$tabelas = 'gdoks_grds a
-							INNER JOIN gdoks_projetos b on b.id=a.id_projeto
-							INNER JOIN gdoks_clientes c on c.id=b.id_cliente';
+				$tabelas = 'grds a
+							INNER JOIN projetos b on b.id=a.id_projeto
+							INNER JOIN clientes c on c.id=b.id_cliente';
 
 				// Definindo condições
 				$condicoes = $condicao_cliente.'
@@ -5335,7 +5335,7 @@
 						LEFT JOIN
 						  (SELECT id_grd,
 						          count(*) AS n_docs
-						   FROM gdoks_grds_x_revisoes
+						   FROM grds_x_revisoes
 						   GROUP BY id_grd) Y ON X.grd_id=Y.id_grd
 						ORDER BY grd_registradaEm DESC LIMIT ?,?";
 				
@@ -5375,9 +5375,9 @@
 
 				// verificando se a grd é da mesma empresa do usuário
 				$sql = 'SELECT a.id,a.nome
-						FROM gdoks_usuarios a
-						INNER JOIN gdoks_projetos b ON a.id_empresa=b.id_empresa
-						INNER JOIN gdoks_grds c ON c.id_projeto=b.id
+						FROM usuarios a
+						INNER JOIN projetos b ON a.id_empresa=b.id_empresa
+						INNER JOIN grds c ON c.id_projeto=b.id
 						WHERE token=?
 						  AND validade_do_token>now()
 						  AND c.id=?';
@@ -5404,7 +5404,7 @@
 					$unique_link = md5(uniqid(rand(), true));
 
 					// Settando o unique link da grd na base e idu_remetente
-					$sql = 'UPDATE gdoks_grds SET unique_link=? WHERE id=?';
+					$sql = 'UPDATE grds SET unique_link=? WHERE id=?';
 					$db->query($sql,'si',$unique_link,$grd->id);
 
 					// Definindo o From
@@ -5446,7 +5446,7 @@
 
 					if($response->statusCode() == 202){
 						// Registrando a datahora do envio e idu_remetente
-						$sql = 'UPDATE gdoks_grds SET datahora_enviada=NOW(),idu_remetente=? WHERE id=?';
+						$sql = 'UPDATE grds SET datahora_enviada=NOW(),idu_remetente=? WHERE id=?';
 						$db->query($sql,'ii',$id_usuario,$grd->id);
 
 						// Retornando sucesso
@@ -5472,9 +5472,9 @@
 
 				// verificando se a grd é da mesma empresa do usuário
 				$sql = 'SELECT a.id,a.nome
-						FROM gdoks_usuarios a
-						INNER JOIN gdoks_projetos b ON a.id_empresa=b.id_empresa
-						INNER JOIN gdoks_grds c ON c.id_projeto=b.id
+						FROM usuarios a
+						INNER JOIN projetos b ON a.id_empresa=b.id_empresa
+						INNER JOIN grds c ON c.id_projeto=b.id
 						WHERE token=?
 						  AND validade_do_token>now()
 						  AND c.id=?';
@@ -5504,7 +5504,7 @@
 							       (!isnull(ftp_host)
 							        AND !isnull(ftp_usuario)
 							        AND !isnull(ftp_senha)) AS ftp_configurado
-							FROM gdoks_clientes
+							FROM clientes
 							WHERE id=?';
 					$ftp_keys = $db->query($sql,'si',AES_KEY,$grd->cliente_id)[0];
 
@@ -5558,7 +5558,7 @@
 						}
 
 						// Registrando a datahora do envio
-						$sql = 'UPDATE gdoks_grds SET datahora_enviada=NOW(),idu_remetente=? WHERE id=?';
+						$sql = 'UPDATE grds SET datahora_enviada=NOW(),idu_remetente=? WHERE id=?';
 						$db->query($sql,'ii',$id_usuario,$grd->id);
 
 						// Retornando sucesso
@@ -5586,9 +5586,9 @@
 
 				// verificando se a grd é da mesma empresa do usuário
 				$sql = 'SELECT a.id
-						FROM gdoks_usuarios a
-						INNER JOIN gdoks_projetos b ON a.id_empresa=b.id_empresa
-						INNER JOIN gdoks_grds c ON c.id_projeto=b.id
+						FROM usuarios a
+						INNER JOIN projetos b ON a.id_empresa=b.id_empresa
+						INNER JOIN grds c ON c.id_projeto=b.id
 						WHERE token=?
 						  AND validade_do_token>now()
 						  AND c.id=?';
@@ -5609,7 +5609,7 @@
 
 					// Marcando GRD como enviada pelo usuário
 					try {
-						$sql = 'UPDATE gdoks_grds SET datahora_enviada=NOW(),idu_remetente=? WHERE id=?';
+						$sql = 'UPDATE grds SET datahora_enviada=NOW(),idu_remetente=? WHERE id=?';
 						$db->query($sql,'ii',$id_usuario,$id_grd);
 					} catch (Exception $e) {
 						http_response_code(401);
@@ -5631,9 +5631,9 @@
 				$sql = 'SELECT
 							count(*)=1 as ok
 						FROM
-							gdoks_grds a
-						    inner join gdoks_projetos b on b.id=a.id_projeto
-						    inner join gdoks_usuarios c on (c.id_empresa=b.id_empresa and c.token=? and c.validade_do_token>now())
+							grds a
+						    inner join projetos b on b.id=a.id_projeto
+						    inner join usuarios c on (c.id_empresa=b.id_empresa and c.token=? and c.validade_do_token>now())
 						WHERE a.id=?;';
 				$ok = $db->query($sql,'si',$token,$id_grd)[0]['ok']==1;
 
@@ -5647,15 +5647,15 @@
 							       a.idu,
 							       a.obs,
 							       a.comentario_cliente as cc
-							FROM gdoks_observacoes a
-							INNER JOIN gdoks_revisoes b ON a.id_revisao=b.id
+							FROM observacoes a
+							INNER JOIN revisoes b ON a.id_revisao=b.id
 							WHERE a.id_grd=?';
 					$observacoes = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_grd));
 
 					// levantando arquivos de observações
 					$sql = 'SELECT id,
 							       nome_cliente
-							FROM gdoks_observacoes_arquivos
+							FROM observacoes_arquivos
 							WHERE id_observacao=?';
 					foreach ($observacoes as $obs) {
 						$obs->arquivos = $db->query($sql,'i',$obs->id);
@@ -5685,9 +5685,9 @@
 							b.id as id_projeto,
 							count(*)=1 as ok
 						FROM
-							gdoks_grds a
-						    inner join gdoks_projetos b on b.id=a.id_projeto
-						    inner join gdoks_usuarios c on (c.id_empresa=b.id_empresa and c.token=? and c.validade_do_token>now())
+							grds a
+						    inner join projetos b on b.id=a.id_projeto
+						    inner join usuarios c on (c.id_empresa=b.id_empresa and c.token=? and c.validade_do_token>now())
 						WHERE a.id=?;';
 				$rs = $db->query($sql,'si',$token,$id_grd);
 
@@ -5709,7 +5709,7 @@
 					// = = = = = = = = = = = = = = = = = = = = = = =
 					// Atualizando observação
 					// = = = = = = = = = = = = = = = = = = = = = = =
-					$sql = 'UPDATE gdoks_observacoes SET obs=?,comentario_cliente=?,data_recebida=?,datahora_registrada=NOW(),idu=? WHERE id=?';
+					$sql = 'UPDATE observacoes SET obs=?,comentario_cliente=?,data_recebida=?,datahora_registrada=NOW(),idu=? WHERE id=?';
 					$db->query($sql,'sssii',$obs->obs,$obs->cc,$obs->data_recebida,$idu,$obs->id);
 
 					// levantando os anexos existentes que devem ser removidos
@@ -5718,7 +5718,7 @@
 					} else {
 						$condicao = 'FALSE';
 					}
-					$sql = "SELECT caminho,nome_cliente,id FROM gdoks_observacoes_arquivos WHERE id_observacao=? && !($condicao)";
+					$sql = "SELECT caminho,nome_cliente,id FROM observacoes_arquivos WHERE id_observacao=? && !($condicao)";
 					$paraRemover = array_map(function($a){return (object)$a;},$db->query($sql,'i',$obs->id));
 
 					// removendo arquivos
@@ -5729,7 +5729,7 @@
 					}
 					
 					// apagando da base
-					$sql = "DELETE FROM gdoks_observacoes_arquivos WHERE id_observacao=? && !($condicao)";
+					$sql = "DELETE FROM observacoes_arquivos WHERE id_observacao=? && !($condicao)";
 					$db->query($sql,'i',$obs->id);
 
 					// Definindo vetor de resultados de uploads
@@ -5773,7 +5773,7 @@
 									$result->newId = 0;
 								} else {
 									// inserindo na base
-									$sql = 'INSERT INTO gdoks_observacoes_arquivos (caminho,nome_cliente,id_observacao) VALUES (?,?,?)';
+									$sql = 'INSERT INTO observacoes_arquivos (caminho,nome_cliente,id_observacao) VALUES (?,?,?)';
 									$db->query($sql,'ssi',$caminho,$file,$obs->id);
 									$result->newId = $db->insert_id;
 								}
@@ -5795,7 +5795,7 @@
 					// = = = = = = = = = = = = = = = = = = = = = = =
 					// INSERINDO observação
 					// = = = = = = = = = = = = = = = = = = = = = = =
-					$sql = 'INSERT INTO gdoks_observacoes (id_grd,id_revisao,obs,comentario_cliente,data_recebida,datahora_registrada,idu) VALUES (?,?,?,?,?,now(),?)';
+					$sql = 'INSERT INTO observacoes (id_grd,id_revisao,obs,comentario_cliente,data_recebida,datahora_registrada,idu) VALUES (?,?,?,?,?,now(),?)';
 					$db->query($sql,'iisssi',$id_grd,$obs->id_revisao,$obs->obs,$obs->cc,$obs->data_recebida,$idu);
 					$newId = $db->insert_id;
 
@@ -5839,7 +5839,7 @@
 									$result->newId = 0;
 								} else {
 									// inserindo na base
-									$sql = 'INSERT INTO gdoks_observacoes_arquivos (caminho,nome_cliente,id_observacao) VALUES (?,?,?)';
+									$sql = 'INSERT INTO observacoes_arquivos (caminho,nome_cliente,id_observacao) VALUES (?,?,?)';
 									$db->query($sql,'ssi',$pasta_destino.$uniq_name,$file,$newId);
 									$result->newId = $db->insert_id;
 								}
@@ -5868,8 +5868,8 @@
 				$sql = 'SELECT b.id,
 						       b.simbolo,
 						       b.nome
-						FROM gdoks_usuarios a
-						INNER JOIN gdoks_codigos_emi b ON a.id_empresa=b.id_empresa
+						FROM usuarios a
+						INNER JOIN codigos_emi b ON a.id_empresa=b.id_empresa
 						WHERE a.token=?';
 				$rs = $db->query($sql,'s',$token);
 				if(sizeof($rs) > 0){
@@ -5890,8 +5890,8 @@
 				$sql = 'SELECT b.id,
 						       b.simbolo,
 						       b.nome
-						FROM gdoks_usuarios a
-						INNER JOIN gdoks_tipos_de_doc b ON a.id_empresa=b.id_empresa
+						FROM usuarios a
+						INNER JOIN tipos_de_doc b ON a.id_empresa=b.id_empresa
 						WHERE a.token=?';
 				$rs = $db->query($sql,'s',$token);
 				if(sizeof($rs) > 0){
@@ -5913,14 +5913,14 @@
 						       titulo,
 						       descricao,
 						       endereco
-						FROM gdoks_telas';
+						FROM telas';
 				$telas = array_map(function($a){return (object)$a;}, $db->query($sql));
 
 				// Carregando as opções das telas
 				$sql = 'SELECT id,
 						       descricao,
 						       valor_padrao
-						FROM gdoks_opcoes_de_telas
+						FROM opcoes_de_telas
 						WHERE id_tela=?';
 				foreach ($telas as $tela) {
 					$tela->opcoes = $db->query($sql,'i',$tela->id);
@@ -5942,9 +5942,9 @@
 				// Definindo a consulta
 				$sql = 'SELECT a.id_projeto,
 						       a.ordem
-						FROM gdoks_hist_prjs a
-						INNER JOIN gdoks_usuarios b ON a.id_usuario=b.id
-						INNER JOIN gdoks_projetos c ON a.id_projeto=c.id
+						FROM hist_prjs a
+						INNER JOIN usuarios b ON a.id_usuario=b.id
+						INNER JOIN projetos c ON a.id_projeto=c.id
 						WHERE b.token=? AND c.ativo
 						ORDER BY a.ordem DESC';
 
@@ -5972,7 +5972,7 @@
 			$app->put('/configuracoes',function() use ($app,$db,$token,$FILE_CONFIG){
 
 				// Levantando o id do usuário a partir do token
-				$sql = 'select id from gdoks_usuarios where token=?';
+				$sql = 'select id from usuarios where token=?';
 				$idu = $db->query($sql,'s',$token)[0]['id'];
 
 				// Lendo configurações enviadas configurações
@@ -6033,21 +6033,21 @@
 								b.criacao,
 								b.emissao,
 								b.aprovacao
-						FROM gdoks_propostas a
+						FROM propostas a
 						INNER JOIN
 						(SELECT va.id_proposta,
 								ifnull(idap, idva) AS id_versao_principal
 							FROM
 							(SELECT id_proposta,
 									max(id) AS idva
-							FROM gdoks_versoes_de_propostas
+							FROM versoes_de_propostas
 							GROUP BY id_proposta) va
 							LEFT JOIN
 							( SELECT id_proposta,
 									id AS idap
-							FROM gdoks_versoes_de_propostas
+							FROM versoes_de_propostas
 							WHERE aprovacao IS NOT NULL ) ap ON va.id_proposta=ap.id_proposta) x ON a.id=x.id_proposta
-						INNER JOIN gdoks_versoes_de_propostas b ON b.id=x.id_versao_principal
+						INNER JOIN versoes_de_propostas b ON b.id=x.id_versao_principal
 						WHERE
 							$restricao_cliente
 							AND $restricao_de
@@ -6074,21 +6074,21 @@
 								b.emissao,
 								b.valor,
 								b.aprovacao
-						FROM gdoks_propostas a
+						FROM propostas a
 						INNER JOIN
 						(SELECT va.id_proposta,
 								ifnull(idap, idva) AS id_versao_principal
 							FROM
 							(SELECT id_proposta,
 									max(id) AS idva
-							FROM gdoks_versoes_de_propostas
+							FROM versoes_de_propostas
 							GROUP BY id_proposta) va
 							LEFT JOIN
 							( SELECT id_proposta,
 									id AS idap
-							FROM gdoks_versoes_de_propostas
+							FROM versoes_de_propostas
 							WHERE aprovacao IS NOT NULL ) ap ON va.id_proposta=ap.id_proposta) x ON a.id=x.id_proposta
-						INNER JOIN gdoks_versoes_de_propostas b ON b.id=x.id_versao_principal LIMIT 0,10';
+						INNER JOIN versoes_de_propostas b ON b.id=x.id_versao_principal LIMIT 0,10';
 				$rs = array_map(function($a){return (object)$a;}, $db->query($sql));
 
 				// Preparando a resposta
@@ -6102,7 +6102,7 @@
 			$app->get('/propostas/:id',function($id_proposta) use ($app,$db,$token,$config){
 
 				// Levantando ultimas propostas
-				$sql = 'SELECT id,codigo,titulo,id_cliente FROM gdoks_propostas WHERE id=?';
+				$sql = 'SELECT id,codigo,titulo,id_cliente FROM propostas WHERE id=?';
 				$rs = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id_proposta));
 
 				// Verificando existência da proposta
@@ -6116,7 +6116,7 @@
 				}
 
 				// Levantando versões da proposta
-				$sql = 'SELECT id,serial,criacao,emissao,aprovacao,nome_cliente,valor FROM gdoks_versoes_de_propostas WHERE id_proposta=?';
+				$sql = 'SELECT id,serial,criacao,emissao,aprovacao,nome_cliente,valor FROM versoes_de_propostas WHERE id_proposta=?';
 				$proposta->versoes =  $db->query($sql,'i',$id_proposta);
 
 				// Preparando a resposta
@@ -6130,7 +6130,7 @@
 			$app->get('/propostas/:id_proposta/versoes/:serial_versao',function($id_proposta,$serial_versao) use ($app,$db,$token,$config,$empresa){
 
 				// Levantando informações do usuário
-				$sql = 'SELECT id FROM gdoks_usuarios WHERE token=? and validade_do_token>now()';
+				$sql = 'SELECT id FROM usuarios WHERE token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token);
 
 				// Testando se o usuário está ok
@@ -6143,7 +6143,7 @@
 				$id_usuario = $rs[0]['id'];
 
 				// Carregando informações da versão da proposta
-				$sql = 'SELECT arquivo,nome_cliente,contentType from gdoks_versoes_de_propostas WHERE serial=? AND id_proposta=?';
+				$sql = 'SELECT arquivo,nome_cliente,contentType from versoes_de_propostas WHERE serial=? AND id_proposta=?';
 				$rs = $db->query($sql,'ii',$serial_versao,$id_proposta);
 
 				// Verificando se versão existe
@@ -6180,7 +6180,7 @@
 
 			$app->post('/propostas/:id_proposta/versoes/:serial_versao/aprovar',function($id_proposta,$serial_versao) use ($app,$db,$token,$config,$empresa){
 				// Recuperando id do usuário
-				$sql = 'SELECT id FROM gdoks_usuarios WHERE token=? AND validade_do_token>now()';
+				$sql = 'SELECT id FROM usuarios WHERE token=? AND validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token);
 				if(sizeof($rs) == 0){
 					http_response_code(403);
@@ -6191,11 +6191,11 @@
 				$id_usuario = $rs[0]['id'];
 
 				// Desaprovando TODAS as propostas
-				$sql = 'UPDATE gdoks_versoes_de_propostas SET aprovacao=NULL WHERE id_proposta=?';
+				$sql = 'UPDATE versoes_de_propostas SET aprovacao=NULL WHERE id_proposta=?';
 				$db->query($sql,'i',$id_proposta);
 
 				// Aprovando a resposta em questão
-				$sql = 'UPDATE gdoks_versoes_de_propostas SET aprovacao=now() WHERE id_proposta=? and serial=?';
+				$sql = 'UPDATE versoes_de_propostas SET aprovacao=now() WHERE id_proposta=? and serial=?';
 				$db->query($sql,'ii',$id_proposta,$serial_versao);
 
 				// Registrando no LOG
@@ -6209,7 +6209,7 @@
 
 			$app->post('/propostas/:id_proposta/versoes/:serial_versao/reprovar',function($id_proposta,$serial_versao) use ($app,$db,$token,$config,$empresa){
 				// Recuperando id do usuário
-				$sql = 'SELECT id FROM gdoks_usuarios WHERE token=? AND validade_do_token>now()';
+				$sql = 'SELECT id FROM usuarios WHERE token=? AND validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token);
 				if(sizeof($rs) == 0){
 					http_response_code(403);
@@ -6220,7 +6220,7 @@
 				$id_usuario = $rs[0]['id'];
 
 				// Reprovando a versão da proposta em questão
-				$sql = 'UPDATE gdoks_versoes_de_propostas SET aprovacao=NULL WHERE id_proposta=? and serial=?';
+				$sql = 'UPDATE versoes_de_propostas SET aprovacao=NULL WHERE id_proposta=? and serial=?';
 				$db->query($sql,'ii',$id_proposta,$serial_versao);
 
 				// Registrando no LOG
@@ -6233,7 +6233,7 @@
 
 			$app->post('/propostas/:id_proposta/versoes/:serial_versao/enviar',function($id_proposta,$serial_versao) use ($app,$db,$token,$config,$empresa){
 				// Recuperando id do usuário
-				$sql = 'SELECT id FROM gdoks_usuarios WHERE token=? AND validade_do_token>now()';
+				$sql = 'SELECT id FROM usuarios WHERE token=? AND validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token);
 				if(sizeof($rs) == 0){
 					http_response_code(403);
@@ -6247,7 +6247,7 @@
 				$mail = json_decode($app->request->getBody());
 				
 				// Levantando o arquivo a anexar
-				$sql = 'SELECT arquivo,contentType FROM gdoks_versoes_de_propostas WHERE id_proposta=? AND serial=?';
+				$sql = 'SELECT arquivo,contentType FROM versoes_de_propostas WHERE id_proposta=? AND serial=?';
 				$rs = $db->query($sql,'ii',$id_proposta,$serial_versao);
 				$filename = $rs[0]['arquivo'];
 				$filepath = CLIENT_DATA_PATH.$empresa.'/uploads/propostas/'.$filename;
@@ -6301,7 +6301,7 @@
 				}
 
 				// Registrando o instante do envio na base
-				$sql = 'UPDATE gdoks_versoes_de_propostas SET emissao=NOW() where id_proposta=? and serial=?';
+				$sql = 'UPDATE versoes_de_propostas SET emissao=NOW() where id_proposta=? and serial=?';
 				$db->query($sql,'ii',$id_proposta,$serial_versao);
 
 				// Levantando emails de destinatários para por no log
@@ -6330,7 +6330,7 @@
 				}
 
 				// Validando usuário
-				$sql = 'SELECT count(*) as n FROM gdoks_usuarios WHERE id=? AND token=? AND validade_do_token>NOW()';
+				$sql = 'SELECT count(*) as n FROM usuarios WHERE id=? AND token=? AND validade_do_token>NOW()';
 				$rs = $db->query($sql,'is',$user->id,$user->token);
 				if(sizeof($rs) == 0){
 					http_response_code(403);
@@ -6377,7 +6377,7 @@
 				$valor_proposta = 1*$_POST['profiles'][0]['valor_proposta'];
 
 				// Verificando se a proposta realmente existe
-				$sql = 'SELECT id FROM gdoks_propostas WHERE id=? AND codigo=?';
+				$sql = 'SELECT id FROM propostas WHERE id=? AND codigo=?';
 				$rs = $db->query($sql,'is',$id_proposta,$codigo);
 				if(sizeof($rs)!=1){
 					http_response_code(401);
@@ -6385,12 +6385,12 @@
 					$response->flush();
 					exit(1);
 				} else {
-					$sql = 'SELECT ifnull(max(serial),0)+1 as proximoSerial  FROM gdoks_versoes_de_propostas WHERE id_proposta=?';
+					$sql = 'SELECT ifnull(max(serial),0)+1 as proximoSerial  FROM versoes_de_propostas WHERE id_proposta=?';
 					$proximoSerial = $db->query($sql,'i',$id_proposta)[0]['proximoSerial'];
 				}
 
 				// Salvando informações versao de proposta
-				$sql = 'INSERT INTO gdoks_versoes_de_propostas (serial,id_proposta,criacao,arquivo,nome_cliente,contentType,aprovada,valor) VALUES (?,?,NOW(),?,?,?,0,?)';
+				$sql = 'INSERT INTO versoes_de_propostas (serial,id_proposta,criacao,arquivo,nome_cliente,contentType,aprovada,valor) VALUES (?,?,NOW(),?,?,?,0,?)';
 				$db->query($sql,'iisssd',$proximoSerial, $id_proposta,$nomeNoServidor,$nomeNoCliente,$contentType,$valor_proposta);
 
 				// Retonando para o usuário
@@ -6417,7 +6417,7 @@
 				}
 
 				// Validando usuário
-				$sql = 'SELECT count(*) as n FROM gdoks_usuarios WHERE id=? AND token=? AND validade_do_token>NOW()';
+				$sql = 'SELECT count(*) as n FROM usuarios WHERE id=? AND token=? AND validade_do_token>NOW()';
 				$rs = $db->query($sql,'is',$user->id,$user->token);
 				if(sizeof($rs) == 0){
 					http_response_code(403);
@@ -6483,7 +6483,7 @@
 						preg_match('/\$i\([0-9]+\)/',$novo_codigo,$m);
 						if(sizeof($m)==1){
 							// Determinando sequencial no ano corrente
-							$sql = 'SELECT count(*) as n FROM (SELECT a.id, min(criacao) as criacao FROM gdoks_propostas a inner join gdoks_versoes_de_propostas b on a.id=b.id_proposta group by a.id) X WHERE YEAR(X.criacao)=year(now());';
+							$sql = 'SELECT count(*) as n FROM (SELECT a.id, min(criacao) as criacao FROM propostas a inner join versoes_de_propostas b on a.id=b.id_proposta group by a.id) X WHERE YEAR(X.criacao)=year(now());';
 							$n = $db->query($sql)[0]['n'] + 1;
 	
 							// Determinando o tamanho da string sequencial definida no cod de substituição
@@ -6502,7 +6502,7 @@
 					}
 					
 					// Inserindo na base
-					$sql = 'INSERT INTO gdoks_propostas (id_cliente,codigo,titulo) VALUES (?,?,?)';
+					$sql = 'INSERT INTO propostas (id_cliente,codigo,titulo) VALUES (?,?,?)';
 					
 					try {
 						$db->query($sql,'iss',$id_cliente,$codigo,$titulo_proposta);
@@ -6518,7 +6518,7 @@
 					$proximoSerial = 0;
 				} else {
 					// Verificando se a proposta realmente existe
-					$sql = 'SELECT id FROM gdoks_propostas WHERE id=? AND codigo=?';
+					$sql = 'SELECT id FROM propostas WHERE id=? AND codigo=?';
 					$rs = $db->query($sql,'is',$id_proposta,$codigo);
 					if(sizeof($rs)!=1){
 						http_response_code(401);
@@ -6526,13 +6526,13 @@
 						$response->flush();
 						exit(1);
 					} else {
-						$sql = 'SELECT ifnull(max(serial),0)+1 as proximoSerial  FROM gdoks_versoes_de_propostas WHERE id_proposta=?';
+						$sql = 'SELECT ifnull(max(serial),0)+1 as proximoSerial  FROM versoes_de_propostas WHERE id_proposta=?';
 						$proximoSerial = $db->query($sql,'i',$id_proposta)[0]['proximoSerial'];
 					}
 				}
 
 				// Salvando informações versao de proposta
-				$sql = 'INSERT INTO gdoks_versoes_de_propostas (serial,id_proposta,criacao,arquivo,nome_cliente,contentType,aprovada,valor) VALUES (?,?,NOW(),?,?,?,0,?)';
+				$sql = 'INSERT INTO versoes_de_propostas (serial,id_proposta,criacao,arquivo,nome_cliente,contentType,aprovada,valor) VALUES (?,?,NOW(),?,?,?,0,?)';
 				$db->query($sql,'iisssd',$proximoSerial, $id_proposta,$nomeNoServidor,$nomeNoCliente,$contentType,$valor_proposta);
 
 				// Retonando para o usuário
@@ -6548,7 +6548,7 @@
 			$app->delete('/propostas/:id_proposta/versoes/:serial_versao',function($id_proposta,$serial_versao) use ($app,$db,$token,$config,$empresa){
 
 				// Levantando informações do usuário
-				$sql = 'SELECT id FROM gdoks_usuarios WHERE token=? and validade_do_token>now()';
+				$sql = 'SELECT id FROM usuarios WHERE token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token);
 
 				// Testando se o usuário está ok
@@ -6561,7 +6561,7 @@
 				$id_usuario = $rs[0]['id'];
 
 				// Determinando o nome do arquivo da versão
-				$sql = 'SELECT arquivo FROM gdoks_versoes_de_propostas WHERE serial=? and id_proposta=?';
+				$sql = 'SELECT arquivo FROM versoes_de_propostas WHERE serial=? and id_proposta=?';
 				$arquivo = $db->query($sql,'ii',$serial_versao,$id_proposta)[0]['arquivo'];
 				$caminho = CLIENT_DATA_PATH.'/'.$empresa.'/uploads/propostas/'.$arquivo;
 				if(file_exists($caminho)) {
@@ -6569,7 +6569,7 @@
 				}
 
 				// Removendo versão
-				$sql = 'DELETE from gdoks_versoes_de_propostas WHERE serial=? and id_proposta=?';
+				$sql = 'DELETE from versoes_de_propostas WHERE serial=? and id_proposta=?';
 				try {
 					$db->query($sql,'ii',$serial_versao,$id_proposta);
 				} catch (Exception $e) {
@@ -6590,7 +6590,7 @@
 			$app->delete('/propostas/:id_proposta',function($id_proposta) use ($app,$db,$token,$config){
 
 				// Levantando informações do usuário
-				$sql = 'SELECT id FROM gdoks_usuarios WHERE token=? and validade_do_token>now()';
+				$sql = 'SELECT id FROM usuarios WHERE token=? and validade_do_token>now()';
 				$rs = $db->query($sql,'s',$token);
 
 				// Testando se o usuário está ok
@@ -6603,7 +6603,7 @@
 				$id_usuario = $rs[0]['id'];
 
 				// Removendo versão
-				$sql = 'DELETE from gdoks_propostas WHERE id=?';
+				$sql = 'DELETE from propostas WHERE id=?';
 				try {
 					$db->query($sql,'i',$id_proposta);
 				} catch (Exception $e) {
@@ -6627,7 +6627,7 @@
 				$proposta = json_decode($app->request->getBody());
 
 				// Salvando o título da proposta
-				$sql='UPDATE gdoks_propostas SET titulo=? WHERE id=?';
+				$sql='UPDATE propostas SET titulo=? WHERE id=?';
 				try {
 					$db->query($sql,'si',$proposta->titulo,$id_proposta);
 				} catch (Exception $e) {

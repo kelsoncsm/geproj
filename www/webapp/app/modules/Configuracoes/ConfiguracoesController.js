@@ -3,9 +3,9 @@
 	angular.module('Configuracoes',[]).controller('ConfiguracoesController',ConfiguracoesController);
 
 	// Definição da ConfigurcoesController
-	function ConfiguracoesController($scope,GDoksFactory,$mdToast,$window){
+	function ConfiguracoesController($scope,GeProjFactory,$mdToast,$window){
 				
-		GDoksFactory.getConfiguracoes()
+		GeProjFactory.getConfiguracoes()
 		.success(function(response){
 			$scope.config = response.config;
 		})
@@ -20,7 +20,7 @@
 		});
 
 		$scope.salvar = function(){
-			GDoksFactory.putConfiguracoes($scope.config)
+			GeProjFactory.putConfiguracoes($scope.config)
 			.success(function(response){
 				// Retornando Toast para o usuário
 				$mdToast.show(

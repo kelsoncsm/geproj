@@ -3,12 +3,12 @@
 	var module = angular.module('VisaoGeral',[]);
 
 	// Definindo a função controller da visão geral
-	function VisaoGeralController($scope,GDoksFactory,$mdToast){
+	function VisaoGeralController($scope,GeProjFactory,$mdToast){
 		// Declarando variáveis do scope
 		$scope.progresso_geral = null;
 
 		// Carregando dados de visão geral
-		GDoksFactory.getVisaoGeral()
+		GeProjFactory.getVisaoGeral()
 		.success(function(response){
 			$scope.progresso_geral = Math.round(response.progresso_geral);
 			$scope.n_docs = response.n_docs;
@@ -190,14 +190,14 @@
 	}
 
 	// Definindo controller de docsParaValidar
-	function DocsParaValidarController($scope,GDoksFactory,$mdToast,$location){
+	function DocsParaValidarController($scope,GeProjFactory,$mdToast,$location){
 		// Declarando docsParaValidar
 		$scope.docsParaValidar = [];
 		$scope.maxDocsExibidos = 5;
 
 		// Carrtegando documentos para validar
 		(function(){
-			GDoksFactory.getDocumentosParaValidar()
+			GeProjFactory.getDocumentosParaValidar()
 			.success(function(response){
 				$scope.docsParaValidar = response.documentos.map(function(d){
 					d.validar=true;
@@ -234,7 +234,7 @@
 		}
 
 		$scope.baixarPDA = function(idPDA){
-			GDoksFactory.baixarPDA(idPDA);
+			GeProjFactory.baixarPDA(idPDA);
 		}
 
 		$scope.verTodos = function(){

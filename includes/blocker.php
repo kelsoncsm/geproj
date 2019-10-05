@@ -3,14 +3,14 @@
 	// verificando se o usuário está setado
 	if(!isset($_COOKIE['user'])){
 		// redirecionando para página inicial.
-		header("Location: /webapp/login.php?error=1");
+		header("Location: /geproj/www/webapp/login.php?error=1");
 	}
 
 	// lendo o objeto user que está no cookie
 	$EU = json_decode($_COOKIE['user']);
 	if(json_last_error() !== JSON_ERROR_NONE){
 		// redirecionando para página inicial.
-		header("Location: /webapp/login.php?error=2");
+		header("Location: /geproj/www/webapp/login.php?error=2");
 	}
 
 	// incluindo arquivo dbkey
@@ -19,13 +19,13 @@
 		include($dbkey_file);
 	} else {
 		// redirecionando para página inicial.
-		header("Location: /webapp/login.php?error=3");	
+		header("Location: /geproj/www/webapp/login.php?error=3");	
 	}
 
 	// verificando se o token está setado no usuário
 	if(!isset($EU->token)){
 		// redirecionando para página inicial.
-		header("Location: /webapp/login.php?error=4");
+		header("Location: /geproj/www/webapp/login.php?error=4");
 	}
 
 	// Incluindo script de conexão com DB.
@@ -35,11 +35,11 @@
 	$db = new DB($dbkey);
 
 	// verificando se o token existe e é válido.
-	$sql = 'SELECT id FROM gdoks_usuarios WHERE token=? and validade_do_token>now()';
+	$sql = 'SELECT id FROM usuarios WHERE token=? and validade_do_token>now()';
 	$resultado = $db->query($sql,'s',$EU->token);
 	if(sizeof($resultado) == 0){
 		// redirecionando para página inicial.
-		header("Location: /webapp/login.php?error=5");
+		header("Location: /geproj/www/webapp/login.php?error=5");
 	}
 
 ?>
