@@ -1,3 +1,6 @@
 RewriteEngine On
+Options +FollowSymlinks
+RewriteBase /
+#RewriteCond %{HTTP_HOST} geproj.com.br
 RewriteCond %{REQUEST_URI} !www/
-RewriteRule ^(.*)$ $1 [L]
+RewriteRule ^(.*)$ www/$1 [L]

@@ -48,7 +48,7 @@
 			<md-button class="md-icon-button" aria-label="Settings" ng-click="toggleMenu()">
 				<md-icon class="material-icons step" aria-label="menu">list</md-icon>
 			</md-button>
-			<img src="img/logo_peq_clara.png" alt="GeProj" id="logo" >
+			<img src="img/logo_peq_clara.png" alt="GeProj" id="logo">
 			<span flex></span>
 			<md-menu>
 				<md-button ng-disabled="root.historico.length==0" ng-click="$mdMenu.open()" aria-label="Abre Histórico" class="md-icon-button">
@@ -57,7 +57,7 @@
 						Histórico de Documentos
 					</md-tooltip>
 				</md-button>
-				<md-menu-content ng-controller="HistoricoController"> 
+				<md-menu-content ng-controller="HistoricoController">
 					<md-menu-item ng-repeat="doc in root.historico">
 						<md-button ng-click="goToDoc(doc.i)">
 							<md-icon class="material-icons step" aria-label="Ir para documento {{doc.nome}}">insert_drive_file</md-icon>

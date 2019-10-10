@@ -52,6 +52,10 @@
 						Salvar Alteração
 					</md-tooltip>
 			</md-button>
+			
+			<md-button ng-click="onCancelarClick()" class="md-accent md-raised" aria-label="Cancelar">Cancelar</md-button>
+
+
 					
 			<md-button ng-click="uploadVersaoDeProposta()" ng-disabled="proposta.cliente == null || proposta.arquivo == null" ng-if="proposta.id==0" class="md-raised md-primary" aria-label="Salvar proposta"><md-icon class="material-icons step">save</md-icon>Salvar</md-button>
 			<md-button ng-click="deleteProposta()" ng-if="proposta.id!=0 && proposta.versoes.length==0" class="md-raised md-accent" aria-label="Remover proposta"><md-icon class="material-icons step">delete</md-icon>Apagar proposta</md-button>
@@ -70,6 +74,8 @@
 					Adicionar nova versão a proposta
 				</md-tooltip>
 		</md-button>
+
+		
 	</div>
 
 	<div ng-if="proposta.arquivo" class="arquivoSelecionado">
@@ -152,5 +158,7 @@
     			</td>
     		</tr>
     	</tbody>
-    </table>
+	</table>
+	
+			
 </div>

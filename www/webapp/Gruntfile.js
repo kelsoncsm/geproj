@@ -48,7 +48,7 @@ module.exports = function(grunt) {
 					'app/modules/VisaoGeral/VisaoGeralController.js',
 					'app/modules/Validacao/validacaoController.js',
 					'app/services/constants.js',
-					'app/WebGeProj.js',
+					'app/WebGDoks.js',
 					'app/services/Factory.js',
 					'app/directives/directives.js',
 					'app/directives/clickoutside.directives.js',

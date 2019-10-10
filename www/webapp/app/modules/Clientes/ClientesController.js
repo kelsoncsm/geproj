@@ -42,6 +42,7 @@
 			$scope.cliente.login = '';
 			$scope.cliente.senha1 = '';
 			$scope.cliente.senha2 = '';
+			$scope.cliente.enderecoimagem = '';
 		} else {
 			// Carregando informações do cliente a partir da base
 			GeProjFactory.getCliente(id)

@@ -1,7 +1,12 @@
 <form name="form" ng-submit="salvarCliente()">
 	<div id="cliente_container" class="bloco_conteudo bloco_central_50" md-whiteframe="1dp">
-		<h1>Dados de {{ cliente.id==0 ? 'Novo Cliente' : cliente.nome}}</h1>
+		<!-- <h1>Dados de {{ cliente.id==0 ? 'Novo Cliente' : cliente.nome}}</h1> -->
+	
 		<div class="md-padding" layout="column">
+				​<picture 	>
+						<source srcset="..." type={{cliente.enderecoimagem}}>
+						<img src={{cliente.enderecoimagem}} class="img-fluid img-thumbnail" alt="..." width="99px" align="right">
+					  </picture>
 			<div layout="row" layout-align="space-between start">
 				<md-input-container flex="45">
 					<label>Nome</label>

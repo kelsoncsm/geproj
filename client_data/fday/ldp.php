@@ -5,6 +5,8 @@
 	include_once('db.php');
 	require_once('vendor/autoload.php');
 
+	
+
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
 	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 	
@@ -88,7 +90,7 @@
 						WHERE d.id_projeto=?
 						group by a.id_documento
 						order by a.id DESC) R ON R.id_documento=a.id
-					WHERE c.id_projeto=?';
+					WHERE c.id_projeto=? order by a.codigo';
 
 			$this->documentos = array_map(function($a){return (object)$a;}, $this->db->query($sql,'ii',$id_projeto,$id_projeto));
 		}
@@ -300,7 +302,7 @@
 							<td>Telefone: <?php echo($this->projeto->contato_telefone); ?></td>
 						</tr>
 					</table>
-				</header>
+					</header>
 				<table>
 					<thead>
 						<tr>

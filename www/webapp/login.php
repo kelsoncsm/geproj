@@ -22,7 +22,7 @@
 				</md-input-container>
 				<md-input-container>
 					<label>Login</label>
-					<input type="text" ng-model="loginData.login" id="login"  >
+					<input type="text" ng-model="loginData.login" id="login" >
 				</md-input-container>
 				<md-input-container>
 					<label>Senha</label>
@@ -56,7 +56,7 @@
 				$scope.loginData = {};
 				$scope.loginData.login = 'kelson';
 				$scope.loginData.senha = 'kelson*123';
-				$scope.loginData.empresa = 'fday';	
+				$scope.loginData.empresa = 'fday';
 
 				// Carregando imagem de fundo (background)
 				var img = new Image();
@@ -83,22 +83,18 @@
 
 				// Definindo função que tenta obter o token
 				$scope.getToken = function(){
-
-
-				
 					
 					// Iniciando animação de carregando
 					$scope.carregando = true;
 
 					// Escondendo mensagem de login falho
 					$scope.loginFail = false;
+
 					// fazendo post
 					$http.post(API_ROOT+'/login',$scope.loginData,{headers:{Authorization:$scope.loginData.empresa + '-0'}})
 					.then(function(response) {
 						// Parando animação de carregando
 						$scope.carregando = false;
-						
-
 						
 						if(response.data.error === 0){
 

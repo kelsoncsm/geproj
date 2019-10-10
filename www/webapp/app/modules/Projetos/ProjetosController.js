@@ -18,7 +18,7 @@
 		var ids_projetos = null;
 
 		// Definindo critério padrão de ordem
-		$scope.o = 'nome';
+		$scope.o = 'codigo';
 
 		// Definindo valor padrão para mostrar inativos ou não
 		$scope.mostrarInativos = false;

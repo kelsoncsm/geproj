@@ -48,14 +48,12 @@
 		$token = $user->token;
 	}
 
-
 	// Definindo os nomes dos arquivos do cliente;
-	// $FILE_DBKEY = CLIENT_DATA_PATH.$empresa.'/dbkey.php';
 	$FILE_DBKEY = CLIENT_DATA_PATH.$empresa.'/dbkey.php';
 	$FILE_GRD = CLIENT_DATA_PATH.$empresa.'/grd.php';
 	$FILE_LOGO = CLIENT_DATA_PATH.$empresa.'/logo.jpg';
 	$FILE_CONFIG = CLIENT_DATA_PATH.$empresa.'/config.json';
-	// die($FILE_DBKEY);
+	
 	// Criando a conexão
 	if(isset($empresa) && file_exists($FILE_DBKEY)){
 		// Incluindo arquivo que define $dbkey
@@ -2858,12 +2856,17 @@
 				// Verificando se foi enviada busca
 				if(array_key_exists('busca', $_GET)) {
 					$q = json_decode($_GET['busca']);
+
+				 
+				
 					if(json_last_error() != JSON_ERROR_NONE){
 						http_response_code(401);
 						$response = new response(1,'Parâmetros de busca inválidos');
 						$response->flush();
 						exit(1);
 					}
+
+
 
 					// Criando buscador e realizando busca
 					$buscador = new Buscador($db);
@@ -6402,6 +6405,8 @@
 				$response->codigo = $codigo;
 				$response->flush();
 			});
+
+
 
 			$app->post('/propostas',function() use ($app,$db,$token,$config){
 

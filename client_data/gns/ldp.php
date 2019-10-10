@@ -4,6 +4,11 @@
 	include_once('constantes.php');
 	include_once('db.php');
 	require_once('vendor/autoload.php');
+	
+	$PastaInterna="webapp/";
+	define('DIRPAGE',"http://{$_SERVER['HTTP_HOST']}/{$PastaInterna}");
+
+
 
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
 	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;

@@ -529,7 +529,8 @@ WebGeProj.factory('GeProjFactory',
 				// Criando de busca para conter o objeto de busca
 				if(busca!=undefined){
 					var input = document.createElement('input');
-					input.setAttribute('name','busca');
+					input.setAttribute('name','busca2');
+					
 					input.setAttribute('value',JSON.stringify(busca));
 					form.appendChild(input);
 				}

@@ -664,6 +664,8 @@
 					}
 				];
 
+
+				console.log(packToSend)
 				// Enviando pacote
 				Upload.upload(
 					{
@@ -686,7 +688,7 @@
 	            	function(error){
 	            		// Imprimindo erro no console
 	            		console.warn(error);
-
+						console.log(error)
 	            		// Retornando Toast para o usuário
 	            		$mdToast.show(
 	            			$mdToast.simple()
@@ -695,6 +697,8 @@
 	            			.hideDelay(5000)
 	            		);
 
+
+						console.log(error.data.msg)
 	            		// Esconde o carregando
 	            		$scope.mostrarProgressoUpload = false;
 	            	},
