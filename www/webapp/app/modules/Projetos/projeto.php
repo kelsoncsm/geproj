@@ -30,7 +30,7 @@
 						<div layout="row" layout-align="space-between start" class="md-inline-form">
 							<md-input-container flex="30">
 								<label>Nome</label>
-								<input type="text" placeholder="Dê um nome para o projeto" ng-model="projeto.nome" required>
+								<input type="text" placeholder="Dê um nome para o projeto" ng-model="projeto.nome" capitalize required>
 							</md-input-container>
 							
 							<md-input-container flex="30">

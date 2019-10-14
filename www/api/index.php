@@ -2950,13 +2950,18 @@
 
 					// Associando colunas aos seus conteúdos
 					$col_codigo = 'A';
-					$col_codAlt = 'B';
-					$col_titulo = 'C';
-					$col_disciplina = 'D';
-					$col_subdisciplina = 'E';
-					$col_area = 'F';
-					$col_subarea = 'G';
-					$col_dataLimite = 'H';
+					$col_tipo = 'B';
+					$col_codAlt = 'C';
+					$col_titulo = 'D';
+					$col_formato = 'E';
+					$col_folhas = 'F';
+					$col_revisao = 'G';
+					$col_area = 'H';
+					$col_subarea = 'I';
+					$col_disciplina = 'J';
+					$col_dataLimite = 'K';
+					$col_codemissao = 'L';
+					$col_grdemissao = 'M';
 
 					// Criando vetor de críticas
 					$criticas = Array();
@@ -2979,6 +2984,11 @@
 								array_push($critica, 'Código muito longo. Tamanho máximo: '.$MAX_COD_SIZE);
 							}
 
+
+							$doc->tipo = $sheet_documentos->getCell($col_tipo.$i)->getValue();
+
+							$doc->formato = $sheet_documentos->getCell($col_formato.$i)->getValue();
+							
 							// Verificando se o código já existe
 							$sql = 'SELECT id FROM documentos WHERE codigo=?';
 							$rs = $db->query($sql,'s',$doc->codigo);
@@ -3012,11 +3022,8 @@
 								$doc->disciplina = $rs[0]['id'];
 							}
 
-							// Validando subdisciplina
-							$subdisciplina = $sheet_documentos->getCell($col_subdisciplina.$i)->getValue();
-							$sigla_subdisciplina = explode(' - ', $subdisciplina)[0];
-							$sql = 'SELECT id FROM subdisciplinas WHERE sigla=? AND id_disciplina=?';
-							$rs = $db->query($sql,'si',$sigla_subdisciplina,$doc->disciplina);
+						 	$sql = 'SELECT id FROM subdisciplinas WHERE sigla=? AND id_disciplina=?';
+							$rs = $db->query($sql,'si','ENT',$doc->disciplina);
 							if(sizeof($rs) == 0){
 								array_push($critica, 'Subdisciplina inexistente ou não pertence a disciplina: "'.$subdisciplina.'"');
 								$doc->subdisciplina = 0;
@@ -3106,14 +3113,44 @@
 						
 						// Verificando se houve criticas
 						if(sizeof($critica) == 0) {
+ 
+							//tipo de papel
+							$sql = 'select id  from tipos_de_doc  where simbolo =?';
+							$rs = $db->query($sql,'s',$doc->tipo);
+							$id_tipo_documento = $rs[0]['id'];
+
 							// Inserindo documento na base
-							$sql = 'INSERT INTO documentos (nome,codigo,codigo_alternativo,id_subarea,id_subdisciplina) VALUES (?,?,?,?,?)';
-							$db->query($sql,'sssii',$doc->titulo,$doc->codigo,$doc->codAlt,$doc->subarea,$doc->subdisciplina);
-							$doc->id = $db->insert_id;
+							$sql = 'INSERT INTO documentos (nome,codigo,codigo_alternativo,id_subarea,id_subdisciplina,id_tipo_documento,codigo_revisao) VALUES (?,?,?,?,?,?,?)';
+							$db->query($sql,'sssiiis',$doc->titulo,$doc->codigo,$doc->codAlt,$doc->subarea,$doc->subdisciplina,$id_tipo_documento,$col_revisao);
+							$doc->iddocumento = $db->insert_id;
 
 							// Criando revisão do documento
 							$sql = 'INSERT INTO revisoes (serial,id_documento,data_limite,progresso_validado,progresso_a_validar) VALUES (0,?,?,0,0)';
-							$db->query($sql,'is',$doc->id,$doc->data_limite);
+							$db->query($sql,'is',$doc->iddocumento,$doc->data_limite);
+							$doc->idrevisao = $db->insert_id;
+							//kelson				
+							// Criando pda e determinando seu id
+							$sql = "INSERT INTO pdas (progresso_total,id_revisao,idu,datahora,obs) VALUES (?,?,?,NOW(),?)";
+							$db->query($sql,'isis',1,$doc->idrevisao,$id_usuario ,'lista importação');
+							$id_pda = $db->insert_id;
+
+							//tamanho do papel
+							$sql = 'SELECT tp.id,tp.nome,tp.altura,tp.largura FROM tamanhos_de_papel tp
+											WHERE nome=? ;';
+							$rs = $db->query($sql,'s',$doc->formato);
+					     	$id_tamanhoPapel = $rs[0]['id'];
+
+				
+						// criando registro na arquivos
+						$sql = "INSERT INTO arquivos (caminho,nome_cliente,datahora_upload,idu,tamanho,tamanho_do_papel,nPaginas) VALUES (?,?,NOW(),?,?,?,?)";
+						$db->query($sql,'ssiiii','','Largo',$id_usuario ,1, $id_tamanhoPapel,$col_folhas);
+						$id_arquivo = $db->insert_id;
+
+						// criando registro na pdas_x_arquivos
+						 $sql = 'INSERT INTO pdas_x_arquivos (id_pda,id_arquivo) VALUES (?,?)';
+						 $db->query($sql,'ii',$id_pda,$id_arquivo);
+
+
 						} else {
 							$aux = new stdClass();
 							$aux->linha = $i;

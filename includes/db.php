@@ -2,6 +2,7 @@
 	class DB extends mysqli{
 		public function __construct($dbkey){
 			$this->connect($dbkey->DB_HOST,$dbkey->DB_USER,$dbkey->DB_PASS,$dbkey->DB_BASE,$dbkey->DB_PORT,$dbkey->DB_SOCKET);
+			set_time_limit(300);
 			$this->set_charset("utf8");
 		}
 

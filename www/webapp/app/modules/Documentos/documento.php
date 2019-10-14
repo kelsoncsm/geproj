@@ -43,17 +43,15 @@
 			<md-button
 				class="md-raised md-primary"
 				ng-click="bloquearParaRevisao()"
-				ng-if="documento.ehEspecialista && !(documento.status=='checkout' && documento.idu_checkout==usuario.id)"
-				ng-disabled="documento.projeto_ativo==0 || !(documento.status=='validado' || documento.status=='virgem')"
 				aria-label="Bloquear documento para revisão">
 					<md-icon ng-if="documento.status=='validado' || documento.status=='virgem'" class="material-icons step" aria-label="Bloquear documento para revisão">lock_open</md-icon>
 					<md-icon ng-if="!(documento.status=='validado' || documento.status=='virgem')" class="material-icons step" aria-label="Desbloquear para revisão">lock_outline</md-icon>
 					
 					<!-- Determinando o texto do botão -->
-					<span ng-if="documento.status=='validado' || documento.status=='virgem'">Bloquear</span>
-					<span ng-if="documento.status=='checkout'">Bloqueado por {{documento.sigla_checkout}} em {{documento.datahora_do_checkout|date:"dd/MM/yyyy à's' hh:mm:ss"}}</span>
-					<span ng-if="documento.status=='paravalidacao'">Aguardando validação</span>
-					<span ng-if="documento.status=='concluido'">Concluído</span>
+					<span >Bloquear</span>
+					<span >Bloqueado por {{documento.sigla_checkout}} em {{documento.datahora_do_checkout|date:"dd/MM/yyyy à's' hh:mm:ss"}}</span>
+					<span >Aguardando validação</span>
+					<span>Concluído</span>
 					<!--/ Determinando o texto do botão -->
 
 					<md-tooltip md-delay="0" md-direction="bottom" md-autohide="true">
@@ -62,7 +60,6 @@
 			</md-button>
 
 			<md-button
-				ng-if="documento.status=='checkout' && documento.idu_checkout==usuario.id"
 				class="md-raised md-primary"
 				ng-click="desbloquear()"
 				aria-label="Desbloquear">
@@ -75,7 +72,7 @@
 			<md-button
 				class="md-raised md-primary"
 				ng-click="baixar()"
-				ng-disabled="documento.revisoes[0].pdas==undefined"
+				
 				aria-label="Baixar">
 					<md-icon class="material-icons step" aria-label="Baixar">file_download</md-icon>Baixar
 			</md-button>
@@ -83,8 +80,7 @@
 			<md-button
 				class="md-raised md-primary"
 				ng-click="openValidarProgressoDialog($event)"
-				ng-disabled="!(documento.status == 'paravalidacao' && documento.ehValidador)"
-				aria-label="Validar Progresso">
+					aria-label="Validar Progresso">
 					<md-icon class="material-icons step" aria-label="Validar Progresso">done</md-icon>Validar Progresso
 			</md-button>
 		</div>
@@ -152,14 +148,14 @@
 	<pre></pre>
 
 	<div class="fabs_container" layout="row" layout-align="end center">
-		<?php if($permissoes['RemoverDocumento'] === 1): ?>
-		<md-button class="md-fab md-mini" ng-click="openRemoverConfirm($event,doc)" ng-disabled="documento.revisoes.length > 1 || documento.revisoes[0].pdas.length > 0">
+	
+		<md-button class="md-fab md-mini" ng-click="openRemoverConfirm($event,doc)" >
 			<md-icon class="material-icons step" aria-label="Excluir documento">delete</md-icon>
 			<md-tooltip md-delay="0" md-direction="bottom" md-autohide="true">
 				Excluir documento
 			</md-tooltip>
 		</md-button>
-		<?php endif; ?>
+	 
 		
 		<!-- <md-button class="md-primary md-fab md-mini" ng-click="confirmPublicarController($event)">
 			<md-icon class="material-icons step" aria-label="Alterar documento">mode_edit</md-icon>
@@ -171,7 +167,6 @@
 		<md-button
 			class="md-primary md-fab md-mini"
 			ng-click=""
-			ng-disabled="documento.projeto_ativo==0 || (documento.status == 'checkout' && documento.idu_checkout!=usuario.id) || (documento.status != 'checkout')"
 			ng-model="updateFiles"
 			ngf-select
 			ngf-max-size="<?php echo(ini_get('upload_max_filesize').'B'); ?>"
