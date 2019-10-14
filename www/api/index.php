@@ -3140,10 +3140,17 @@
 							$rs = $db->query($sql,'s',$doc->formato);
 					     	$id_tamanhoPapel = $rs[0]['id'];
 
-				
+							 //tamanho do papel
+							$sql = 'select c.nome_fantasia  from projetos p
+							 inner join clientes c on c.id = p.id_cliente
+							 WHERE p.id=? ;';
+							$rs = $db->query($sql,'i',$id_projeto);
+							$nome_fantasia = $rs[0]['nome_fantasia'];
+
+							 
 						// criando registro na arquivos
 						$sql = "INSERT INTO arquivos (caminho,nome_cliente,datahora_upload,idu,tamanho,tamanho_do_papel,nPaginas) VALUES (?,?,NOW(),?,?,?,?)";
-						$db->query($sql,'ssiiii','','Largo',$id_usuario ,1, $id_tamanhoPapel,$col_folhas);
+						$db->query($sql,'ssiiii','',$nome_fantasia,$id_usuario ,1, $id_tamanhoPapel,$col_folhas);
 						$id_arquivo = $db->insert_id;
 
 						// criando registro na pdas_x_arquivos
