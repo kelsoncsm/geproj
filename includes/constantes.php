@@ -1,6 +1,6 @@
 <?php
 	define('UPLOAD_PATH','../../uploads/');
-	define('TMP_PATH',rtrim($_SERVER['DOCUMENT_ROOT'],'/').'/tmp/');
+	define('TMP_PATH',rtrim($_SERVER['DOCUMENT_ROOT'],'/').'/geproj/tmp/');
 	define('CLIENT_DATA_PATH',rtrim($_SERVER['DOCUMENT_ROOT'],'/').'/geproj/client_data/');
 	define('FPDF_FONT_PATH',rtrim($_SERVER['DOCUMENT_ROOT'],'/').'/includes/FPDF/fonts/');
 	define('AES_KEY','J237HDF9H99QEW78FGGF8VIBLAS893BDOU978B9A');
