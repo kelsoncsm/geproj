@@ -272,7 +272,7 @@
 							ng-click="openDocumentoDialog($event,0)">
 								<md-icon class="material-icons step" aria-label="Criar um novo documento">add</md-icon>Novo Documento
 						</md-button>
-						<md-button
+						<!-- <md-button
 							class="md-raised md-primary"
 							aria-label="Baixar Modelo de LDP"
 							ng-click="baixarModeloParaImportacao()">
@@ -280,7 +280,7 @@
 								<md-tooltip md-delay="0" md-direction="bottom" md-autohide="true">
 									Baixar modelo para importação (modelo.xlsx)
 								</md-tooltip>
-						</md-button>
+						</md-button> -->
 						<md-button
 							class="md-raised md-primary"
 							aria-label="Enviar arquivo para importação"
