@@ -2959,9 +2959,9 @@
 					$col_area = 'H';
 					$col_subarea = 'I';
 					$col_disciplina = 'J';
-					$col_dataLimite = 'K';
-					$col_codemissao = 'L';
-					$col_grdemissao = 'M';
+					// $col_dataLimite = 'K';
+					// $col_codemissao = 'L';
+					// $col_grdemissao = 'M';
 
 					// Criando vetor de críticas
 					$criticas = Array();
@@ -3022,8 +3022,8 @@
 								$doc->disciplina = $rs[0]['id'];
 							}
 
-						 	$sql = 'SELECT id FROM subdisciplinas WHERE sigla=? AND id_disciplina=?';
-							$rs = $db->query($sql,'si','ENT',$doc->disciplina);
+						 	$sql = 'SELECT id FROM subdisciplinas WHERE id_disciplina=?';
+							$rs = $db->query($sql,'i',$doc->disciplina);
 							if(sizeof($rs) == 0){
 								array_push($critica, 'Subdisciplina inexistente ou não pertence a disciplina: "'.$subdisciplina.'"');
 								$doc->subdisciplina = 0;
@@ -3099,53 +3099,54 @@
 							}
 
 							// Validando data limite
-							$n_dias = $sheet_documentos->getCell($col_dataLimite.$i)->getValue();
-							if(is_numeric($n_dias)){
-								$n_dias--;
-								$data_limite = new DateTime('01-01-1900');
-								$data_limite = $data_limite->add(new DateInterval('P'.$n_dias.'D'));
-								$doc->data_limite = $data_limite->format('Y-m-d');
-							} else {
-								array_push($critica, 'Data limite inválida.');
-								$doc->data_limite = 0;
-							}
+							// $n_dias = $sheet_documentos->getCell($col_dataLimite.$i)->getValue();
+							// if(is_numeric($n_dias)){
+							// 	$n_dias--;
+							// 	$data_limite = new DateTime('01-01-1900');
+							// 	$data_limite = $data_limite->add(new DateInterval('P'.$n_dias.'D'));
+							// 	$doc->data_limite = $data_limite->format('Y-m-d');
+							// } else {
+							// 	array_push($critica, 'Data limite inválida.');
+							// 	$doc->data_limite = 0;
+							// }
 						// Fim de Validações
 						
 						// Verificando se houve criticas
 						if(sizeof($critica) == 0) {
  
 							//tipo de papel
-							$sql = 'select id  from tipos_de_doc  where simbolo =?';
-							$rs = $db->query($sql,'s',$doc->tipo);
-							$id_tipo_documento = $rs[0]['id'];
+						
+						//   $sql = 'select id  from tipos_de_doc  where simbolo =?';
+						// 	$rs = $db->query($sql,'s',$doc->tipo);
+						// 	$id_tipo_documento = $rs[0]['id'];
 
 							// Inserindo documento na base
-							$sql = 'INSERT INTO documentos (nome,codigo,codigo_alternativo,id_subarea,id_subdisciplina,id_tipo_documento,codigo_revisao) VALUES (?,?,?,?,?,?,?)';
-							$db->query($sql,'sssiiis',$doc->titulo,$doc->codigo,$doc->codAlt,$doc->subarea,$doc->subdisciplina,$id_tipo_documento,$col_revisao);
+							$sql = 'INSERT INTO documentos (nome,codigo,codigo_alternativo,id_subarea,id_subdisciplina) VALUES (?,?,?,?,?)';
+							$db->query($sql,'sssii',$doc->titulo,$doc->codigo,$doc->codAlt,$doc->subarea,$doc->subdisciplina);
 							$doc->iddocumento = $db->insert_id;
 
 							// Criando revisão do documento
-							$sql = 'INSERT INTO revisoes (serial,id_documento,data_limite,progresso_validado,progresso_a_validar) VALUES (0,?,?,0,0)';
-							$db->query($sql,'is',$doc->iddocumento,$doc->data_limite);
+							$sql = 'INSERT INTO revisoes (serial,id_documento,data_limite,progresso_validado,progresso_a_validar) VALUES (0,?,NOW(),0,0)';
+							$db->query($sql,'i',$doc->iddocumento);
 							$doc->idrevisao = $db->insert_id;
 							//kelson				
 							// Criando pda e determinando seu id
 							$sql = "INSERT INTO pdas (progresso_total,id_revisao,idu,datahora,obs) VALUES (?,?,?,NOW(),?)";
-							$db->query($sql,'isis',1,$doc->idrevisao,$id_usuario ,'lista importação');
+							$db->query($sql,'isis',1,$doc->idrevisao,$id_usuario ,'Importação Manual');
 							$id_pda = $db->insert_id;
 
-							//tamanho do papel
-							$sql = 'SELECT tp.id,tp.nome,tp.altura,tp.largura FROM tamanhos_de_papel tp
-											WHERE nome=? ;';
-							$rs = $db->query($sql,'s',$doc->formato);
-					     	$id_tamanhoPapel = $rs[0]['id'];
+						/*	 //tamanho do papel
+							 $sql = 'SELECT tp.id,tp.nome,tp.altura,tp.largura FROM tamanhos_de_papel tp
+							 				WHERE nome=? ;';
+							 $rs = $db->query($sql,'s',$doc->formato);
+					     	 $id_tamanhoPapel = $rs[0]['id'];
 
 							 //tamanho do papel
-							$sql = 'select c.nome_fantasia  from projetos p
-							 inner join clientes c on c.id = p.id_cliente
-							 WHERE p.id=? ;';
-							$rs = $db->query($sql,'i',$id_projeto);
-							$nome_fantasia = $rs[0]['nome_fantasia'];
+							 $sql = 'select c.nome_fantasia  from projetos p
+							  inner join clientes c on c.id = p.id_cliente
+							  WHERE p.id=? ;';
+							 $rs = $db->query($sql,'i',$id_projeto);
+							 $nome_fantasia = $rs[0]['nome_fantasia'];
 
 							 
 						// criando registro na arquivos
@@ -3157,7 +3158,7 @@
 						 $sql = 'INSERT INTO pdas_x_arquivos (id_pda,id_arquivo) VALUES (?,?)';
 						 $db->query($sql,'ii',$id_pda,$id_arquivo);
 
-
+								*/
 						} else {
 							$aux = new stdClass();
 							$aux->linha = $i;
@@ -6528,6 +6529,7 @@
 						$novo_codigo = str_replace('$A',date('Y'),$novo_codigo);
 						$novo_codigo = str_replace('$a',date('y'),$novo_codigo);
 	
+						
 						// Substituindo sequencial
 						preg_match('/\$i\([0-9]+\)/',$novo_codigo,$m);
 						if(sizeof($m)==1){

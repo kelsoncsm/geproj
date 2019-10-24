@@ -13,14 +13,9 @@
 			<input type="text" ng-model="q.nome" placeholder="Digite">
 		</md-input-container>
 	</div>
-
-
 	<table class="projetos" ng-if="projetos.length > 0">
 		<thead>
 			<tr>
-			<td style="width: 116px;">
-					Ações
-				</td>
 				<td ng-click="setOrderBy('codigo')">
 					Código
 					<md-icon ng-if="o=='-codigo'" class="material-icons step md-primary">keyboard_arrow_down</md-icon>
@@ -41,11 +36,17 @@
 					<md-icon ng-if="o=='-progresso'" class="material-icons step md-primary">keyboard_arrow_down</md-icon>
 					<md-icon ng-if="o=='progresso'" class="material-icons step md-primary">keyboard_arrow_up</md-icon>
 				</td>
-				
+				<td>
+					Ações
+				</td>
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="p in projetos|filter:q|orderBy:o" ng-click="editProjeto(p.id,$event)">
+			<tr ng-repeat="p in projetos track by p.id" ng-click="gotoProjeto(p.id)">
+				<td>{{p.codigo}}</td>
+				<td>{{p.nome}}</td>
+				<td>{{p.nome_cliente}}</td>
+				<td>{{p.progresso_total}} %</td>
 				<td>
 					<?php if($opcoes_de_tela['AcessarPrj']): ?>
 					<md-button
@@ -68,11 +69,6 @@
 					</md-button>
 					<?php endif; ?>
 				</td>
-			<td>{{p.codigo}}</td>
-				<td>{{p.nome}}</td>
-				<td>{{p.nome_cliente}}</td>
-				<td>{{p.progresso_total}} %</td>
-			
 			</tr>
 		</tbody>
 	</table>

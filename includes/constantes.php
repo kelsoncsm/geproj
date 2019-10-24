@@ -8,7 +8,7 @@
 	define('SENDGRID_DEFAULT_FROM','postmaster@geproj.com.br');
 	define('SENDGRID_DEFAULT_FROM_NAME','GeProj');
 	define('VALIDADE_DO_PEDIDO_RECONFPWS', 5);
-	define('TOKEN_DURARION', 3600); //in seconds
+	define('TOKEN_DURARION', 3600); //in seconds	
 	define('ID_OPCAO_VER_FORMA_DE_COBRANCA',20);
 	define('ID_OPCAO_VER_VALOR_DE_PROJETO',22);
 	define('ID_OPCAO_ALTERAR_FORMA_DE_COBRANCA',19);

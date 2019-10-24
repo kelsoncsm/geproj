@@ -521,7 +521,7 @@
 							.position('bottom left')
 							.hideDelay(5000)
 						);
-
+						
 						// Atualizando projeto na base local
 						indexedDB.open('geproj').onsuccess = function(evt){
 							// limpando dados para armazenamento.
@@ -531,6 +531,8 @@
 
 							// armazenando.
 							evt.target.result.transaction('projetos','readwrite').objectStore('projetos').put(projeto);
+						
+						
 						}
 					}
 				)
