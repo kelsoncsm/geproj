@@ -1712,7 +1712,8 @@
 				if($ok == 1) {
 
 					// Verificando se é ou não para gerar o código automaticamente
-					if($config->GERAR_CODIGOS_DE_PROJETOS_AUTOMATICAMENTE->valor === true){
+					if($projeto->codigo == ''){
+					// if($config->GERAR_CODIGOS_DE_PROJETOS_AUTOMATICAMENTE->valor === true){
 						
 						// Determinando o próximo código do projeto
 						$novo_codigo = $config->PADRAO_CODIGOS_DE_PROJETOS->valor;
