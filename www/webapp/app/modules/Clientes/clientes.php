@@ -1,3 +1,25 @@
+<?php 
+	// Incluindo classe "Tela" para carregar as opções da tela Documentos
+	include('GeProj/Tela.php');
+
+	// Levantando dados do usuário a partir do cookie
+	$user = json_decode($_COOKIE['user']);
+
+	// Incluindo constantes
+	include_once('constantes.php');
+	include_once('db.php');
+
+	// Carregando dbkey
+	include_once(CLIENT_DATA_PATH.$user->empresa.'/dbkey.php');
+
+	// Criando conexão com base de dados
+	$db = new DB($dbkey);
+	unset($dbkey);
+
+	$tela = Tela::CreateById(1,$user->id, $db);
+	$permissoes = $tela->getOpcoes();
+
+ ?>
 <form name="form" ng-submit="salvarCliente()">
 	<div id="cliente_container" class="bloco_conteudo bloco_central_50" md-whiteframe="1dp">
 		<!-- <h1>Dados de {{ cliente.id==0 ? 'Novo Cliente' : cliente.nome}}</h1> -->

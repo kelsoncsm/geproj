@@ -191,14 +191,14 @@ WebGeProj.config(
 			'/clientes',
 			{
 				controller: 'ClientesController',
-				templateUrl: 'app/modules/Clientes/clientes.html'
+				templateUrl: 'app/modules/Clientes/clientes.php'
 			}
 		)
 		.when(
 			'/clientes/:id',
 			{
 				controller: 'ClienteController',
-				templateUrl: 'app/modules/Clientes/cliente.html'
+				templateUrl: 'app/modules/Clientes/cliente.php'
 			}
 		)
 		.when(
