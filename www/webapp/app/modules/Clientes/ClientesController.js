@@ -122,6 +122,7 @@
 
 						// Voltando para a tela de clientes
 						$location.url("/clientes");
+
 					}
 				)
 				.error(

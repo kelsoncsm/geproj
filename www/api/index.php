@@ -4577,6 +4577,80 @@
 					die();
 				}
 			});
+
+
+			$app->delete('/clientes/img/:id/',function($id) use ($app,$db,$token,$empresa){
+				// Lendo e saneando as informações da requisição
+				$id_cliente = 1*$id;
+				
+			
+
+				// verificando se o usário enviado é da mesma empresa da subdisciplina atual
+				$sql = 'SELECT a.id,
+						       a.nome,
+						       a.nome_fantasia,
+						       a.cnpj,
+						       a.cpf,
+						       a.contato_nome,
+						       a.contato_email,
+						       a.contato_telefone,
+						       a.ftp_host,
+						       a.ftp_usuario,
+						       a.login,
+						       a.endereco,	
+						  ci.nome_arquivo
+						FROM clientes a 
+                        left outer join cliente_imagem ci on ci.id_cliente  = a.id
+						INNER JOIN
+						  (SELECT id_empresa
+						   FROM usuarios
+						   WHERE token=?) b ON a.id_empresa=b.id_empresa
+						WHERE a.id=?
+							ORDER by a.nome';
+
+				$rs = $db->query($sql,'si',$token,$id);
+	            $cliente = (object)$rs[0];
+				$ok = (sizeof($rs) > 0);
+				$id_usuario = $rs[0]['id'];
+
+				if($ok == 1){
+					// Tudo ok! A dao a ser removida é do mesmo cliente do usuário
+					$sql = 'DELETE FROM cliente_imagem WHERE id_cliente=?';
+					$removeuDaBase = false;
+					try {
+						$db->query($sql,'i',$id);
+						$removeuDaBase = true;
+					} catch (Exception $e) {
+						http_response_code(401);
+						$response = new response(1,$e->getMessage());
+						$response->flush();
+						return;
+					}
+
+					$removeuDoFS = false;
+					if($removeuDaBase){
+						// removendo do FS
+						$removeuDoFS = @unlink(IMG_PATH.'/'.$id_cliente.'/'.$cliente->nome_arquivo);
+					} else {
+						http_response_code(401);
+						$response = new response(1,'Falha ao tentar remover registro do documento na base de dados.');
+						$response->flush();
+						return;	
+					}
+
+					if($removeuDoFS){
+						// Retornando resultado para o cliente
+						$response = new response(0,'Ok');
+						$response->flush();
+						// Registrando a ação
+						registrarAcao($db,$id_usuario,ACAO_REMOVEU_IMAGEM_CLIENTE,implode(',',(array)$cliente));
+					}
+					
+				} else {
+					http_response_code(401);
+					$response = new response(1,'Não altera dados de outra empresa.');	
+				}
+			});
 		// FIM DE ROTAS DE CLIENTES
 		
 		// ROTAS DE AÇÕES

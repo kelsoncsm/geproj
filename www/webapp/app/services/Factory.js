@@ -180,6 +180,10 @@ WebGeProj.factory('GeProjFactory',
 				return $http.post(API_ROOT+'/clientes',cliente,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.removerImg = function(cliente){
+				return $http.delete(API_ROOT+'/clientes/img/'+cliente.id_cliente);
+			}
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.getDocumentosParaValidar = function(){
 				return $http.get(API_ROOT+'/documentos/paraValidar',buildHeaders());
 			}

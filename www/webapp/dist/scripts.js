@@ -19643,7 +19643,7 @@ module.exports = function(Chart) {
 											break;
 									}
 								};
-								
+									$location.reload();
 							} else {
 								// Retornando Toast para o usuário
 								$mdToast.show(
@@ -19681,7 +19681,7 @@ module.exports = function(Chart) {
 		}
 
 		// Abrir dialog para confirmar Remoção de DAO
-		$scope.openConfirmRemoveDAO = function(ev,idCliente) {
+	$scope.openConfirmRemoveImg = function(ev,idCliente) {
 			// Appending dialog to document.body to cover sidenav in docs app
 			var confirm = $mdDialog.confirm()
 				.title('Tem certeza que deseja a imagem deste cliente?')
@@ -19699,7 +19699,7 @@ module.exports = function(Chart) {
 					// Ajeitando dao a ser removida
 					var cli = $scope.cliente.imgs.find(function(a){return a.id == this},idCliente);
 					cli.id = $scope.cliente.id;
-					GeProjFactory.removerDAO(dao)
+					GeProjFactory.removerImg(cli)
 					.success(function(response){
 						// Esconde carregando
 						$scope.root.carregando = false;
@@ -19713,7 +19713,9 @@ module.exports = function(Chart) {
 							.textContent('Documento removido com sucesso')
 							.position('bottom left')
 							.hideDelay(5000)
-						);
+                        );
+                        
+                        $location.reload();
 					})
 					.error(function(error){
 						// Esconde carregando
@@ -26575,11 +26577,17 @@ function RootController($scope,$interval,$cookies,GeProjFactory,$mdSidenav,$mdMe
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.atualizarCliente = function(cliente){
 				return $http.put(API_ROOT+'/clientes/'+cliente.id,cliente,buildHeaders());
-			}
+            }
+            
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.adicionarCliente = function(cliente){
 				return $http.post(API_ROOT+'/clientes',cliente,buildHeaders());
-			}
+            }
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.removerImg = function(cliente){
+				return $http.delete(API_ROOT+'/clientes/img/'+cliente.id_cliente);
+            }
+            
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.getDocumentosParaValidar = function(){
 				return $http.get(API_ROOT+'/documentos/paraValidar',buildHeaders());

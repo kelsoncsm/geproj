@@ -26,10 +26,10 @@
 			<md-content id="addprojeto_dados_container" class="md-padding">
 
 					<form name="form_projetoInfo" ng-submit="salvarCliente()">
-				{{cliente.nome_arquivos}}
+
 			  <div layout="column">
-				​	<picture>
-					  <source ng-if="cliente.imgs.length >0" srcset="..." type={{cliente.nome}}>
+				​  	<picture>
+					<source ng-if="cliente.imgs.length >0" srcset="..." type={{cliente.nome}}>
                       <img ng-if="cliente.imgs.length >0"  src="photos/{{cliente.id}}/{{cliente.nome_arquivo}}" class="img-fluid img-thumbnail" alt={{cliente.nome_arquivo}} width="99px" align="right">
 				      <img ng-if="cliente.imgs.length == 0"  src="photos/exemplo.jpeg" class="img-fluid img-thumbnail" alt={{cliente.nome_arquivo}} width="99px" align="right">
                 
@@ -83,17 +83,17 @@
 
                                 <md-input-container flex="15">
                                     <label>Login</label>
-                                    <input type="text" ng-model="cliente.contato_telefone" required>
+                                    <input type="text" ng-model="cliente.login" required>
                                 </md-input-container>
 
                                 <md-input-container flex="10">
                                     <label>senha</label>
-                                    <input type="text" ng-model="cliente.contato_telefone" required>
+                                    <input type="password" ng-model="cliente.senha1" required>
                                 </md-input-container>
 
                                 <md-input-container flex="10">
                                     <label>confirmacao</label>
-                                    <input type="text" ng-model="cliente.contato_telefone" required>
+                                    <input type="password" ng-model="cliente.senha2" required>
                                 </md-input-container>
 
                             </div>
@@ -136,7 +136,7 @@
 
 
 
-		<md-tab label="Imagens" ng-disabled="cliente.id==0">
+		<!-- <md-tab label="Imagens" ng-disabled="cliente.id==0">
 			<md-content id="addcliente_img_container" class="md-padding" ng-controller="ClientesImgController">
 				<form id="form_clientes" name="form_clientes">
 					<div layout="row" layout-align="space-between center">
@@ -154,7 +154,7 @@
 						Foram selecionados arquivos com tamanho superior a {{errorFiles[0].$errorParam}}.<br>
 						Estes arquivos não serão enviados.
 					</div>
-					<table ng-if="clienteFiles.length>0">
+					<table ng-if="clienteFiles.length >0">
 						<thead>
 							<tr>
 								<td>Nome do Documento</td>
@@ -199,6 +199,78 @@
 								<td>
 									<md-button ng-click="download(cliente.id)" class="md-icon-button md-primary" aria-label="Baixar"><md-icon class="material-icons step" aria-label="Baixar">file_download</md-icon></md-button>
 									<md-button ng-click="openConfirmRemoveDAO(ev,cliente.id)" class="md-icon-button md-primary" aria-label="Remover"><md-icon class="material-icons step" aria-label="Remover">delete</md-icon></md-button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</md-content>
+		</md-tab> -->
+
+		<md-tab label="Imagems" ng-disabled="cliente.id==0">
+			<md-content id="addprojeto_dao_container" class="md-padding" ng-controller="ClientesImgController">
+				<form id="form_cliente_img" name="form_cliente_img">
+					<div layout="row" layout-align="space-between center">
+						<md-button
+							class="md-raised md-primary"
+							ngf-multiple="true"
+							ngf-select
+							ngf-max-size="<?php echo(ini_get('upload_max_filesize').'B'); ?>"
+							ngf-model-invalid="errorFiles"
+							ng-model="clienteFiles"
+							ng-disabled="clienteFiles.length>0"
+							aria-label="Selecione">Selecione (Máximo <?php echo(ini_get('upload_max_filesize').'B)'); ?></md-button>
+					
+					</div>
+					<div ng-if="errorFiles.length" class="alertaDeTamanho">
+						Foram selecionados arquivos com tamanho superior a {{errorFiles[0].$errorParam}}.<br>
+						Estes arquivos não serão enviados.
+					</div>
+					<table ng-if="clienteFiles.length>0">
+						<thead>
+						<tr>
+								<td>Arquivo</td>
+								<td>Tipo</td>
+								<td>Tamanho</td>
+								<td></td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="file in clienteFiles" id="tr_{{file.name}}">
+								<td><input type="text" name="clienteName_{{$index}}" ng-model="clienteNames[$index]" required></td>
+								<td>{{file.name}}</td>
+								<td>{{errosNoUploadDeClientes[file.name]}}</td>
+								<td>
+									<md-button class="md-raised md-accent" aria-label="Remover" ng-click="removerClienteFile($index)">Remover</md-button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<div layout="row" layout-align="end center">
+						<md-progress-circular ng-if="mostrarProgressoUploadCliente" md-mode="determinate" value="{{progress}}" md-diameter="20"></md-progress-circular>
+						<md-button class="md-raised md-primary" ng-click="uploadClienteFiles(clienteFiles)" ng-if="clienteFiles.length>0"  ng-disabled="clienteFiles.length==0 || !form_cliente_img.$valid" aria-label="Salvar">Salvar</md-button>
+					</div>
+				</form>
+				<div layout="row" class="sub_bloco" id="clientesRegistradas_container" ng-if="cliente.imgs.length>0">
+					<h3 flex="15">Já registrados</h3>
+					<table flex="85">
+						<thead>
+							<tr>
+								<td>Arquivo</td>
+								<td>Tipo</td>
+								<td>Tamanho</td>
+								<td></td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="cliente in cliente.imgs|filter:qCliente">
+								<td>{{cliente.nome_arquivo}}</td>
+								<td>{{cliente.tipo}}</td>
+								<td>{{cliente.tamanho}}</td>
+								<td>
+									<md-button ng-click="download(cliente.id)" class="md-icon-button md-primary" aria-label="Baixar"><md-icon class="material-icons step" aria-label="Baixar">file_download</md-icon></md-button>
+									<md-button ng-click="openConfirmRemoveImg(ev,cliente.id)" class="md-icon-button md-primary" aria-label="Remover"><md-icon class="material-icons step" aria-label="Remover">delete</md-icon></md-button>
 								</td>
 							</tr>
 						</tbody>

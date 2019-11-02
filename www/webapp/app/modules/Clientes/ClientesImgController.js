@@ -81,6 +81,8 @@
 											break;
 									}
 								};
+
+								$location.reload();
 								
 							} else {
 								// Retornando Toast para o usuário
@@ -119,7 +121,7 @@
 		}
 
 		// Abrir dialog para confirmar Remoção de DAO
-		$scope.openConfirmRemoveDAO = function(ev,idCliente) {
+		$scope.openConfirmRemoveImg = function(ev,idCliente) {
 			// Appending dialog to document.body to cover sidenav in docs app
 			var confirm = $mdDialog.confirm()
 				.title('Tem certeza que deseja a imagem deste cliente?')
@@ -135,9 +137,12 @@
 					$scope.root.carregando = true;
 
 					// Ajeitando dao a ser removida
-					var dao = $scope.cliente.imgs.find(function(a){return a.id == this},idCliente);
-					dao.id_projeto = $scope.cliente.id;
-					GeProjFactory.removerDAO(dao)
+					var cli = $scope.cliente.imgs.find(function(a){return a.id == this},idCliente);
+					cli.id = $scope.cliente.id;
+
+					$timeout(function () {
+
+					GeProjFactory.removerImg(cli)
 					.success(function(response){
 						// Esconde carregando
 						$scope.root.carregando = false;
@@ -152,6 +157,8 @@
 							.position('bottom left')
 							.hideDelay(5000)
 						);
+
+						
 					})
 					.error(function(error){
 						// Esconde carregando
@@ -168,6 +175,8 @@
 						// Imprimindo erro no console
 						console.warn(error.msg);
 					});
+
+					
 				}
 			);
 		};
