@@ -42,7 +42,9 @@
 			$scope.cliente.login = '';
 			$scope.cliente.senha1 = '';
 			$scope.cliente.senha2 = '';
-			$scope.cliente.enderecoimagem = '';
+			$scope.cliente.caminho = '';
+			
+		 
 		} else {
 			// Carregando informações do cliente a partir da base
 			GeProjFactory.getCliente(id)
@@ -50,6 +52,8 @@
 					function(response){
 						$scope.cliente = response.cliente;
 						$scope.cliente.tipo = response.cliente.cpf == null?'1':'2';
+						$scope.cliente.imgs = [];
+
 					}
 				)
 				.error(

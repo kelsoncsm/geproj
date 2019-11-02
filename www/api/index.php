@@ -4127,16 +4127,29 @@
 						       a.ftp_host,
 						       a.ftp_usuario,
 						       a.login,
-						       a.endereco
-						FROM clientes a
+						       a.endereco,	
+						  ci.nome_arquivo
+						FROM clientes a 
+                        left outer join cliente_imagem ci on ci.id_cliente  = a.id
 						INNER JOIN
 						  (SELECT id_empresa
 						   FROM usuarios
 						   WHERE token=?) b ON a.id_empresa=b.id_empresa
 						WHERE a.id=?
 							ORDER by a.nome';
-				$response = new response(0,'ok');
-				$response->cliente = $db->query($sql,'si',$token,$id)[0];
+
+				$rs = $db->query($sql,'si',$token,$id);
+
+
+	
+	             $cliente = (object)$rs[0];
+				 $response = new response(0,'ok');
+
+				// levantando DAOs do projeto
+				$sql = 'SELECT id,nome_unico,nome_arquivo,tipo,tamanho,id_cliente FROM cliente_imagem WHERE id_cliente=?';
+				$cliente->imgs = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id));
+
+				$response->cliente  = $cliente;
 				$response->flush();
 			});
 
@@ -4416,6 +4429,153 @@
 				}
 				// Registrando a ação
 				registrarAcao($db,$id,ACAO_ADICIONOU_CLIENTE,$db->insert_id.','.$cliente->nome);
+			});
+
+
+			$app->post('/cliente/:id/img/',function($id) use ($app,$db,$empresa,$token){
+				// lendo dados
+				$id_cliente = 1*$id;
+					// Verificando se o cliente é da mesma empresa do usuário
+					$sql = 'SELECT
+					A.id
+					FROM (
+					SELECT
+						id,id_empresa
+					FROM usuarios
+					WHERE token=? AND validade_do_token>now()) A INNER JOIN 
+						(
+					SELECT
+						id_empresa
+					FROM clientes
+						WHERE id=?) B on A.id_empresa=B.id_empresa;';
+					$rs = $db->query($sql,'si',$token,$id);
+					$ok = (sizeof($rs) > 0);
+					$id_usuario = $rs[0]['id'];
+
+				// Indo adiante
+				if($ok == 1) {
+					// Determinando a quantidade de arquivos
+					$n = sizeof($_POST['profiles']);
+
+					// criando vetor de erros
+					$erros = Array();
+
+					// criando o vetor de sucessos
+					$sucessos = Array();
+
+					// percorrendo informações armazenamento na base e no filesystem
+					for ($i=0; $i < $n; $i++) { 
+						// verificando se há erro
+						if($_FILES['profiles']['error'][$i]['file'] == 0){
+							// UPLOAD COM SUCESSO
+							
+							// Organizando informações a serem salvas na base
+							$nomeUnico = uniqid(true);
+							$nomeTemporario = $_FILES['profiles']['tmp_name'][$i]['file'];
+							$nomeArquivo = $_FILES['profiles']['name'][$i]['file'];
+							$tipo = substr($_FILES['profiles']['type'][$i]['file'],0,45);
+							$tamanho = $_FILES['profiles']['size'][$i]['file'];
+						    
+							// Salvando arquivo no FS
+							$salvoNoFS = false;
+							try {
+								// verificando se existe uma pasta da empresa. Se não houver, tenta criar.
+								$caminho = IMG_PATH.'/'.$id_cliente.'/';
+								
+							if(!file_exists($caminho)){
+
+									if(!@mkdir($caminho)){	
+										http_response_code(401);
+										$response = new response(1,'Pasta destino inexistente. Não foi possível criar uma pasta destino.'.$caminho );
+										$response->flush();
+										return;
+									}
+									
+					 	       }
+								if($caminho){
+									// Salvando arquivo na pasta do cliente
+									$salvoNoFS = @move_uploaded_file($nomeTemporario, $caminho.'/'.$nomeArquivo);	
+								}
+
+								if($salvoNoFS){
+									// Criando elemento de vetor de sucesso
+									$cli = new stdClass();
+									
+									$cli->nome_arquivo = $nomeArquivo;
+									$cli->nome_unico = $nomeUnico;
+									$cli->tipo = $tipo;
+									$cli->tamanho = $tamanho;
+									$cli->id = $db->insert_id;
+									array_push($sucessos, $cli);
+
+									// Registrando informações na base
+									$registradoNaBase = false;
+									$sql = "INSERT INTO cliente_imagem (nome_unico,nome_arquivo,tipo,tamanho,id_cliente)
+											VALUES (?,?,?,?,?)";
+									try {
+										$db->query($sql,'sssii',
+											$nomeUnico,
+											$nomeArquivo,
+											$tipo,
+											$tamanho,
+											$id_cliente);
+										$registradoNaBase = true;
+									} catch (Exception $e1) {
+										// registrando falha na consulta no vetor de falhas.
+										$erro = new stdClass();
+										$erro->arquivo = $nomeCliente;
+										$erro->msg = $e1->getMessage();
+										$erro->codigo = $e1->getCode();
+										array_push($erros, $erro);
+									}
+									
+									// Registrando a ação
+									registrarAcao($db,$id_usuario,ACAO_SALVOU_IMAGEM_CLIENTE,implode(',', (array)$cli));
+								} else {
+									// registrando falha no processo de salvar no FS
+									$erro = new stdClass();
+									$erro->arquivo = $nomeArquivo;
+									$erro->msg = $e1->getMessage();
+									array_push($erros, $erro);
+
+									// removendo registro na base de dados
+									$sql = "DELETE from cliente_imagem WHERE id=?";
+									$db->query($sql,'i',$db->insert_id);
+								}
+							} catch (Exception $e2) {
+								// registrando falha na consulta no vetor de falhas.
+								$erro = new stdClass();
+								$erro->arquivo = $nomeArquivo;
+								$erro->msg = $e2->getMessage();
+								$erro->codigo = -2;
+								array_push($erros, $erro);
+							}
+
+							
+						} else {
+							// Registrando falha no upload no vetor de falhas.
+							$erro = new stdClass();
+							$erro->arquivo = $_FILES['profiles']['name'][$i]['file'];
+							$erro->codigo = -1;
+
+							// Traduzindo qual o erro do upload
+							$msg = erroDeUpload($_FILES['profiles']['error'][$i]['file']);
+
+							$erro->msg = 'Upload falhou. Erro: '.$msg;
+							array_push($erros, $erro);
+						}
+					}
+
+					// retornando;
+					$response = new response(0,'Imagem Enviada.');
+					$response->erros = $erros;
+					$response->sucessos = $sucessos;
+					$response->flush();
+				} else {
+					http_response_code(401);
+					$response = new response(1,'Não Foi possivel mudar a imagem.');	
+					die();
+				}
 			});
 		// FIM DE ROTAS DE CLIENTES
 		

@@ -26,6 +26,7 @@ module.exports = function(grunt) {
 					'node_modules/angular-filesize-filter/angular-filesize-filter.js',
 					'app/modules/Cargos/CargosController.js',
 					'app/modules/Clientes/ClientesController.js',
+					'app/modules/Clientes/ClientesImgController.js',
 					'app/modules/Configuracoes/ConfiguracoesController.js',
 					'app/modules/Documentos/DocumentosController.js',
 					'app/modules/Documentos/DocumentoController.js',
