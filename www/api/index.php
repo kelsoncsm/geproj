@@ -3833,8 +3833,11 @@
 				$response = new response(0,'ok');
 				$response->flush();
 
-				// disparando ações pós atualização de documento
-				GeProj::onDocumentUpdate($id_doc,$empresa);
+				if($progresso_total >= 49 && $progresso_total < 51){
+					// disparando ações pós atualização de documento
+					GeProj::onDocumentUpdate($id_doc,$empresa);
+				}
+				
 			});
 
 			$app->post('/documentos/:id_doc/validacaoDeProgresso',function($id_doc) use ($app,$db,$token){
