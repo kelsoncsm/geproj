@@ -16,12 +16,7 @@
 
 		// Alguns dados do possível update a ser realizado
 		$scope.update = {};
-
-		// Pedindo para carregar tamanhos de papel
-		$scope.tamanhosDePapel = [];
-		$scope.tamanhoPadrao = null;
-		carregaTamanhosDePapel();
-
+ 
 		// Definindo vetor que mantém os usuários
 		$scope.usuarios = [];
 

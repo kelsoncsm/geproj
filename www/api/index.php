@@ -2413,11 +2413,11 @@
 					// Tudo ok! A documento a ser adicionada é do mesmo cliente do usuário
 
 					// Salvando o documento
-					$sql = 'INSERT INTO documentos (nome,codigo,codigo_cliente,codigo_alternativo,id_subarea,id_subdisciplina) VALUES (?,?,?,?,?,?)';
+					$sql = 'INSERT INTO documentos (nome,codigo,codigo_cliente,codigo_alternativo,id_subarea,id_subdisciplina,tamanhoDoPapel,qPaginas) VALUES (?,?,?,?,?,?,?,?)';
 					try {
 
 						// Salvando documento
-						$db->query($sql,'ssssii',$documento->nome,$documento->codigo,$documento->codigo_cliente,$documento->codigo_alternativo,$documento->id_subarea,$documento->id_subdisciplina);
+						$db->query($sql,'ssssiiii',$documento->nome,$documento->codigo,$documento->codigo_cliente,$documento->codigo_alternativo,$documento->id_subarea,$documento->id_subdisciplina,$documento->id_subdisciplina,$documento->id_subdisciplina);
 
 						// Salvando o novo id do documento recém adicionado
 						$newId = $db->insert_id;
@@ -2660,7 +2660,7 @@
 							          c.sigla AS sigla_disciplina,
 							          c.id AS id_disciplina,
 							          e.codigo AS cod_area,
-							          e.id AS id_area
+							          e.id AS id_area,a.tamanhodopapel,a.qPaginas
 							   FROM documentos a
 							   INNER JOIN subdisciplinas b ON a.id_subdisciplina=b.id
 							   INNER JOIN disciplinas c ON b.id_disciplina=c.id
@@ -3220,7 +3220,7 @@
 						       revs.data_limite,
 						       revs.progresso_validado,
 						       revs.progresso_a_validar,
-						       revs.ua
+						       revs.ua,tamanhodopapel,qPaginas
 						FROM
 						  (SELECT e.id,
 						          e.nome,
@@ -3401,7 +3401,9 @@
                                 ifnull(sum(f.hh),0) as trabalho_estimado,
 								i.id as id_cliente,
 								i.nome as nome_cliente,
-							    i.nome_fantasia as fantasia_cliente
+							    i.nome_fantasia as fantasia_cliente,
+							    a.tamanhodopapel as tamanhodopapel,
+							    a.qPaginas as qPaginas
 
 							FROM
 								documentos a

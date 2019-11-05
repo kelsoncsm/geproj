@@ -21,6 +21,7 @@
 						id_doc: id_doc,
 						documentos: angular.copy($scope.projeto.documentos),
 						cargos:$scope.cargos,
+					
 						parentScope:$scope,
 						copy:clonar
 					},
@@ -97,6 +98,13 @@
 			// Copiando as disciplinas para o scope
 			$scope.disciplinas = disciplinas;
 			delete disciplinas;
+
+			
+			// Pedindo para carregar tamanhos de papel
+			$scope.tamanhosDePapel = [];
+			$scope.tamanhoPadrao = null;
+			carregaTamanhosDePapel();
+
 			
 			// Copiando cargos para o scope
 			$scope.cargos = cargos;
@@ -164,8 +172,10 @@
 					"ehValidador":null,
 					"revisoes":[],
 					"grds":[],
-					"dependencias":[],
-					"hhs":[]
+                    "dependencias":[],
+                    "hhs":[],
+                    "dic_tamanhosDePapel": [],
+					"nPaginas": null
 				}
 
 				// Executando função de documento carregado
@@ -214,6 +224,35 @@
 				
 			}
 
+
+			function carregaTamanhosDePapel(){
+				GeProjFactory.getTamanhosDePapel()
+				.success(function(response){
+					$scope.tamanhosDePapel = response.tamanhosDePapel;
+					$scope.tamanhoPadrao = $scope.tamanhosDePapel.find(function(a){
+							return a.nome == "A4";
+						});
+	
+					// Montando dicionário
+					$scope.dic_tamanhosDePapel = [];
+					for (var i = $scope.tamanhosDePapel.length - 1; i >= 0; i--) {
+						$scope.dic_tamanhosDePapel[$scope.tamanhosDePapel[i].id] = $scope.tamanhosDePapel[i].nome;
+					}
+				})
+				.error(function(error){
+					// Retornando Toast para o usuário
+					$mdToast.show(
+						$mdToast.simple()
+						.textContent('Não foi possível carregar tamanhos de papel: ' + error.msg)
+						.position('bottom left')
+						.hideDelay(5000)
+					);
+	
+					// Enviando erro para o console
+					console.warn(error);
+				})
+			}
+			
 			/**
 			 * Função a ser executada quando o documento é definido.
 			 */

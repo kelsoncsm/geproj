@@ -1,6 +1,7 @@
 <div id="documentoEdit_container" class="container_80">
 	<form name="formdoc" layout="column" novalidate>
 		<h3>Dados do Documento</h3>
+		 
 		<div layout="row" layout-align="space-between center">
 			<md-input-container flex="20">
 				<label>Cliente</label>
@@ -74,8 +75,19 @@
 							ng-repeat="dp in dependenciasPossiveis">{{dp.codigo}}</md-option>
 				</md-select>
 			</md-input-container>
-			<div flex="20"></div>
-			<div flex="20"></div>
+
+			<md-input-container flex="20">
+			<label>Tipo Papel {{doc.tamanhoDoPapel}}</label>
+					<md-select md-selected-text="dic_tamanhosDePapelEdit[doc.tamanhoDoPapel]" ng-model="doc.tamanhoDoPapel"  aria-label="Tamanho do Papel" class="md-no-underline">
+                        <md-option ng-value="opt" ng-repeat="opt in tamanhosDePapelEdit">{{ opt.nome }} ({{opt.a}}mm x {{opt.l}}mm)</md-option>
+                    </md-select>
+			</md-input-container>
+			<md-input-container flex="20">
+			<label>Número de Páginas</label>
+					<input type="number" aria-label="Número de Páginas" min="1" ng-model="doc.nPaginas">
+			
+			</md-input-container>
+
 		</div>
 		<div class="trabalho">
 			<h3>Trabalho Estimado (Homem x Hora)</h3>

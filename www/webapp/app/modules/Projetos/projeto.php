@@ -270,7 +270,7 @@
 							class="md-raised md-primary"
 							aria-label="Novo Documento"
 							ng-click="openDocumentoDialog($event,0)">
-								<md-icon class="material-icons step" aria-label="Criar um novo documento">add</md-icon>Novo Documento
+								<md-icon class="material-icons step" aria-label="Criar um novo documento">add</md-icon>Novo Documento222
 						</md-button>
 						<!-- <md-button
 							class="md-raised md-primary"
@@ -375,7 +375,7 @@
 						</tr>
 						<tr class="par">
 							<td>
-								<div class="label">Trabalho (Homem x Hora)</div>
+								<div class="label">Trabalho (Homem x Hora) 2</div>
 								<div class="value" ng-repeat="hh in doc.hhs" ng-if="doc.hhs.length > 0">
 									{{hh.cargo.nome}}: {{hh.hh}} hh
 								</div>

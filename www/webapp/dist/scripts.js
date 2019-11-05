@@ -20617,6 +20617,12 @@ module.exports = function(Chart) {
 
 		// Definindo global para guardar documentos do projeto
 		var documentos = null;
+
+        // Pedindo para carregar tamanhos de papel
+			$scope.tamanhosDePapelEdit = [];
+			$scope.tamanhoPadraoEdit = null;
+			carregaTamanhosDePapelEdit();
+	
 		
 		if(id == 0){
 
@@ -20775,6 +20781,33 @@ module.exports = function(Chart) {
 			}
 		}
 
+        function carregaTamanhosDePapelEdit(){
+			GeProjFactory.getTamanhosDePapel()
+			.success(function(response){
+				$scope.tamanhosDePapelEdit = response.tamanhosDePapel;
+				$scope.tamanhoPadraoEdit = $scope.tamanhosDePapelEdit.find(function(a){
+						return a.nome == "A4";
+					});
+
+				// Montando dicionário
+				$scope.dic_tamanhosDePapelEdit = [];
+				for (var i = $scope.tamanhosDePapelEdit.length - 1; i >= 0; i--) {
+					$scope.dic_tamanhosDePapelEdit[$scope.tamanhosDePapelEdit[i].id] = $scope.tamanhosDePapelEdit[i].nome;
+				}
+			})
+			.error(function(error){
+				// Retornando Toast para o usuário
+				$mdToast.show(
+					$mdToast.simple()
+					.textContent('Não foi possível carregar tamanhos de papel: ' + error.msg)
+					.position('bottom left')
+					.hideDelay(5000)
+				);
+
+				// Enviando erro para o console
+				console.warn(error);
+			})
+		}
 		function onDocumentoCarregado(){
 			// Parsing date
 			$scope.doc.revisoes[0].data_limite = new Date($scope.doc.revisoes[0].data_limite);
@@ -24521,7 +24554,13 @@ function ProjetosAreasController($scope,GeProjFactory,$mdDialog,$mdToast){
 			
 			// Copiando cargos para o scope
 			$scope.cargos = cargos;
-			delete cargos;
+            delete cargos;
+            
+            
+			// Pedindo para carregar tamanhos de papel
+			$scope.tamanhosDePapel = [];
+			$scope.tamanhoPadrao = null;
+			carregaTamanhosDePapel();
 
 			// Associoando áreas e subáreas do parentScope no scope local
 			(function(){
@@ -24585,8 +24624,10 @@ function ProjetosAreasController($scope,GeProjFactory,$mdDialog,$mdToast){
 					"ehValidador":null,
 					"revisoes":[],
 					"grds":[],
-					"dependencias":[],
-					"hhs":[]
+                    "dependencias":[],
+                    "hhs":[],
+                    "dic_tamanhosDePapel": [],
+					"nPaginas": null
 				}
 
 				// Executando função de documento carregado
@@ -24633,7 +24674,37 @@ function ProjetosAreasController($scope,GeProjFactory,$mdDialog,$mdToast){
 					);
 				});
 				
+            }
+            
+
+            function carregaTamanhosDePapel(){
+				GeProjFactory.getTamanhosDePapel()
+				.success(function(response){
+					$scope.tamanhosDePapel = response.tamanhosDePapel;
+					$scope.tamanhoPadrao = $scope.tamanhosDePapel.find(function(a){
+							return a.nome == "A4";
+						});
+	
+					// Montando dicionário
+					$scope.dic_tamanhosDePapel = [];
+					for (var i = $scope.tamanhosDePapel.length - 1; i >= 0; i--) {
+						$scope.dic_tamanhosDePapel[$scope.tamanhosDePapel[i].id] = $scope.tamanhosDePapel[i].nome;
+					}
+				})
+				.error(function(error){
+					// Retornando Toast para o usuário
+					$mdToast.show(
+						$mdToast.simple()
+						.textContent('Não foi possível carregar tamanhos de papel: ' + error.msg)
+						.position('bottom left')
+						.hideDelay(5000)
+					);
+	
+					// Enviando erro para o console
+					console.warn(error);
+				})
 			}
+			
 
 			/**
 			 * Função a ser executada quando o documento é definido.
