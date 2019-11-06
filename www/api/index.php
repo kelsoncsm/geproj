@@ -3253,7 +3253,9 @@
 						   INNER JOIN subareas f ON f.id=e.id_subarea
 						   INNER JOIN areas g ON g.id=f.id_area
 						   INNER JOIN projetos h ON h.id=g.id_projeto
+						   INNER JOIN hhemdocs i ON i.id_doc=e.id
 						   LEFT JOIN hhemdocs i ON i.id_doc=e.id
+					
 						   WHERE a.id=?
 						   GROUP BY e.id,
 						            e.nome,
@@ -3403,7 +3405,7 @@
 								i.nome as nome_cliente,
 							    i.nome_fantasia as fantasia_cliente,
 							    a.tamanhoDoPapel as tamanhoDoPapel,
-							    a.qPaginas as qPaginas
+							    a.qPaginas as qPaginas,tdp.nome as nomePapel
 
 							FROM
 								documentos a
@@ -3415,6 +3417,7 @@
                                 LEFT JOIN hhemdocs f ON f.id_doc=a.id
                                 LEFT JOIN usuarios h ON h.id=a.idu_checkout
 								INNER JOIN clientes i ON i.id=g.id_cliente
+								INNER JOIN tamanhos_de_papel tdp on tdp.id = a.tamanhoDoPapel
 							WHERE
 								a.id=?
 							GROUP BY
@@ -3836,6 +3839,8 @@
 
 				if($progresso_total >= 49 && $progresso_total < 51){
 					// disparando ações pós atualização de documento
+					GeProj::onDocumentUpdate($id_doc,$empresa);
+				}else if($progresso_total == 100){
 					GeProj::onDocumentUpdate($id_doc,$empresa);
 				}
 				

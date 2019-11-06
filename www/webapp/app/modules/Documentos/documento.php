@@ -141,11 +141,17 @@ $permissoes = $tela->getOpcoes();
             </td>
         </tr>
         <tr>
-            <td colspan="3">
+            <td>
                 <label>GRDs contendo este documento</label>
                 <span ng-if="documento.grds.length==0">Nenhuma</span>
                 <span ng-repeat="grd in documento.grds"><a href="#/grds/{{grd.id}}">{{grd.codigo}} (rev {{grd.serial_rev}})</a></span>
             </td>
+            <td>
+                <label>Folha</label>{{documento.nomePapel}}
+                 </td>
+            <td>
+                <label>Quantidade de Folhas</label>{{documento.qPaginas}}
+                 </td>
         </tr>
     </table>
     
@@ -209,9 +215,9 @@ echo (ini_get('upload_max_filesize') . 'B');
                     ng-value="documento.revisoes[0].progresso_validado"
                     ng-min="documento.revisoes[0].progresso_validado+1"
                     min="{{documento.revisoes[0].progresso_validado+1}}"
-                    max="100">
+                    max="100" >
                 <div ng-messages="form_atualizarRevisao.progresso_total.$error" multiple md-auto-hide="false">
-                     <div ng-message="min">O progresso total deve ser no mínimo {{documento.revisoes[0].progresso_validado+1}} %</div>
+                     <div ng-message="min">O progresso total deve ser no mínimo {{documento.revisoes[0].progresso_validado+1}}%  </div>
                 </div>
             </md-input-container>
             
