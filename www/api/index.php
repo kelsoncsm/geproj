@@ -2417,7 +2417,7 @@
 					try {
 
 						// Salvando documento
-						$db->query($sql,'ssssiiii',$documento->nome,$documento->codigo,$documento->codigo_cliente,$documento->codigo_alternativo,$documento->id_subarea,$documento->id_subdisciplina,$documento->id_subdisciplina,$documento->id_subdisciplina);
+						$db->query($sql,'ssssiiii',$documento->nome,$documento->codigo,$documento->codigo_cliente,$documento->codigo_alternativo,$documento->id_subarea,$documento->id_subdisciplina,$documento->tamanhoDoPapel,$documento->qPaginas);
 
 						// Salvando o novo id do documento recém adicionado
 						$newId = $db->insert_id;
@@ -2660,7 +2660,7 @@
 							          c.sigla AS sigla_disciplina,
 							          c.id AS id_disciplina,
 							          e.codigo AS cod_area,
-							          e.id AS id_area,a.tamanhodopapel,a.qPaginas
+							          e.id AS id_area,a.tamanhoDoPapel,a.qPaginas
 							   FROM documentos a
 							   INNER JOIN subdisciplinas b ON a.id_subdisciplina=b.id
 							   INNER JOIN disciplinas c ON b.id_disciplina=c.id
@@ -3220,7 +3220,7 @@
 						       revs.data_limite,
 						       revs.progresso_validado,
 						       revs.progresso_a_validar,
-						       revs.ua,tamanhodopapel,qPaginas
+						       revs.ua,docs.tamanhoDoPapel,docs.qPaginas
 						FROM
 						  (SELECT e.id,
 						          e.nome,
@@ -3402,7 +3402,7 @@
 								i.id as id_cliente,
 								i.nome as nome_cliente,
 							    i.nome_fantasia as fantasia_cliente,
-							    a.tamanhodopapel as tamanhodopapel,
+							    a.tamanhoDoPapel as tamanhoDoPapel,
 							    a.qPaginas as qPaginas
 
 							FROM
@@ -3779,14 +3779,13 @@
 						move_uploaded_file($_FILES['profiles']['tmp_name'][$i]['file'], $caminho_completo);
 
 						// criando registro na arquivos
-						$sql = "INSERT INTO arquivos (caminho,nome_cliente,datahora_upload,idu,tamanho,tamanho_do_papel,nPaginas) VALUES (?,?,NOW(),?,?,?,?)";
+						$sql = "INSERT INTO arquivos (caminho,nome_cliente,datahora_upload,idu,tamanho) VALUES (?,?,NOW(),?,?)";
 						$db->query($sql,'ssiiii',
 								$caminho_completo,
 								$item->nome,
 								$idu,
-								$_FILES['profiles']['size'][$i]['file'],
-								$item->tamanhoDoPapel,
-								$item->nPaginas
+								$_FILES['profiles']['size'][$i]['file']
+
 							);
 						$id_arquivo = $db->insert_id;
 

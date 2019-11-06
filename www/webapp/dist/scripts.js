@@ -20078,11 +20078,6 @@ module.exports = function(Chart) {
 		// Alguns dados do possível update a ser realizado
 		$scope.update = {};
 
-		// Pedindo para carregar tamanhos de papel
-		$scope.tamanhosDePapel = [];
-		$scope.tamanhoPadrao = null;
-		carregaTamanhosDePapel();
-
 		// Definindo vetor que mantém os usuários
 		$scope.usuarios = [];
 
@@ -20127,9 +20122,9 @@ module.exports = function(Chart) {
 			for (var i = $scope.updateFiles.length - 1; i >= 0; i--) {
 				if(ultimosArquivos.find(function(a){return a.nome_cliente==this},$scope.updateFiles[i].name) == undefined){
 					// Arquivo NOVO
-					item = {nome:$scope.updateFiles[i].name, nPaginas:1, tamanhoDoPapel:$scope.tamanhoPadrao.id, tipo:'novo',acao:1};
+					item = {nome:$scope.updateFiles[i].name, tipo:'novo',acao:1};
 				} else {
-					item = {nome:$scope.updateFiles[i].name, nPaginas:1, tamanhoDoPapel:$scope.tamanhoPadrao.id, tipo:'antigoParaAtualizar',acao:1}
+					item = {nome:$scope.updateFiles[i].name, tipo:'antigoParaAtualizar',acao:1}
 				}
 				$scope.formUploadItems.push(item);
 			}
@@ -20137,7 +20132,7 @@ module.exports = function(Chart) {
 			// percorrendo o último pacote de arquivos procurando os arquivos que não constam no vetor de arquivos escolhidos
 			for (var i = ultimosArquivos.length - 1; i >= 0; i--) {
 				if($scope.updateFiles.find(function(a){return a.name == ultimosArquivos[i].nome_cliente}) == undefined){
-					item = {nome:ultimosArquivos[i].nome_cliente, nPaginas:1, tamanhoDoPapel:$scope.tamanhoPadrao.id, tipo:'antigoNaoAtualizar',acao:1}
+					item = {nome:ultimosArquivos[i].nome_cliente, tipo:'antigoNaoAtualizar',acao:1}
 					$scope.formUploadItems.push(item);
 				}				
 			}
@@ -20514,36 +20509,8 @@ module.exports = function(Chart) {
 					.hideDelay(5000)
 				);
 			});
-		}
-
-		function carregaTamanhosDePapel(){
-			GeProjFactory.getTamanhosDePapel()
-			.success(function(response){
-				$scope.tamanhosDePapel = response.tamanhosDePapel;
-				$scope.tamanhoPadrao = $scope.tamanhosDePapel.find(function(a){
-						return a.nome == "A4";
-					});
-
-				// Montando dicionário
-				$scope.dic_tamanhosDePapel = [];
-				for (var i = $scope.tamanhosDePapel.length - 1; i >= 0; i--) {
-					$scope.dic_tamanhosDePapel[$scope.tamanhosDePapel[i].id] = $scope.tamanhosDePapel[i].nome;
-				}
-			})
-			.error(function(error){
-				// Retornando Toast para o usuário
-				$mdToast.show(
-					$mdToast.simple()
-					.textContent('Não foi possível carregar tamanhos de papel: ' + error.msg)
-					.position('bottom left')
-					.hideDelay(5000)
-				);
-
-				// Enviando erro para o console
-				console.warn(error);
-			})
-		}
-
+        }
+        
 		function carregaUsuarios(){
 			indexedDB.open("geproj").onsuccess = function(evt){
 				evt.target.result.transaction('usuarios').objectStore('usuarios').getAll().onsuccess = function(evt){
@@ -20623,7 +20590,6 @@ module.exports = function(Chart) {
 			$scope.tamanhoPadraoEdit = null;
 			carregaTamanhosDePapelEdit();
 	
-		
 		if(id == 0){
 
 			// Criando documento vazio
@@ -24626,8 +24592,8 @@ function ProjetosAreasController($scope,GeProjFactory,$mdDialog,$mdToast){
 					"grds":[],
                     "dependencias":[],
                     "hhs":[],
-                    "dic_tamanhosDePapel": [],
-					"nPaginas": null
+                    "tamanhosDePapel": null,
+					"qPaginas": null
 				}
 
 				// Executando função de documento carregado

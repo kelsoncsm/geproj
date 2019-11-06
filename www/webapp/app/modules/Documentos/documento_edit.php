@@ -77,15 +77,14 @@
 			</md-input-container>
 
 			<md-input-container flex="20">
-			<label>Tipo Papel {{doc.tamanhoDoPapel}}</label>
-					<md-select md-selected-text="dic_tamanhosDePapelEdit[doc.tamanhoDoPapel]" ng-model="doc.tamanhoDoPapel"  aria-label="Tamanho do Papel" class="md-no-underline">
-                        <md-option ng-value="opt" ng-repeat="opt in tamanhosDePapelEdit">{{ opt.nome }} ({{opt.a}}mm x {{opt.l}}mm)</md-option>
-                    </md-select>
+			<label>Tipo Papel </label>
+				<md-select md-selected-text="dic_tamanhosDePapelEdit[doc.tamanhoDoPapel]" ng-model="doc.tamanhoDoPapel" aria-label="Tamanho do Papel" class="md-no-underline" require>
+					<md-option ng-value="opt.id" ng-repeat="opt in tamanhosDePapelEdit">{{ opt.nome }} ({{opt.a}}mm x {{opt.l}}mm)</md-option>
+				</md-select>	
 			</md-input-container>
 			<md-input-container flex="20">
-			<label>Número de Páginas</label>
-					<input type="number" aria-label="Número de Páginas" min="1" ng-model="doc.nPaginas">
-			
+			<label>Número de Páginas </label>
+						<input type="number" aria-label="Número de Páginas" min="1"  require ng-model="doc.qPaginas">
 			</md-input-container>
 
 		</div>

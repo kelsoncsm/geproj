@@ -16,8 +16,6 @@
 
 		// Definindo global para guardar documentos do projeto
 		var documentos = null;
-
-
 			// Pedindo para carregar tamanhos de papel
 			$scope.tamanhosDePapelEdit = [];
 			$scope.tamanhoPadraoEdit = null;
@@ -117,7 +115,7 @@
 
 				// Atribuindo subarea e subdisciplina
 				doc.id_subarea = $scope.areas.selecionada.subareas.selecionada.id;
-				doc.id_subdisciplina = $scope.disciplinas.selecionada.subs.selecionada.id;
+				doc.id_subdisciplina = $scope.disciplinas.selecionada.subs.selecionada.id;z
 			
 				// Documento NOVO. Proceder criação
 				GeProjFactory.adicionarDocumento(doc)
@@ -148,6 +146,8 @@
 	
 			} else {
 
+
+				console.log(doc)
 				// Documento já existente. Proceder alteração
 				GeProjFactory.alterarDocumento(doc)
 				.success(function(response){
@@ -327,9 +327,9 @@
 					"grds": [],
 					"dependencias": [],
 					"hhs": [],
-					"tamanhosDePapelEdit": [],
-					"nPaginas": null
-				};
+                    "tamanhosDePapel": null,
+					"qPaginas": null
+				};	
 			}
 		
 			// Determinando lista de possíveis dependentes

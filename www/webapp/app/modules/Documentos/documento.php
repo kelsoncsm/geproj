@@ -225,8 +225,6 @@ echo (ini_get('upload_max_filesize') . 'B');
                 <tr>
                     <td>Nome</td>
                     <td></td>
-                    <td>Nº de Páginas</td>
-                    <td>Tam. do Papel</td>
                     <td>Tipo</td>
                     <td>Ação</td>
                 </tr>
@@ -234,14 +232,6 @@ echo (ini_get('upload_max_filesize') . 'B');
             <tr ng-repeat="item in formUploadItems|orderBy:'nome'">
                 <td>{{item.nome}}</td>
                 <td><md-button ng-click="onDeleteClick(item.nome)" class="md-icon-button md-primary" ng-disabled="item.tipo=='antigoNaoAtualizar'" aria-label="Excluir"><md-icon class="material-icons step" aria-label="Excluir">delete</md-icon></md-button></td>
-                <td>
-                    <input type="number" aria-label="Número de Páginas" min="1" ng-model="item.nPaginas">
-                </td>
-                <td>
-                    <md-select md-selected-text="dic_tamanhosDePapel[item.tamanhoDoPapel]" ng-model="item.tamanhoDoPapel" aria-label="Tamanho do Papel" class="md-no-underline">
-                        <md-option ng-value="opt.id" ng-repeat="opt in tamanhosDePapel">{{ opt.nome }} ({{opt.a}}mm x {{opt.l}}mm)</md-option>
-                    </md-select>
-                </td>
                 <td>
                     {{item.tipo=='novo'?'Novo':''}}
                     {{item.tipo=='antigoParaAtualizar'?'Preexistente para Atualizar':''}}
