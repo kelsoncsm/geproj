@@ -21,13 +21,11 @@
 			</md-input-container>
 		</div>
 		<div layout="row" layout-align="space-between center">
-			
 			<md-input-container flex>
 				<label>Título do Documento</label>
 				<input md-maxlength="100" maxlength="100" type="text" ng-model="doc.nome" required>
 			</md-input-container>
 		</div>
-
 		<div layout="row" layout-align="space-between center" >
 			<md-input-container flex="20">
 				<label>Disciplina</label>
@@ -75,18 +73,16 @@
 							ng-repeat="dp in dependenciasPossiveis">{{dp.codigo}}</md-option>
 				</md-select>
 			</md-input-container>
-
-			<md-input-container flex="20">
-			<label>Tipo Papel </label>
-				<md-select md-selected-text="dic_tamanhosDePapelEdit[doc.tamanhoDoPapel]" ng-model="doc.tamanhoDoPapel" aria-label="Tamanho do Papel" class="md-no-underline" require>
-					<md-option ng-value="opt.id" ng-repeat="opt in tamanhosDePapelEdit">{{ opt.nome }} ({{opt.a}}mm x {{opt.l}}mm)</md-option>
+			<md-input-container flex="10">
+			<label>Tipo Papel</label>
+				<md-select data-md-container-class="SelectDpsHeader" md-selected-text="dic_tamanhosDePapelEdit[doc.tamanhoDoPapel]" ng-model="doc.tamanhoDoPapel" aria-label="Tamanho do Papel" class="md-no-underline" require>
+					<md-option ng-value="opt.id"  ng-repeat="opt in tamanhosDePapelEdit">{{ opt.nome }} ({{opt.a}}mm x {{opt.l}}mm)</md-option>
 				</md-select>	
 			</md-input-container>
 			<md-input-container flex="20">
-			<label>Número de Páginas </label>
+			<label>Número de Páginas</label>
 						<input type="number" aria-label="Número de Páginas" min="1"  require ng-model="doc.qPaginas">
 			</md-input-container>
-
 		</div>
 		<div class="trabalho">
 			<h3>Trabalho Estimado (Homem x Hora)</h3>

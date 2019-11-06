@@ -2330,9 +2330,9 @@
 
 				if($ok == 1){
 					// Tudo ok! O documento a ser alterado é da mesma empresa do usuário
-					$sql = 'UPDATE documentos SET nome=?,codigo=?,codigo_cliente=?,codigo_alternativo=?,id_subarea=?,id_subdisciplina=? WHERE id=?';
+					$sql = 'UPDATE documentos SET nome=?,codigo=?,codigo_cliente=?,codigo_alternativo=?,id_subarea=?,id_subdisciplina=?,tamanhoDoPapel=? ,qPaginas=? WHERE id=?';
 					try {
-						$db->query($sql,'ssssiii',$documento->nome,$documento->codigo,$documento->codigo_cliente,$documento->codigo_alternativo,$documento->id_subarea,$documento->id_subdisciplina,$id_documento);
+						$db->query($sql,'ssssiiiii',$documento->nome,$documento->codigo,$documento->codigo_cliente,$documento->codigo_alternativo,$documento->id_subarea,$documento->id_subdisciplina,$documento->tamanhoDoPapel,$documento->qPaginas,$id_documento);
 						$response = new response(0,'Documento alterado com sucesso.');
 						$response->flush();
 					} catch (Exception $e) {
@@ -5323,7 +5323,7 @@
 				$grd->obs = (isset($grd->obs)?$grd->obs:'');
 
 				// Determinando o código da nova GRD
-				$sql = 'SELECT ifnull(1*MAX(replace(codigo,"GRD-'.date('Y').'-",""))+1,1) as n FROM GeProj001.grds WHERE CODIGO LIKE "GRD-'.date('Y').'-%"';
+				$sql = 'SELECT ifnull(1*MAX(replace(codigo,"GRD-'.date('Y').'-",""))+1,1) as n FROM grds WHERE CODIGO LIKE "GRD-'.date('Y').'-%"';
 				$n = $db->query($sql)[0]['n'];
 				$newCodigo = 'GRD-'.date('Y').'-'.str_pad($n, 6, "0", STR_PAD_LEFT);
 				

@@ -3,7 +3,7 @@
 	define('TMP_PATH',rtrim($_SERVER['DOCUMENT_ROOT'],'/').'/geproj/tmp/');
 	define('CLIENT_DATA_PATH',rtrim($_SERVER['DOCUMENT_ROOT'],'/').'/geproj/client_data/');
 	define('IMG_PATH',rtrim($_SERVER['DOCUMENT_ROOT'],'/').'/geproj/www/webapp/photos');
-	define('FPDF_FONT_PATH',rtrim($_SERVER['DOCUMENT_ROOT'],'/').'/includes/FPDF/fonts/');
+	define('FPDF_FONT_PATH',rtrim($_SERVER['DOCUMENT_ROOT'],'/').'/geproj/includes/FPDF/fonts/');
 	define('AES_KEY','J237HDF9H99QEW78FGGF8VIBLAS893BDOU978B9A');
 	define('SENDGRID_KEY','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');
 	define('SENDGRID_DEFAULT_FROM','postmaster@geproj.com.br');
