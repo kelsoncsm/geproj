@@ -95,14 +95,15 @@
 					       d.simbolo AS tipo,
 					       b.serial AS rev_serial,
 					       e.simbolo AS codEMI,
-					       a.nFolhas,
+						   c.qPaginas,
 					       a.nVias,
-					       c.nome AS doc_nome
+					       c.nome AS doc_nome,tp.nome as nomeFormato
 					FROM grds_x_revisoes a
 					INNER JOIN revisoes b ON b.id=a.id_revisao
 					INNER JOIN documentos c ON c.id=b.id_documento
 					INNER JOIN tipos_de_doc d ON d.id=a.id_tipo
 					INNER JOIN codigos_emi e ON e.id=a.id_codEMI
+					INNER JOIN tamanhos_de_papel tp ON tp.id=c.tamanhoDoPapel
 					WHERE a.id_grd=?';
 			$instance->documentos = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id));
 
@@ -168,17 +169,18 @@
 
 			// Levantando dados dos documentos desta grd
 			$sql = 'SELECT c.codigo AS doc_codigo,
-					       d.simbolo AS tipo,
-					       b.serial AS rev_serial,
-					       e.simbolo AS codEMI,
-					       a.nFolhas,
-					       a.nVias,
-					       c.nome AS doc_nome
+							d.simbolo AS tipo,
+							b.serial AS rev_serial,
+							e.simbolo AS codEMI,
+							c.qPaginas,
+							a.nVias,
+							c.nome AS doc_nome,tp.nome as nomeFormato
 					FROM grds_x_revisoes a
 					INNER JOIN revisoes b ON b.id=a.id_revisao
 					INNER JOIN documentos c ON c.id=b.id_documento
 					INNER JOIN tipos_de_doc d ON d.id=a.id_tipo
 					INNER JOIN codigos_emi e ON e.id=a.id_codEMI
+					INNER JOIN tamanhos_de_papel tp ON tp.id=c.tamanhoDoPapel
 					WHERE a.id_grd=?';
 			$instance->documentos = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$instance->_id));
 

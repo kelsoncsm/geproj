@@ -3783,7 +3783,7 @@
 
 						// criando registro na arquivos
 						$sql = "INSERT INTO arquivos (caminho,nome_cliente,datahora_upload,idu,tamanho) VALUES (?,?,NOW(),?,?)";
-						$db->query($sql,'ssiiii',
+						$db->query($sql,'ssii',
 								$caminho_completo,
 								$item->nome,
 								$idu,

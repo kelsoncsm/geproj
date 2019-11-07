@@ -10,13 +10,15 @@
 			$this->tiposDeDocumento = $tiposDeDocumento;
 			$this->titles = json_decode('[
 				{"titulo":"Item","width":15},
-				{"titulo":"Nº Documento","width":50},
+				{"titulo":"Título","width":55},
+				{"titulo":"Nº Documento","width":40},
 				{"titulo":"Tipo","width":10},
 				{"titulo":"Qtd. Vias","width":15},
 				{"titulo":"Revisão","width":15},
 				{"titulo":"Cód. EMI","width":15},
-				{"titulo":"Nº Fls","width":15},
-				{"titulo":"Título","width":55}
+				{"titulo":"Formato","width":15},
+				{"titulo":"Nº Fls","width":15}
+			
 			]');
 			$this->addContent();
 		}
@@ -24,7 +26,8 @@
 		// Page header
 		function Header(){
 		    // Logo
-		    $this->Image(CLIENT_DATA_PATH.$this->empresa.'/logo.jpg',10,10,45);
+			$this->Image(CLIENT_DATA_PATH.$this->empresa.'/logo.jpg',10,10,45);
+			
 
 		    // Título
 		    $this->SetFont('helvetica','B',16);
@@ -40,7 +43,7 @@
 		    $this->Cell(65,5,utf8_decode('GRD Nº: '.$this->grd->codigo),0);
 		    $this->Ln(5);
 		    $this->Cell(125,5,utf8_decode('Resp. Envio: '.$this->resp_envio),0);
-
+			 
 		    // Determinando a string de datahora do envio
 		    $dh_registro = new DateTime($this->grd->datahora_registro);
 
@@ -78,22 +81,25 @@
 				$this->titles[4]->width,
 				$this->titles[5]->width,
 				$this->titles[6]->width,
-				$this->titles[7]->width
+				$this->titles[7]->width,
+				$this->titles[8]->width
 			));
 
-			$this->SetAligns(Array('C','L','C','C','C','C','C','L'));
+			$this->SetAligns(Array('C','L','C','C','C','C','C','C','L'));
 
 			for ($i=0; $i < sizeof($this->grd->documentos); $i++) { 
 			 	$doc = 	$this->grd->documentos[$i];
 				$data = Array(
 					($i+1),
+					utf8_decode($doc->doc_nome	),
 					utf8_decode($doc->doc_codigo),
 					utf8_decode($doc->tipo		),
 					utf8_decode($doc->nVias 	),
 					utf8_decode($doc->rev_serial),
 					utf8_decode($doc->codEMI	),
-					utf8_decode($doc->nFolhas 	),
-					utf8_decode($doc->doc_nome	)
+					utf8_decode($doc->nomeFormato 	),
+					utf8_decode($doc->qPaginas 	)
+					
 				);
 				$this->row($data);
 			}
@@ -115,8 +121,8 @@
 		    $nColunas = 4;
 		    $wColuna = 45;
 		    $hColuna = 5;
-		    $xMargin = 12;
-		    $hLn = 4;
+		    $xMargin = 15;
+		    $hLn = 3;
 
 		    // Começa a escrever no rodapé
 		    $this->SetXY(12,-56);
