@@ -65,7 +65,7 @@
 					INNER JOIN projetos b ON a.id_projeto = b.id
 					INNER JOIN clientes c ON b.id_cliente = c.id
 					LEFT JOIN usuarios d ON a.idu_remetente = d.id
-					WHERE a.id=?';
+					WHERE a.id=? order by a.codigo';
 			$rs = $db->query($sql,'i',$id)['0'];
 
 			// Criando instância
@@ -104,7 +104,7 @@
 					INNER JOIN tipos_de_doc d ON d.id=a.id_tipo
 					INNER JOIN codigos_emi e ON e.id=a.id_codEMI
 					INNER JOIN tamanhos_de_papel tp ON tp.id=c.tamanhoDoPapel
-					WHERE a.id_grd=?';
+					WHERE a.id_grd=?  order by c.codigo';
 			$instance->documentos = array_map(function($a){return (object)$a;}, $db->query($sql,'i',$id));
 
 			// Retornando resultado
