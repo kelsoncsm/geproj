@@ -54,6 +54,8 @@
 	            			// Escondendo o carregando
 	            			$scope.mostrarProgressoUploadCliente = false;
 
+							
+
 	            			// Tratando resposta
 							if(result.error == 0){
 								var tr; // variável da linha da tabela que exibe os campos dos arquivos que vão subir
@@ -82,8 +84,7 @@
 									}
 								};
 
-								$location.reload();
-								
+							
 							} else {
 								// Retornando Toast para o usuário
 								$mdToast.show(

@@ -19368,7 +19368,7 @@ module.exports = function(Chart) {
 		}
 		// função que leva para a tela de adicionar disciplina
 		$scope.goToAddCliente = function(){
-			$location.url('/clientes/0');
+			$location.url('/clientes/0');e
 		}
 	};
 
@@ -19643,7 +19643,7 @@ module.exports = function(Chart) {
 											break;
 									}
 								};
-									$location.reload();
+                                
 							} else {
 								// Retornando Toast para o usuário
 								$mdToast.show(

@@ -4578,6 +4578,7 @@
 					// retornando;
 					$response = new response(0,'Imagem Enviada.');
 					$response->erros = $erros;
+					$response->data = $cli;
 					$response->sucessos = $sucessos;
 					$response->flush();
 				} else {

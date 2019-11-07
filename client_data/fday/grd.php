@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 	class PDFGrd extends xPDF {
 		// Construtor
 		function __construct($empresa,$grd,$resp_envio,$codigosEmi,$tiposDeDocumento){
@@ -9,16 +9,15 @@
 			$this->codigosEmi = $codigosEmi;
 			$this->tiposDeDocumento = $tiposDeDocumento;
 			$this->titles = json_decode('[
-				{"titulo":"Item","width":15},
+				{"titulo":"Item","width":10},
 				{"titulo":"Título","width":55},
 				{"titulo":"Nº Documento","width":40},
-				{"titulo":"Tipo","width":10},
+				{"titulo":"Tipo","width":15},
 				{"titulo":"Qtd. Vias","width":15},
 				{"titulo":"Revisão","width":15},
 				{"titulo":"Cód. EMI","width":15},
 				{"titulo":"Formato","width":15},
-				{"titulo":"Nº Fls","width":15}
-			
+				{"titulo":"Folhas","width":15}	
 			]');
 			$this->addContent();
 		}
@@ -26,8 +25,7 @@
 		// Page header
 		function Header(){
 		    // Logo
-			$this->Image(CLIENT_DATA_PATH.$this->empresa.'/logo.jpg',10,10,45);
-			
+		    $this->Image(CLIENT_DATA_PATH.$this->empresa.'/logo.jpg',10,10,45);
 
 		    // Título
 		    $this->SetFont('helvetica','B',16);
@@ -43,7 +41,7 @@
 		    $this->Cell(65,5,utf8_decode('GRD Nº: '.$this->grd->codigo),0);
 		    $this->Ln(5);
 		    $this->Cell(125,5,utf8_decode('Resp. Envio: '.$this->resp_envio),0);
-			 
+
 		    // Determinando a string de datahora do envio
 		    $dh_registro = new DateTime($this->grd->datahora_registro);
 
