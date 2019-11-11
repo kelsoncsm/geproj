@@ -5351,6 +5351,14 @@
 					$db->query($sql,'iiiiii',$newId,$d->rev_id,$d->id_codEMI,$d->id_tipo,$d->nFolhas,$d->nVias);
 				}
 
+				// Atualizando paginas documento
+			
+				$sql = 'UPDATE documentos SET qPaginas=? WHERE id=?';
+
+				foreach ($grd->docs as $d) {
+					$db->query($sql,'ii',$d->nFolhas,$d->id_documento);
+				}
+
 				// Retornando resposta ao computador cliente
 				$response = new response(0,'ok');
 				$response->newId = $newId;
@@ -5437,6 +5445,10 @@
 					$db->query($sql,'iiiiii',$grd->id,$d->rev_id,$d->id_codEMI,$d->id_tipo,$d->nFolhas,$d->nVias);
 				}
 
+				$sql = 'UPDATE documentos SET qPaginas=? WHERE id=?';
+				foreach ($grd->docs as $d) {
+					$db->query($sql,'ii',$d->nFolhas,$d->id_documento);
+				}
 
 				// Enviando resposta para o cliente
 				$response = new response(0,'GRD atualizada com sucesso.');

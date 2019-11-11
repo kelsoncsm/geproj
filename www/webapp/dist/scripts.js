@@ -21994,7 +21994,7 @@ function OldDisciplinaController($scope,$routeParams,GeProjFactory){
 			
 			// Fazendo cópia de grd
 			var grd = angular.copy($scope.grd);
-
+   
 			// Aplicando filtro e mapeamento nos documentos para um vetor de dados a ser enviado. 
 			grd.docs = ($scope.documentos.filter(function(a){return a.added})).map(function(a){
 				var result = {};
@@ -22002,7 +22002,8 @@ function OldDisciplinaController($scope,$routeParams,GeProjFactory){
 				result.id_tipo = a.tipo.id;
 				result.nFolhas = a.nFolhas;
 				result.nVias = a.nVias;
-				result.rev_id = a.rev_id;
+                result.rev_id = a.rev_id;
+               result.id_documento = a.id;
 				return result;
 			})
 

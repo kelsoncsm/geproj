@@ -270,7 +270,7 @@
 							class="md-raised md-primary"
 							aria-label="Novo Documento"
 							ng-click="openDocumentoDialog($event,0)">
-								<md-icon class="material-icons step" aria-label="Criar um novo documento">add</md-icon>Novo Documento222
+								<md-icon class="material-icons step" aria-label="Criar um novo documento">add</md-icon>Novo Documento
 						</md-button>
 						<!-- <md-button
 							class="md-raised md-primary"

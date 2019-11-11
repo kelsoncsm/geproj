@@ -273,6 +273,7 @@
 			
 			// Fazendo cópia de grd
 			var grd = angular.copy($scope.grd);
+			
 
 			// Aplicando filtro e mapeamento nos documentos para um vetor de dados a ser enviado. 
 			grd.docs = ($scope.documentos.filter(function(a){return a.added})).map(function(a){
@@ -282,6 +283,7 @@
 				result.nFolhas = a.nFolhas;
 				result.nVias = a.nVias;
 				result.rev_id = a.rev_id;
+				result.id_documento = a.id;
 				return result;
 			})
 
@@ -692,6 +694,7 @@
 			$scope.tiposDeDocumento = parentScope.tiposDeDocumento;
 			$scope.doc.codEMI = $scope.codigosEmi.find(function(a){return 1*a.id==1*this}, doc.codEMI.id);
 			$scope.doc.tipo = $scope.tiposDeDocumento.find(function(a){return a.id==this}, doc.tipo.id);
+			$scope.id_documento = doc.id;
 
 			$scope.cancelar = function(){
 				$mdDialog.hide();
