@@ -367,10 +367,46 @@ WebGeProj.factory('GeProjFactory',
 				return $http.get(API_ROOT+'/grds/'+id_grd,buildHeaders());
 			}
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				GeProjFactory.getMedicoes = function(id_grd){
-					return $http.get(API_ROOT+'/medicoes/'+id_medicao,buildHeaders());
-				}
+			GeProjFactory.adicionarMedicao = function(medicao){
+				return $http.post(API_ROOT+'/medicoes', medicao,buildHeaders());
+			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.atualizarMedicao = function(medicao){
+				return $http.put(API_ROOT+'/medicoes/'+medicao.id, Medicao,buildHeaders());	
+			}
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.getMedicao = function(id_medicaos){
+				return $http.get(API_ROOT+'/medicoes/'+id_medicao,buildHeaders());
+			}
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.buscarMedicao = function(query){
+				
+				// Montando a query string com base no objeto query
+				var queryString = '';
+				for(var i in query){
+
+					// Verificando se é do tipo Date
+					if(query[i] instanceof Date){
+						
+						// Propriedade é do tipo data. Transformando em string
+						queryString += i+'='+(query[i].toJSON().substr(0,10))+'&';
+					
+					} else {
+
+						// Propriedade não é Date. emendando na string
+						queryString += i+'='+query[i]+'&';
+					}
+					
+				}
+
+				// removendo o derradeiro &;
+				queryString = queryString.substr(0,queryString.length-1);
+
+				// Retornando promise da requisição de busca
+				return $http.get(API_ROOT+'/medicoes/search/q?'+queryString,buildHeaders());
+			}
+				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		
 			GeProjFactory.getCodigosEmi = function(){
 				return $http.get(API_ROOT+'/emis',buildHeaders());
 			}

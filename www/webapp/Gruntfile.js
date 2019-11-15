@@ -33,6 +33,7 @@ module.exports = function(grunt) {
 					'app/modules/Documentos/DocumentoEditController.js',
 					'app/modules/Disciplinas/DisciplinasController.js',
 					'app/modules/Medicoes/MedicoesController.js',
+					'app/modules/Medicoes/MedicaoController.js',
 					'app/modules/Grds/GrdsController.js',
 					'app/modules/Nav/NavController.js',
 					'app/modules/Log/LogController.js',

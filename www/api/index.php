@@ -6167,6 +6167,309 @@
 			});
 		// FIM DE ROTAS PARA GRDS
 
+
+		//ROTA DE MEDICAO
+
+		// ROTAS DE medicoes
+		$app->post('/medicoes',function() use ($app,$db,$token){
+			// Lendo e saneando as informações da requisição
+			$medicao = json_decode($app->request->getBody());
+
+			// Capturando o id e o id_empresa do usuário atual
+			$sql = 'SELECT
+						id,id_empresa
+					FROM 
+						usuarios
+					WHERE
+						token=? and validade_do_token>now()';
+			$rs = $db->query($sql,'s',$token)[0];
+			$id_empresa = $rs['id_empresa'];
+			$id = $rs['id'];
+
+			// Verificando se o projeto é da empresa atual e se ele está ativo
+			$sql = 'SELECT count(*) as ok, ativo FROM projetos WHERE id=? AND id_empresa=?';
+			$rs = $db->query($sql,'ii',$medicao->id_projeto,$id_empresa);
+			
+			// Bloqueando para não alterar dados de outra empresa
+			if($rs[0]['ok'] == 0){
+				http_response_code(401);
+				$response = new response(1,'Não altera dados de outra empresa.');
+				$response->flush();
+				exit(1);
+			}
+
+			// Bloqueando por que o projeto está inativo
+			if($rs[0]['ativo'] == 0 || is_null($rs[0]['ativo'])){
+				http_response_code(401);
+				$response = new response(1,'Não cria Medição de projeto inativo.');
+				$response->flush();
+				exit(1);
+			}
+
+			
+			// Determinando o código da nova MEDICAO
+			$sql = 'SELECT ifnull(1*MAX(replace(codigo,"MED-'.date('Y').'-",""))+1,1) as n FROM medicao WHERE CODIGO LIKE "MED-'.date('Y').'-%"';
+			$n = $db->query($sql)[0]['n'];
+			$newCodigo = 'MED-'.date('Y').'-'.str_pad($n, 6, "0", STR_PAD_LEFT);
+			
+			// Inserindo nova medicao.
+			$sql = 'INSERT INTO medicao (id_projeto,codigo,datahora_registro) VALUES (?,?,NOW())';
+			try {
+				$db->query($sql,'is',$medicao->id_projeto,$newCodigo);
+				$newId = $db->insert_id;
+			} catch (Exception $e) {
+				http_response_code(401);
+				$response = new response(1,$e->getMessage());
+				$response->flush();
+				return;
+			}
+
+			// Registrando a ação
+			registrarAcao($db,$id,ACAO_CRIOU_MEDICAO,$newId.','.$newCodigo.','.$medicao->id_projeto);
+		});
+
+		$app->put('/medicoes/:id',function($id) use ($app,$db,$token){
+			// Lendo e saneando as informações da requisição
+			$medicao = json_decode($app->request->getBody());
+
+			// verificando se os dados da requisição são consistentes
+			if($medicao->id != $id){
+				http_response_code(401);
+				$response = new response(1,'Dados da requisição são inconsistentes');
+				$response->flush();
+				return;
+			}
+
+			// Capturando o id e o id_empresa do usuário atual
+			$sql = 'SELECT
+						id,id_empresa
+					FROM 
+						usuarios
+					WHERE
+						token=? and validade_do_token>now()';
+			$rs = $db->query($sql,'s',$token)[0];
+			$id_empresa = $rs['id_empresa'];
+			$id = $rs['id'];
+
+			// Verificando se o projeto é da empresa atual e se o projeto está ativo
+			$sql = 'SELECT count(*) as ok,ativo FROM projetos WHERE id=? AND id_empresa=?';
+			$rs = $db->query($sql,'ii',$medicao->id_projeto,$id_empresa);
+			
+			// Bloquando caso projeto não seja da empresa do usuário
+			if($rs[0]['ok'] == 0){
+				http_response_code(401);
+				$response = new response(1,'Não altera dados de outra empresa.');
+				$response->flush();
+				exit(1);
+			}
+
+			// Bloquando caso projeto atual da Medição esteja inativo
+			if($rs[0]['ativo'] == 0 || is_null($rs[0]['ativo'])){
+				http_response_code(401);
+				$response = new response(1,'Não altera Medição de projeto inativo.');
+				$response->flush();
+				exit(1);
+			}
+
+			// Bloqueando caso o novo projeto da Medição esteja inativo
+			$sql = 'SELECT ativo FROM projetos WHERE id=?';
+			if(($db->query($sql,'i',$medicao->id_projeto))[0]['ativo'] == 0){
+				http_response_code(401);
+				$response = new response(1,'Não altera Medição para um projeto inativo.');
+				$response->flush();
+				exit(1);
+			}
+
+			
+			// Atualizando a grd.
+			$sql = 'UPDATE medicao SET id_projeto=?,datahora_registro=now() WHERE id=?';
+			try {
+				$db->query($sql,'ii',$medicao->id_projeto,$medicao->id);
+			} catch (Exception $e) {
+				http_response_code(401);
+				$response = new response(1,$e->getMessage());
+				$response->flush();
+				return;
+			}
+
+			// Enviando resposta para o cliente
+			$response = new response(0,'Medição atualizada com sucesso.');
+			$response->flush();
+
+			// Registrando a ação
+			registrarAcao($db,$id,ACAO_ATUALIZOU_MEDICAO,$medicao->id.','.$medicao->codigo.','.$medicao->id_projeto);
+		});
+
+		$app->get('/medicoes/:id_medicao',function($id_medicao) use ($app,$db,$token){
+			// Lendo dados
+			$id_medicao = 1*$id_medicao;
+
+			// Lendo dados do cookie! :(
+			$user = json_decode($_COOKIE['user']);
+
+			$sql = 'SELECT c.id,
+							   c.id_projeto,
+							   c.codigo,
+							   c.datahora_registro,
+							   c.datahora_enviada,
+							   b.id_cliente,
+							   b.ativo as projeto_ativo
+						FROM usuarios a
+						INNER JOIN projetos b ON a.id_empresa=b.id_empresa
+						INNER JOIN medicao c ON c.id_projeto=b.id
+						WHERE token=?
+						  AND validade_do_token>now()
+						  AND c.id=?';
+				$rs = $db->query($sql,'si',$token,$id_medicao);
+
+				if(sizeof($rs) > 0){
+				// MEDICAO existe e usuário está ok. Salvando grd em variável
+				$medicao = (object)$rs[0];
+
+				// Caso o projeto esteja inativo, levantando as informações deste projeto para enviar junto com a GRD
+				$sql = 'SELECT id,codigo,nome,id_cliente,ativo FROM projetos WHERE id=?';
+				$medicao->projeto = (object)$db->query($sql,'i',$medicao->id_projeto)[0];
+					
+					// Enviando resposta para cliente
+					$response = new response(0,'ok');
+					$response->medicao = $medicao;
+					$response->flush();
+					return;
+				} else {
+					http_response_code(401);
+					$response = new response(1,'MEDICAO inexistente ou token expirado.');
+					$response->flush();
+					return;
+				}	
+			
+		});
+
+		$app->get('/medicoes/search/q',function() use ($app,$db,$token){
+				
+			// Defiinindo tamanho da página
+			$npp = 5;
+
+			// Determinando a página
+			$pag = isset($_GET['pagAtual'])?(1*$_GET['pagAtual']):1;
+
+			// Determinando condição id_cliente
+			if(isset($_GET['id_cliente']) && $_GET['id_cliente']!=0 ){
+				$id_cliente = 1*$_GET['id_cliente'];
+				$condicao_cliente = 'c.id=?';
+			} else {
+				$id_cliente = 0;
+				$condicao_cliente = 'trueFromInt(?)';
+			}
+
+			// Determinando condição de id_projeto
+			if(isset($_GET['id_projeto']) && $_GET['id_projeto']!=0){
+				$id_projeto = 1*$_GET['id_projeto'];
+				$condicao_projeto = 'b.id=?';
+				$condicao_cliente = 'trueFromInt(?)';
+			} else {
+				$id_projeto = 0;
+				$condicao_projeto = 'trueFromInt(?)';
+			}
+
+			// Determinando condição de codigo
+			if(isset($_GET['codigo']) && $_GET['codigo']!=''){
+				$codMedi = '%'.$_GET['codigo'].'%';
+				$condicao_codMedi = 'a.codigo LIKE ?';
+			} else {
+				$codMedi = 0;
+				$condicao_codMedi = 'trueFromStr(?)';
+			}
+
+			// Determinando a condicao sobre regDe
+			if(isset($_GET['regDe']) && $_GET['regDe']!=''){
+				$regDe = $_GET['regDe'];
+				$condicao_regDe = 'a.datahora_registro >= ?';
+			} else {
+				$regDe = 0;
+				$condicao_regDe = 'trueFromStr(?)';
+			}
+
+			// Determinando a condicao sobre regAte
+			if(isset($_GET['regAte']) && $_GET['regAte']!=''){
+				$regAte = $_GET['regAte'];
+				$condicao_regAte = 'a.datahora_registro <= ?';
+			} else {
+				$regAte = 0;
+				$condicao_regAte = 'trueFromStr(?)';
+			}
+
+			// Determinando a condicao sobre regDe
+			if(isset($_GET['envDe']) && $_GET['envDe']!=''){
+				$envDe = $_GET['envDe'];
+				$condicao_envDe = 'a.datahora_enviada >= ?';
+			} else {
+				$envDe = 0;
+				$condicao_envDe = 'trueFromStr(?)';
+			}
+
+			// Determinando a condicao sobre envAte
+			if(isset($_GET['envAte']) && $_GET['envAte']!=''){
+				$envAte = $_GET['envAte'];
+				$condicao_envAte = 'a.datahora_enviada <= ?';
+			} else {
+				$envAte = 0;
+				$condicao_envAte = 'trueFromStr(?)';
+			}
+			
+			// Definindo colunas que serão selecionadas
+			$colunas = 'a.id as medicao_id,
+						a.codigo as medicao_cod,
+						DATE_FORMAT(a.datahora_registro,"%d/%m/%Y %H:%i:%s")  as medicao_registradaEm,
+						a.datahora_enviada as medicao_enviadaEm,
+						b.id as projeto_id,
+						b.nome as projeto_nome,
+						c.id as cliente_id,
+						c.nome as cliente_nome';
+
+			// Definindo tabelas a consultar
+			$tabelas = 'medicao a
+						INNER JOIN projetos b on b.id=a.id_projeto
+						INNER JOIN clientes c on c.id=b.id_cliente';
+
+			// Definindo condições
+			$condicoes = $condicao_cliente.'
+						  AND '.$condicao_projeto.'
+						  AND '.$condicao_codMedi.'
+						  AND '.$condicao_regDe.'
+						  AND '.$condicao_regAte.'
+						  AND '.$condicao_envDe.'
+						  AND '.$condicao_envAte;
+			
+			// Preparando string SQL
+			$sql = "SELECT $colunas
+					   FROM $tabelas
+					   WHERE $condicoes 
+					ORDER BY medicao_registradaEm DESC LIMIT ?,?";
+			
+			// Realizando a consulta
+			$result = $db->query($sql,'iisssssii',$id_cliente,$id_projeto,$codMedi,$regDe,$regAte,$envDe,$envAte,(($pag-1)*$npp),$npp);
+			
+			// Determinando o total de GRDs que foram encontrados
+			$sql = "SELECT count(*) as n
+					FROM $tabelas
+					WHERE $condicoes";
+			$n = $db->query($sql,'iisssss',$id_cliente,$id_projeto,$codMedi,$regDe,$regAte,$envDe,$envAte)[0]['n'];
+
+			// Calculando o número de páginas
+			$nPaginas = ceil($n/$npp);
+
+			// Preparando response
+			$response = new response(0,'ok');
+			$response->result = $result;
+			$response->nPaginas = $nPaginas;
+			$response->flush();
+		});
+
+	
+	// FIM DE ROTAS PARA medicoes
+
+		//FIM DE ROTAS PARA MEDICAO
+
 		// ROTAS DE CODIGOS EMI
 			$app->get('/emis',function() use ($app,$db,$token){
 				// retornando os codigos emis da empresa do usuário logado caso o token dele seja válido
