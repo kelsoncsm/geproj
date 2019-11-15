@@ -6217,6 +6217,9 @@
 			try {
 				$db->query($sql,'is',$medicao->id_projeto,$newCodigo);
 				$newId = $db->insert_id;
+				$response = new response(0,'ok');
+				$response->newId = $newId;
+				$response->flush();
 			} catch (Exception $e) {
 				http_response_code(401);
 				$response = new response(1,$e->getMessage());

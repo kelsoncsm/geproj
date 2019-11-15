@@ -21152,6 +21152,7 @@ module.exports = function(Chart) {
 		.success(function(response){
 			$scope.clientes = response.clientes;
 
+
 			// atribuindo cliente da medicao  caso ela tenha sido carregada primeiro
 			if($scope.medicao != null){
 				$scope.medicao.cliente = $scope.clientes.find(function(a){return a.id==this},$scope.medicao.id_cliente);
@@ -21220,7 +21221,7 @@ module.exports = function(Chart) {
 
 		// Define função a ser executada quando o projeto muda
 		$scope.onProjetoChange = function(){
-		
+            $scope.medicao.alterada = true;
 		}
 
 		// Função que leva para a busca de medicaos
@@ -21294,7 +21295,7 @@ module.exports = function(Chart) {
 					// Retornando Toast para o usuário
 					$mdToast.show(
 						$mdToast.simple()
-						.textContent('Falha ao alterar GRD: ' + error.msg)
+						.textContent('Falha ao alterar Medição: ' + error.msg)
 						.position('bottom left')
 						.hideDelay(5000)
 					);
@@ -21306,7 +21307,7 @@ module.exports = function(Chart) {
 		}
 		// Função executada quando se clica no burão para visualizar o GRD
 		$scope.onVisualizarMedicaoClick = function(){
-			GeProjFactory.viewGRD($scope.medicao.id);
+			// GeProjFactory.viewGRD($scope.medicao.id);
 		}
  
 		// FUNÇÕES DE CARGA DE DADOS = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -21385,7 +21386,7 @@ module.exports = function(Chart) {
 
 							// Settando GRD no scope
 							$scope.medicao = response.medicao;
-							// $scope.medicao.alterada= false;
+							$scope.medicao.alterada= false;
 
 							
 							// parsing datas
@@ -21399,7 +21400,8 @@ module.exports = function(Chart) {
 								// Projeto ativo. Carregando o projeto da base local
 								indexedDB.open('geproj').onsuccess = function(evt){
 									evt.target.result.transaction('projetos').objectStore('projetos').getAll().onsuccess = function(evt){
-
+										
+									
 										// Levantando os projetos do cliente
 										$scope.projetos = evt.target.result.filter(function(a){return a.id_cliente==this},$scope.medicao.id_cliente);
 

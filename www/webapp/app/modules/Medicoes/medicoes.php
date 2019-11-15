@@ -104,7 +104,6 @@
             </md-button>
         </div>
 
-        {{med}}
         <div ng-if="resultados.length>0" class="resultado" layout="column" ng-repeat="med in resultados"
             md-whiteframe="2dp" ng-click="onResultadoClick(med.medicao_id)">
             <div layout="row" layout-align="space-between start">

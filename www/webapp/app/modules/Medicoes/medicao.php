@@ -21,11 +21,10 @@
                 <form name="formDados" ng-submit="salvar()">
                     <div layout="row" layout-align="space-between start">
 
-
                         <md-input-container flex="25">
                             <label>Cliente</label>
                             <md-select ng-model="medicao.cliente" ng-change="onClienteChange()"
-                                ng-disabled="medicao.datahora_enviada!=null || medicao.projeto_ativo==0" required>
+                                ng-disabled="medicao.projeto_ativo==0" required>
                                 <md-select-label>Selecione um Cliente</md-select-label>
                                 <md-option ng-value="cliente" ng-repeat="cliente in clientes|orderBy:'nome'">
                                     {{ cliente.nome }}</md-option>
@@ -56,7 +55,7 @@
                             </md-select>
                         </md-input-container>
                         <md-input-container flex="25">
-                            <label>Código da GRD</label>
+                            <label>Código </label>
                             <input type="text" ng-model="medicao.codigo" disabled="disabled"
                                 placeholder="Automático após salvamento">
 						</md-input-container>
@@ -76,8 +75,8 @@
 
                 <div layout="row" layout-align="end center" class="bottom_controls">
                     <md-button ng-disabled="formDados.$pristine || formDados.$invalid || !medicao.alterada"
-                        ng-click="salvar()" class="md-raised md-primary" aria-label="Salvar GRD">
-                        {{medicao.datahora_enviada!=null?'Esta GRD foi já enviada para o cliente. Ela não pode mais ser alterada':'Salvar GRD'}}
+                        ng-click="salvar()" class="md-raised md-primary" aria-label="Salvar">
+                        {{medicao.datahora_enviada!=null?'Esta  foi já enviada para o cliente. Ela não pode mais ser alterada':'Salvar GRD'}}
                     </md-button>
                 </div>
             </md-content>

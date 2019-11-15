@@ -251,12 +251,12 @@
 			
 			// Anula o projeto do cliente selecionado
 			$scope.medicao.projeto = null;
-			//$scope.medicao.alterada= true;
+			$scope.medicao.alterada= true;
 		}
 
 		// Define função a ser executada quando o projeto muda
 		$scope.onProjetoChange = function(){
-		
+			$scope.medicao.alterada = true;
 		}
 
 		// Função que leva para a busca de medicaos
@@ -272,19 +272,6 @@
 			// Fazendo cópia de medicao
 			var medicao = angular.copy($scope.medicao);
 			
-
-			// Aplicando filtro e mapeamento nos documentos para um vetor de dados a ser enviado. 
-			medicao.docs = ($scope.documentos.filter(function(a){return a.added})).map(function(a){
-				var result = {};
-				result.id_codEMI = a.codEMI.id;
-				result.id_tipo = a.tipo.id;
-				result.nFolhas = a.nFolhas;
-				result.nVias = a.nVias;
-				result.rev_id = a.rev_id;
-				result.id_documento = a.id;
-				return result;
-			})
-
 			medicao.id_projeto = medicao.projeto.id;
 			
 			// removendo dados desnecessários
@@ -343,7 +330,7 @@
 					// Retornando Toast para o usuário
 					$mdToast.show(
 						$mdToast.simple()
-						.textContent('Falha ao alterar GRD: ' + error.msg)
+						.textContent('Falha ao alterar Medição: ' + error.msg)
 						.position('bottom left')
 						.hideDelay(5000)
 					);
@@ -355,7 +342,7 @@
 		}
 		// Função executada quando se clica no burão para visualizar o GRD
 		$scope.onVisualizarMedicaoClick = function(){
-			GeProjFactory.viewGRD($scope.medicao.id);
+			// GeProjFactory.viewGRD($scope.medicao.id);
 		}
  
 		// FUNÇÕES DE CARGA DE DADOS = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -434,7 +421,7 @@
 
 							// Settando GRD no scope
 							$scope.medicao = response.medicao;
-							// //$scope.medicao.alterada= false;
+							$scope.medicao.alterada= false;
 
 							
 							// parsing datas
