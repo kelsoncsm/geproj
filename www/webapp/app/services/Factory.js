@@ -366,6 +366,10 @@ WebGeProj.factory('GeProjFactory',
 			GeProjFactory.getGrd = function(id_grd){
 				return $http.get(API_ROOT+'/grds/'+id_grd,buildHeaders());
 			}
+				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+				GeProjFactory.getMedicoes = function(id_grd){
+					return $http.get(API_ROOT+'/medicoes/'+id_medicao,buildHeaders());
+				}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.getCodigosEmi = function(){
 				return $http.get(API_ROOT+'/emis',buildHeaders());

@@ -1,0 +1,232 @@
+#medicao_container{
+	.controle_principal{
+		padding: 20px 0px 20px 0;
+
+		div:first-child{
+			width: 160px;
+		}
+		
+		.sendActions {
+		    position: absolute;
+			top: 65px;
+		}
+	}
+
+	.bottom_controls{
+		margin:15px 0 0 0;
+	}
+
+	.dados{
+		padding-top: 50px;
+	}
+
+	.documentos {
+
+		padding: 0 0;
+
+		.controles_documentos{
+			padding: 2px 5px 2px 10px !important;
+		}
+
+		.doc{
+			padding: 20px 10px;
+			border-bottom:1px solid #DDD;
+			.doc-checkbox{
+				span:nth-child(1){
+					display: block;
+					font-size: 16px;
+					position:relative;
+					top:10px;
+				}
+				span:nth-child(2){
+					font-size: 10px;
+					position:relative;
+					top:1px;
+				}
+			}
+			.controles_de_doc {
+				.ptot{
+					font-size: 12px;
+					text-align: center;
+					border: 1px solid #999;
+					border: none;
+					background-color: #DDD;
+					color: #666;
+					padding: 1px 6px 0px 6px;
+					border-radius: 2px;
+					margin-right: 4px;
+					display: inline-block;
+					text-align: center;
+					cursor: default;
+				}
+				.ptot:focus{
+					outline:none;
+				}
+				.clickable{
+					cursor:pointer;
+					background-color: $azul;
+					color:#FFF;	
+				}
+				button {
+					margin: 0;
+					padding: 0;
+				}
+			}
+		}
+
+		.controles_documentos{
+			padding: 10px 5px 10px 0px;
+			height:72px;
+			border-bottom:3px solid #DDD;
+			input{
+				border: none;
+				padding: 15px 5px;
+				background-color: transparent;
+				width:calc(100% - 50px);
+				font-size: 16px;
+				&:focus{
+					border: none;
+					outline: none;
+				}
+			}
+		}
+
+		md-checkbox {
+			margin: 0;
+			span{
+				font-size: 12px;
+				position: relative;
+				top: -2px;
+			}
+		}
+
+	}
+
+	.retorno{
+		padding-top: 50px;
+		.obs {
+			border:1px solid #D0D0D0;
+			padding-top:30px;
+			background-color:#F0F0F0;
+			margin-bottom:30px;
+			position:relative;
+
+			.title{
+				color: rgba(0,0,0,0.54);
+				font-size: 12px;
+			}
+
+			a{
+				color:$azul;
+				padding: 0 0 0 10px;
+				font-size:12px;
+				margin-top:5px;
+				width:250px;
+				overflow:hidden;
+			}
+
+			.controles{
+				padding: 0 10px 10px 0;
+			}
+
+		}
+		.obs:last-child{
+			margin-bottom:0;
+		}
+	}
+
+	md-input-container{
+		margin: 10px 10px;
+	}
+}
+
+.medicaodoc_dialog{
+	width: 600px;
+	padding: 20px;
+}
+
+.endfisico_dialog{
+	width: 400px;
+	padding: 20px;
+	md-dialog-content {
+		overflow: hidden;	
+	}
+}
+
+.medicaoobs_dialog{
+	width: 500px;
+	padding: 20px;
+	.md-errors-spacer{
+		min-height:0 !important;
+	}
+	md-dialog-content {
+
+		overflow: hidden;
+		textarea {
+			font-family:$fontFamily;
+			line-height:18px;
+			font-size:14px;
+		}
+		.lista_de_anexos{
+			margin:15px 0;
+			div{
+				display:inline-block;
+				padding:5px 45px 5px 10px;
+				border-radius:5px;
+				margin:0 5px 5px 0;
+				font-size:14px;
+				min-width:100px;
+				cursor:default;
+				position:relative;
+				a {
+					display:inline-block;
+					position: absolute;
+					right:5px;
+					top:6px;
+					font-family:"Verdana";
+					cursor:pointer;
+					border-radius:10px;
+					height:20px;
+					width:20px;
+					line-height:18px;
+					text-align:center;
+					text-indent:1px;
+				}
+				a:hover{
+					background-color:$laranja;
+					color:#FFF;
+				}
+			}
+			.pre {
+				color:$cinza;
+				background-color:$cinzaClaro;
+			}
+			.novos {
+				color:$azul;
+				background-color:$azulClaro;
+			}
+
+			button{
+				position:relative;
+				top:-1px;
+			}
+		}
+	}
+}
+
+.enviarEmail_dialog{
+	padding: 20px;
+	width: 640px;
+	
+	.destinatarios md-input-container{
+		width:300px;
+	}
+
+	.container_assunto_msg{
+		width: 98%;
+	}
+
+	.md-errors-spacer{
+		min-height: 5px;
+	}
+}

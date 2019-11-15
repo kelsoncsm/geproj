@@ -2000,6 +2000,230 @@ textarea {
     color: #2196F3;
     margin: 0 auto 0 auto; }
 
+    #medicao_container .controle_principal {
+      padding: 20px 0px 20px 0; }
+      #medicao_container .controle_principal div:first-child {
+        width: 160px; }
+      #medicao_container .controle_principal .sendActions {
+        position: absolute;
+        top: 65px; }
+    #medicao_container .bottom_controls {
+      margin: 15px 0 0 0; }
+    #medicao_container .dados {
+      padding-top: 50px; }
+    #medicao_container .documentos {
+      padding: 0 0; }
+      #medicao_container .documentos .controles_documentos {
+        padding: 2px 5px 2px 10px !important; }
+      #medicao_container .documentos .doc {
+        padding: 20px 10px;
+        border-bottom: 1px solid #DDD; }
+        #medicao_container .documentos .doc .doc-checkbox span:nth-child(1) {
+          display: block;
+          font-size: 16px;
+          position: relative;
+          top: 10px; }
+        #medicao_container .documentos .doc .doc-checkbox span:nth-child(2) {
+          font-size: 10px;
+          position: relative;
+          top: 1px; }
+        #medicao_container .documentos .doc .controles_de_doc .ptot {
+          font-size: 12px;
+          text-align: center;
+          border: 1px solid #999;
+          border: none;
+          background-color: #DDD;
+          color: #666;
+          padding: 1px 6px 0px 6px;
+          border-radius: 2px;
+          margin-right: 4px;
+          display: inline-block;
+          text-align: center;
+          cursor: default; }
+        #medicao_container .documentos .doc .controles_de_doc .ptot:focus {
+          outline: none; }
+        #medicao_container .documentos .doc .controles_de_doc .clickable {
+          cursor: pointer;
+          background-color: #2196F3;
+          color: #FFF; }
+        #medicao_container .documentos .doc .controles_de_doc button {
+          margin: 0;
+          padding: 0; }
+      #medicao_container .documentos .controles_documentos {
+        padding: 10px 5px 10px 0px;
+        height: 72px;
+        border-bottom: 3px solid #DDD; }
+        #medicao_container .documentos .controles_documentos input {
+          border: none;
+          padding: 15px 5px;
+          background-color: transparent;
+          width: calc(100% - 50px);
+          font-size: 16px; }
+          #medicao_container .documentos .controles_documentos input:focus {
+            border: none;
+            outline: none; }
+      #medicao_container .documentos md-checkbox {
+        margin: 0; }
+        #medicao_container .documentos md-checkbox span {
+          font-size: 12px;
+          position: relative;
+          top: -2px; }
+    #medicao_container .retorno {
+      padding-top: 50px; }
+      #medicao_container .retorno .obs {
+        border: 1px solid #D0D0D0;
+        padding-top: 30px;
+        background-color: #F0F0F0;
+        margin-bottom: 30px;
+        position: relative; }
+        #medicao_container .retorno .obs .title {
+          color: rgba(0, 0, 0, 0.54);
+          font-size: 12px; }
+        #medicao_container .retorno .obs a {
+          color: #2196F3;
+          padding: 0 0 0 10px;
+          font-size: 12px;
+          margin-top: 5px;
+          width: 250px;
+          overflow: hidden; }
+        #medicao_container .retorno .obs .controles {
+          padding: 0 10px 10px 0; }
+      #medicao_container .retorno .obs:last-child {
+        margin-bottom: 0; }
+    #medicao_container md-input-container {
+      margin: 10px 10px; }
+    
+    .grddoc_dialog {
+      width: 600px;
+      padding: 20px; }
+    
+    .endfisico_dialog {
+      width: 400px;
+      padding: 20px; }
+      .endfisico_dialog md-dialog-content {
+        overflow: hidden; }
+    
+    .medicaoobs_dialog {
+      width: 500px;
+      padding: 20px; }
+      .medicaoobs_dialog .md-errors-spacer {
+        min-height: 0 !important; }
+      .medicaoobs_dialog md-dialog-content {
+        overflow: hidden; }
+        .medicaoobs_dialog md-dialog-content textarea {
+          font-family: "Poppins", sans-serif;
+          line-height: 18px;
+          font-size: 14px; }
+        .medicaoobs_dialog md-dialog-content .lista_de_anexos {
+          margin: 15px 0; }
+          .medicaoobs_dialog md-dialog-content .lista_de_anexos div {
+            display: inline-block;
+            padding: 5px 45px 5px 10px;
+            border-radius: 5px;
+            margin: 0 5px 5px 0;
+            font-size: 14px;
+            min-width: 100px;
+            cursor: default;
+            position: relative; }
+            .medicaoobs_dialog md-dialog-content .lista_de_anexos div a {
+              display: inline-block;
+              position: absolute;
+              right: 5px;
+              top: 6px;
+              font-family: "Verdana";
+              cursor: pointer;
+              border-radius: 10px;
+              height: 20px;
+              width: 20px;
+              line-height: 18px;
+              text-align: center;
+              text-indent: 1px; }
+            .medicaoobs_dialog md-dialog-content .lista_de_anexos div a:hover {
+              background-color: #ef6c00;
+              color: #FFF; }
+          .medicaoobs_dialog md-dialog-content .lista_de_anexos .pre {
+            color: rgba(0, 0, 0, 0.54);
+            background-color: rgba(0, 0, 0, 0.12); }
+          .medicaoobs_dialog md-dialog-content .lista_de_anexos .novos {
+            color: #2196F3;
+            background-color: #e3f2fd; }
+          .medicaoobs_dialog md-dialog-content .lista_de_anexos button {
+            position: relative;
+            top: -1px; }
+    
+    .enviarEmail_dialog {
+      padding: 20px;
+      width: 640px; }
+      .enviarEmail_dialog .destinatarios md-input-container {
+        width: 300px; }
+      .enviarEmail_dialog .container_assunto_msg {
+        width: 98%; }
+      .enviarEmail_dialog .md-errors-spacer {
+        min-height: 5px; }
+    
+    #medicoes_container {
+      position: relative; }
+      #medicoes_container .controles {
+        width: 400px;
+        margin-top: 30px;
+        padding: 15px;
+        position: fixed;
+        background-color: #FFF; }
+        #medicoes_container .controles .hint {
+          color: #CCC;
+          font-size: 12px;
+          position: absolute;
+          top: 33px;
+          left: 4px; }
+        #medicoes_container .controles md-datepicker .md-datepicker-input {
+          width: 180px; }
+        #medicoes_container .controles md-input-container .md-errors-spacer {
+          min-height: 0 !important; }
+        #medicoes_container .controles .input-container-documento {
+          position: relative;
+          top: -10px; }
+      #medicoes_container .resultados_container {
+        margin: 30px 0 0 410px;
+        width: calc(100% - 400px); }
+        #medicoes_container .resultados_container .resultado {
+          cursor: pointer;
+          padding: 20px;
+          margin: 0 0 10px 0;
+          background-color: #fafafa;
+          width: 100%; }
+          #medicoes_container .resultados_container .resultado > div:first-child {
+            margin-bottom: 10px; }
+          #medicoes_container .resultados_container .resultado * {
+            cursor: pointer; }
+        #medicoes_container .resultados_container .resultado:hover {
+          background-color: #FFF; }
+        #medicoes_container .resultados_container .resultado_item {
+          display: inline-block;
+          vertical-align: top;
+          margin-right: 10px; }
+          #medicoes_container .resultados_container .resultado_item label {
+            display: block;
+            font-size: 12px;
+            color: #BBB; }
+          #medicoes_container .resultados_container .resultado_item span {
+            font-size: 14px; }
+        #medicoes_container .resultados_container .resultado_item:last-child {
+          margin-right: 0; }
+        #medicoes_container .resultados_container .paginacao {
+          width: 400px;
+          position: relative;
+          left: 50%;
+          margin-left: -200px; }
+          #medicoes_container .resultados_container .paginacao .md-button {
+            width: 12%;
+            min-width: 0px; }
+      #medicoes_container .instrucoes {
+        text-align: center;
+        width: 50%;
+        min-width: 600px;
+        color: #2196F3;
+        margin: 0 auto 0 auto; }
+
 #logs_container {
   padding-top: 20px;
   position: relative; }

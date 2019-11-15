@@ -17,6 +17,7 @@ var WebGeProj = angular.module('WebGeProj',
 								'Clientes',
 								'Configuracoes',
 								'Disciplinas',
+								'Medicoes',
 								'Documentos',
 								'Grds',
 								'Log',
@@ -220,6 +221,19 @@ WebGeProj.config(
 			{
 				controller: 'ValidacaoController',
 				templateUrl: 'app/modules/Validacao/validacao.php'
+			}
+		).when(
+			'/medicoes',
+			{
+				controller: 'MedicoesController',
+				templateUrl: 'app/modules/Medicoes/medicoes.php'
+			}
+		)
+		.when(
+			'/medicoes/:id',
+			{
+				controller: 'MedicaoController',
+				templateUrl: 'app/modules/Medicoes/medicao.php'
 			}
 		)
 		.otherwise({redirectTo:'/visaogeral'});
