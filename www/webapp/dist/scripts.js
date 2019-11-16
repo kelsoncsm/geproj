@@ -21146,6 +21146,9 @@ module.exports = function(Chart) {
 		// definindo documentos
 		$scope.documentos = [];
 
+		// definindo lista
+		$scope.listaItem = [];
+
 		// Carregando clientes
 		$scope.clientes = [];
 		GeProjFactory.getClientes()
@@ -21167,6 +21170,7 @@ module.exports = function(Chart) {
 				.hideDelay(5000)
 			);
 		});
+ 
 
 		// Carregando configurações do GeProj
 		var config = null;
@@ -21221,7 +21225,7 @@ module.exports = function(Chart) {
 
 		// Define função a ser executada quando o projeto muda
 		$scope.onProjetoChange = function(){
-            $scope.medicao.alterada = true;
+			$scope.medicao.alterada = true;
 		}
 
 		// Função que leva para a busca de medicaos
@@ -21259,7 +21263,7 @@ module.exports = function(Chart) {
 					$scope.medicao.datahora_registro = new Date();
 
 					// Mudando o tab para o próximo... TODO
-					// TODO: Fazer mudar para tab de documentos depois de salvar GRD
+					// TODO: Fazer mudar para tab de documentos depois de salvar Medição
 
 					// Retornando Toast para o usuário
 					$mdToast.show(
@@ -21305,9 +21309,9 @@ module.exports = function(Chart) {
 				});
 			}
 		}
-		// Função executada quando se clica no burão para visualizar o GRD
+		// Função executada quando se clica no burão para visualizar o Medição
 		$scope.onVisualizarMedicaoClick = function(){
-			// GeProjFactory.viewGRD($scope.medicao.id);
+			// GeProjFactory.viewMedição($scope.medicao.id);
 		}
  
 		// FUNÇÕES DE CARGA DE DADOS = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -21341,7 +21345,7 @@ module.exports = function(Chart) {
 					console.warn(error);
 				});
 			}
-			// Função que carrega a GRD
+			// Função que carrega a Medição
 			function loadMedicao(id){
 				if(id == 0){
 					$scope.medicao = {
@@ -21377,14 +21381,14 @@ module.exports = function(Chart) {
 						// Mostra carregando
 						$scope.root.carregado = true;
 
-						// Carregando GRD do servidor
+						// Carregando Medição do servidor
 						GeProjFactory.getMedicao(id)
 						.success(function(response){
 
 							// Esconde carregando
 							$scope.root.carregando = false;
 
-							// Settando GRD no scope
+							// Settando Medição no scope
 							$scope.medicao = response.medicao;
 							$scope.medicao.alterada= false;
 
@@ -21414,19 +21418,19 @@ module.exports = function(Chart) {
 									}
 								}
 							} else {
-								// Projeto da GRD é inativo. As informações do projeto já estão carregadas na GRD.
-								// Push o projeto da GRD no $scope.projetos
+								// Projeto da Medição é inativo. As informações do projeto já estão carregadas na Medição.
+								// Push o projeto da Medição no $scope.projetos
 								$scope.projetos.push($scope.medicao.projeto);
 							}
 
-							// Mostrando alerta caso a GRD seja de um projeto inativo
+							// Mostrando alerta caso a Medição seja de um projeto inativo
 							if($scope.medicao.projeto_ativo == 0){
 								$mdDialog.show(
 								$mdDialog.alert()
 									.clickOutsideToClose(false)
-									.title('Essa GRD é de um projeto inativo!')
+									.title('Essa Medição é de um projeto inativo!')
 									.textContent('Algumas informações dela não poderão ser alteradas. Ela não poderá ser enviada para o cliente.')
-									.ariaLabel('GRD de projeto inativo')
+									.ariaLabel('Medição de projeto inativo')
 									.ok('OK')
 								);
 							}
@@ -21434,7 +21438,9 @@ module.exports = function(Chart) {
 							// atribuindo o cliente
 							$scope.medicao.cliente = $scope.clientes.find(function(a){return a.id==this},$scope.medicao.projeto.id_cliente);
 
-						
+							$scope.listaMedCargo = response.medicao.cargo;
+							$scope.listaMedHH = response.medicao.hh;
+
 						})
 						.error(function(error){
 							// Esconde carregando
@@ -21443,7 +21449,7 @@ module.exports = function(Chart) {
 							// Retornando Toast para o usuário
 							$mdToast.show(
 								$mdToast.simple()
-								.textContent('Falha ao tentar carregar GRD: '+error.msg)
+								.textContent('Falha ao tentar carregar Medição: '+error.msg)
 								.position('bottom left')
 								.hideDelay(5000)
 							);
@@ -21452,9 +21458,23 @@ module.exports = function(Chart) {
 							console.warn(error);
 						});
 					}
-				}
+                }
+                
+
+                function LoadDadosLista(id){
+
+                    GeProjFactory.getListaItensMedicao(id)
+                            .success(function(response){
+                                $scope.listaItem = response.items;
+                            })
+                            .error(function(error){
+                                console.log(error)
+                            });
+    
+                }
 			}
 
+		
 		// FIM DE FUNÇÕES DE CARGA DE DADOS = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 	// Atribuindo função controller ao módulo
@@ -27330,6 +27350,10 @@ function RootController($scope,$interval,$cookies,GeProjFactory,$mdSidenav,$mdMe
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.getMedicao = function(id_medicao){
 				return $http.get(API_ROOT+'/medicoes/'+id_medicao,buildHeaders());
+			}
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.getListaItensMedicao = function(id_medicao){
+				return $http.get(API_ROOT+'/medicoes/itens/'+id_medicao,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.getCodigosEmi = function(){

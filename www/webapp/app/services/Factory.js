@@ -375,10 +375,11 @@ WebGeProj.factory('GeProjFactory',
 				return $http.put(API_ROOT+'/medicoes/'+medicao.id, Medicao,buildHeaders());	
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GeProjFactory.getMedicao = function(id_medicaos){
-				return $http.get(API_ROOT+'/medicoes/'+id_medicao,buildHeaders());
+			GeProjFactory.getListaItensMedicao = function(id_medicao){
+				return $http.get(API_ROOT+'/medicoes/itens/'+id_medicao,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			
 			GeProjFactory.buscarMedicao = function(query){
 				
 				// Montando a query string com base no objeto query

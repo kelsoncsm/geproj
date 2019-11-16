@@ -71,6 +71,42 @@
 							</md-select>
 						</md-input-container> -->
                     </div>
+            
+                    <div class="container_100" id="propostas_container">
+<div class="controles" layout="row" layout-align="space-between start">
+    <md-button ng-click="onNovaPropostaClick()" class="md-raised md-accent novaPropBt" aria-label="Criar novo item">
+        <md-icon class="material-icons step">add</md-icon>
+        Novo Item
+    </md-button>
+</div>
+</br>
+<table>
+    <thead>
+        <tr>
+            <td style="width: 100px;text-align: center;">Título</td>
+            <td style="width: 100px;text-align: center;">Quantidade</td>
+            <td style="width: 100px;text-align: center;">Valor</td>
+            <td style="width: 100px;text-align: center;">Total</td>
+           
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="c in medicao.cargo" ng-click="goToProposta(c.id)">
+             <td style="width: 100px;text-align: center;">{{c.descricao}}</td>
+             <td style="width: 100px;text-align: center;">{{c.qtd}}</td>
+             <td style="width: 100px;text-align: center;">{{c.valor | currency }}</td>
+             <td style="width: 100px;text-align: center;">{{c.valor *  c.qtd | currency }}</td>
+        </tr>
+        <tr ng-repeat="h in medicao.hh" ng-click="goToProposta(h.id)">
+            <td style="width: 100px;text-align: center;">{{h.descricao}} </td>
+            <td style="width: 100px;text-align: center;">{{h.qtd}}</td>
+            <td style="width: 100px;text-align: center;">{{h.valor | currency }}</td>
+            <td style="width: 100px;text-align: center;">{{h.valor *  h.qtd | currency }}</td>
+        </tr>
+    </tbody>
+</table>
+
+</div>
                 </form>
 
                 <div layout="row" layout-align="end center" class="bottom_controls">
@@ -82,4 +118,4 @@
             </md-content>
         </md-tab>
     </md-tabs>
-</div>
+</div>      

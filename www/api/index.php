@@ -6206,7 +6206,6 @@
 				exit(1);
 			}
 
-			
 			// Determinando o código da nova MEDICAO
 			$sql = 'SELECT ifnull(1*MAX(replace(codigo,"MED-'.date('Y').'-",""))+1,1) as n FROM medicao WHERE CODIGO LIKE "MED-'.date('Y').'-%"';
 			$n = $db->query($sql)[0]['n'];
@@ -6332,8 +6331,19 @@
 				// Caso o projeto esteja inativo, levantando as informações deste projeto para enviar junto com a GRD
 				$sql = 'SELECT id,codigo,nome,id_cliente,ativo FROM projetos WHERE id=?';
 				$medicao->projeto = (object)$db->query($sql,'i',$medicao->id_projeto)[0];
-					
-					// Enviando resposta para cliente
+
+				$sql = 'SELECT	mc.id,mc.descricao,mc.id_empresa,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
+				FROM   medicao_cargo_cliente mc  
+				WHERE mc.id_medicao=?';
+						
+				 $medicao->cargo = $db->query($sql,'i',$id_medicao);
+				$sql = 'SELECT	muc.id,muc.descricao,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
+				FROM  medicao_unidade_cliente muc 
+				WHERE muc.id_medicao =?';
+				  
+			     $medicao->hh = $db->query($sql,'i',$id_medicao);
+
+				// Enviando resposta para cliente
 					$response = new response(0,'ok');
 					$response->medicao = $medicao;
 					$response->flush();
@@ -6466,6 +6476,36 @@
 			$response->result = $result;
 			$response->nPaginas = $nPaginas;
 			$response->flush();
+		});
+
+
+		$app->get('/medicoes/itens/:id_medicao',function($id_medicao) use ($app,$db,$token){
+			// Lendo dados
+			$id_medicao = 1*$id_medicao;
+			$item = [];
+			
+
+			$sql = 'SELECT 	mc.id,mc.id_empresa,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
+					 FROM  medicao med
+				    LEFT JOIN  medicao_cargo_cliente mc  on mc.id_medicao = med.id
+					WHERE med.id=?';
+			 $rs = $db->query($sql,'i',$id_medicao);
+			 
+			 $item->cargo = $db->query($sql,'i',$id_medicao);
+		
+				$sql = 'SELECT 	muc.id,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
+				        FROM  medicao med
+					    LEFT JOIN  medicao_unidade_cliente muc on muc.id_medicao = med.id
+						WHERE med.id =?';
+						
+			    $item->item_hh = $db->query($sql,'i',$id_medicao);
+				
+					$response = new response(0,'ok');
+					$response->item = $item;
+					$response->flush();
+					return;
+					
+
 		});
 
 	
