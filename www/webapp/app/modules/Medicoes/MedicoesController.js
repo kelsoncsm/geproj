@@ -164,12 +164,7 @@
 		// Carregando medicao
 		$scope.medicao = null;
 
-		$scope.tipoMedicao = [{ id: "A", nome: "Ambos" },
-		{ id: "H", nome: "Hora/Hora" },
-		{ id: "U", nome: "Unitario" }];
-
-
-
+	
 		// Definindo códigos emis
 		$scope.codigosEmi = [];
 		loadCodigosEmi();
@@ -207,16 +202,18 @@
 			});
 
 
-		$scope.openItemDialog = function (evt, doc) {
+		$scope.openItemDialog = function (evt, item) {
+
+	
 			$mdDialog.show(
 				{
 					controller: itemDialogController,
 					locals: {
-						doc: angular.copy(doc),
-						parentDoc: doc,
+						item: angular.copy(item),
+						parentDoc: item,
 						parentScope: $scope
 					},
-					templateUrl: './app/modules/medicao/item.dialog.html',
+					templateUrl: './app/modules/medicoes/meditem.dialog.tmpl.html',
 					parent: angular.element(document.body),
 					targetEvent: evt,
 					clickOutsideToClose: true
@@ -230,156 +227,17 @@
 
 		// Função controller do diálogo para alterar endereço físico
 		function itemDialogController($scope, parentScope, parentDoc, item) {
+			
+			$scope.tipoMedicao = [{ id: "A", nome: "Ambos" },
+			{ id: "H", nome: "Hora/Hora" },
+			{ id: "U", nome: "Unitario" }];
+			
 			$scope.item = item;
 
 			$scope.cancelar = function () {
 				$mdDialog.hide();
 			}
 
-			$scope.salvar = function (item) {
-
-				// Mostra carregando
-				parentScope.root.carregando = true;
-
-
-				if ((item.id_med_cargo != undefined && !isNaN(item.id_med_cargo)) || (item.id_med_hh != undefined && !isNaN(item.id_med_hh))) {
-
-
-
-					if (item.id_cargo != undefined && !isNaN(item.id_cargo)) {
-						// Fazendo requisição
-						GeProjFactory.AdicionarItemCargo(item)
-							.success(function (response) {
-								// Escondendo carregando
-								parentScope.root.carregando = false;
-	
-								loadMedicao(item.id_medicao);
-								// Escondendo caixa de diálogo
-								$mdDialog.hide();
-	
-							})
-							.error(function (error) {
-								// Escondendo carregando
-								parentScope.root.carregando = false;
-	
-								// Retornando Toast para o usuário
-								$mdToast.show(
-									$mdToast.simple()
-										.textContent('Não foi possível alterar o item.')
-										.position('bottom left')
-										.hideDelay(5000)
-								);
-	
-								// Imprimindo erro no console
-								console.warn(error)
-	
-							});
-	
-					} else {
-	
-						// Fazendo requisição
-						GeProjFactory.AdicionarItemHoraHora(item)
-							.success(function (response) {
-								// Escondendo carregando
-								parentScope.root.carregando = false;
-	
-								loadMedicao(item.id_medicao);
-	
-								// Escondendo caixa de diálogo
-								$mdDialog.hide();
-	
-							})
-							.error(function (error) {
-								// Escondendo carregando
-								parentScope.root.carregando = false;
-	
-								// Retornando Toast para o usuário
-								$mdToast.show(
-									$mdToast.simple()
-										.textContent('Não foi possível alterar endereço físico.')
-										.position('bottom left')
-										.hideDelay(5000)
-								);
-	
-								// Imprimindo erro no console
-								console.warn(error)
-	
-							});
-	
-					}
-
-
-				}else{
-
-					if (item.id_cargo != undefined && !isNaN(item.id_cargo)) {
-						// Fazendo requisição
-						GeProjFactory.atualizaMedicaoCargo(item)
-							.success(function (response) {
-								// Escondendo carregando
-								parentScope.root.carregando = false;
-	
-								loadMedicao(item.id_medicao);
-								// Escondendo caixa de diálogo
-								$mdDialog.hide();
-	
-							})
-							.error(function (error) {
-								// Escondendo carregando
-								parentScope.root.carregando = false;
-	
-								// Retornando Toast para o usuário
-								$mdToast.show(
-									$mdToast.simple()
-										.textContent('Não foi possível alterar o item.')
-										.position('bottom left')
-										.hideDelay(5000)
-								);
-	
-								// Imprimindo erro no console
-								console.warn(error)
-	
-							});
-	
-					} else {
-	
-						// Fazendo requisição
-						GeProjFactory.atualizaMedicaoHoraHora(item)
-							.success(function (response) {
-								// Escondendo carregando
-								parentScope.root.carregando = false;
-	
-								loadMedicao(item.id_medicao);
-	
-								// Escondendo caixa de diálogo
-								$mdDialog.hide();
-	
-							})
-							.error(function (error) {
-								// Escondendo carregando
-								parentScope.root.carregando = false;
-	
-								// Retornando Toast para o usuário
-								$mdToast.show(
-									$mdToast.simple()
-										.textContent('Não foi possível alterar endereço físico.')
-										.position('bottom left')
-										.hideDelay(5000)
-								);
-	
-								// Imprimindo erro no console
-								console.warn(error)
-	
-							});
-	
-					}
-
-					
-
-
-				}
- 
-
-			}
 		}
 
 		// Carregando configurações do GeProj

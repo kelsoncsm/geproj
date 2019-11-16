@@ -91,23 +91,23 @@
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="c in medicao.cargo" ng-click="goToProposta(c.id)">
-             <td style="width: 100px;text-align: center;">{{c.descricao}}</td>
-             <td style="width: 100px;text-align: center;">{{c.qtd}}</td>
-             <td style="width: 100px;text-align: center;">{{c.valor | currency }}</td>
-             <td style="width: 100px;text-align: center;">{{c.valor *  c.qtd | currency }}</td>
+    <tr ng-repeat="h in medicao.hora" ng-click="openItemDialog($event,h)">
+             <td style="width: 100px;text-align: center;">{{h.descricao}}</td>
+             <td style="width: 100px;text-align: center;">{{h.qtd}}</td>
+             <td style="width: 100px;text-align: center;">{{h.valor | currency }}</td>
+             <td style="width: 100px;text-align: center;">{{h.valor *  h.qtd | currency }}</td>
         </tr>
-        <tr ng-repeat="h in medicao.hh" ng-click="goToProposta(h.id)">
-            <td style="width: 100px;text-align: center;">{{h.descricao}} </td>
-            <td style="width: 100px;text-align: center;">{{h.qtd}}</td>
-            <td style="width: 100px;text-align: center;">{{h.valor | currency }}</td>
-            <td style="width: 100px;text-align: center;">{{h.valor *  h.qtd | currency }}</td>
+        <tr ng-repeat="u in medicao.unidade" ng-click="openItemDialog($event,u)">
+            <td style="width: 100px;text-align: center;">{{u.descricao}} </td>
+            <td style="width: 100px;text-align: center;">{{u.qtd}}</td>
+            <td style="width: 100px;text-align: center;">{{u.valor | currency }}</td>
+            <td style="width: 100px;text-align: center;">{{u.valor *  u.qtd | currency }}</td>
         </tr>
     </tbody>
 </table>
 
 </div>
-                </form>
+</form>
 
                 <div layout="row" layout-align="end center" class="bottom_controls">
                     <md-button ng-disabled="formDados.$pristine || formDados.$invalid || !medicao.alterada"

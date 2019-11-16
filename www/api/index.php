@@ -6332,16 +6332,16 @@
 				$sql = 'SELECT id,codigo,nome,id_cliente,ativo FROM projetos WHERE id=?';
 				$medicao->projeto = (object)$db->query($sql,'i',$medicao->id_projeto)[0];
 
-				$sql = 'SELECT	mc.id,mc.descricao,mc.id_empresa,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
+				$sql = 'SELECT	mc.id,mc.descricao,mc.id_empresa,mc.tipo_medicao,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
 				FROM   medicao_cargo_cliente mc  
 				WHERE mc.id_medicao=?';
 						
-				 $medicao->cargo = $db->query($sql,'i',$id_medicao);
-				$sql = 'SELECT	muc.id,muc.descricao,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
+				 $medicao->hora = $db->query($sql,'i',$id_medicao);
+				$sql = 'SELECT	muc.id,muc.descricao,muc.tipo_medicao,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
 				FROM  medicao_unidade_cliente muc 
 				WHERE muc.id_medicao =?';
 				  
-			     $medicao->hh = $db->query($sql,'i',$id_medicao);
+			     $medicao->unidade = $db->query($sql,'i',$id_medicao);
 
 				// Enviando resposta para cliente
 					$response = new response(0,'ok');

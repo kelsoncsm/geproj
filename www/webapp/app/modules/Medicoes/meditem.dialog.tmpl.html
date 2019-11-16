@@ -1,0 +1,52 @@
+<md-dialog >
+	<md-dialog-content>
+		<form name="medicaoItemForm" ng-submit="salvar()" layout="column">
+			<div layout="row" layout-align="space-between start">
+				<md-input-container flex="100">
+					<label>Descrição</label>
+					<input type="text" maxlength="100" ng-model="item.descricao" required>
+				</md-input-container>
+			</div>
+			 <div layout="row" layout-align="space-between start">
+				<md-input-container flex="20">
+					<label>Tipo </label>
+					<md-select ng-model="item.tipo_medicao" required>
+						<md-option ng-value="tipo_medicao.id"
+							ng-repeat="tipo_medicao in tipoMedicao|orderBy:'nome'">{{ tipo_medicao.nome }}
+						</md-option>
+					</md-select>
+				</md-input-container>
+
+				<md-input-container flex="20" ng-if="item.tipo_medicao == 'H'">
+					<label>Cargo </label>
+					<md-select ng-model="med.tipo_medicao" required>
+						<md-option ng-value="tipo_medicao.id"
+							ng-repeat="tipo_medicao in tipoMedicao|orderBy:'nome'">{{ tipo_medicao.nome }}
+						</md-option>
+					</md-select>
+				</md-input-container> 
+				<md-input-container flex="20" ng-if="item.tipo_medicao == 'U'">
+					<label>Formato </label>
+					<md-select ng-model="med.tipo_medicao" required>
+						<md-option ng-value="tipo_medicao.id"
+							ng-repeat="tipo_medicao in tipoMedicao|orderBy:'nome'">{{ tipo_medicao.nome }}
+						</md-option>
+					</md-select>
+				</md-input-container>
+				<md-input-container flex="20">
+					<label>Quantidade</label>
+					<input type="number" min="1" ng-model="item.qtd" required>
+				</md-input-container>
+				<md-input-container flex="20">
+					<label>Valor</label>
+				  <input type="number"  step="0.01" ng-model="item.valor" required>
+				</md-input-container> 
+			</div>
+			<button type="submit" style="display: none"></button>
+		</form>
+		<div layout="row" layout-align="space-between start">
+			<md-button ng-click="cancelar()" class="md-raised md-accent" aria-label="Cancelar">Cancelar</md-button>
+			<md-button ng-disabled="medicaoItemForm.$pristine || !medicaoItemForm.$valid" ng-click="salvar()" class="md-raised md-primary" aria-label="Alterar">Alterar</md-button>
+		</div>
+	</md-dialog-content>
+</md-dialog>
