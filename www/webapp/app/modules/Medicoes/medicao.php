@@ -74,7 +74,7 @@
             
                     <div class="container_100" id="propostas_container">
 <div class="controles" layout="row" layout-align="space-between start">
-    <md-button ng-click="onNovaPropostaClick()" class="md-raised md-accent novaPropBt" aria-label="Criar novo item">
+    <md-button ng-click="onNovoItemClick()" class="md-raised md-accent novaPropBt" aria-label="Criar novo item">
         <md-icon class="material-icons step">add</md-icon>
         Novo Item
     </md-button>
@@ -118,4 +118,4 @@
             </md-content>
         </md-tab>
     </md-tabs>
-</div>      
+</div>
