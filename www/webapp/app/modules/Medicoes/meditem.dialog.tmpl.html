@@ -1,6 +1,9 @@
-<md-dialog >
+<md-dialog  class="grddoc_dialog">
 	<md-dialog-content>
+
+	
 		<form name="medicaoItemForm" ng-submit="salvar()" layout="column">
+
 			<div layout="row" layout-align="space-between start">
 				<md-input-container flex="100">
 					<label>Descrição</label>
@@ -19,17 +22,17 @@
 
 				<md-input-container flex="20" ng-if="item.tipo_medicao == 'H'">
 					<label>Cargo </label>
-					<md-select ng-model="med.tipo_medicao" required>
-						<md-option ng-value="tipo_medicao.id"
-							ng-repeat="tipo_medicao in tipoMedicao|orderBy:'nome'">{{ tipo_medicao.nome }}
+					<md-select ng-model="med.id_cargo" required>
+						<md-option ng-value="carg.id"
+							ng-repeat="carg in cargos|orderBy:'nome'">{{ carg.nome }}
 						</md-option>
 					</md-select>
 				</md-input-container> 
 				<md-input-container flex="20" ng-if="item.tipo_medicao == 'U'">
 					<label>Formato </label>
-					<md-select ng-model="med.tipo_medicao" required>
-						<md-option ng-value="tipo_medicao.id"
-							ng-repeat="tipo_medicao in tipoMedicao|orderBy:'nome'">{{ tipo_medicao.nome }}
+					<md-select ng-model="med.id_tamanho_papel" required>
+						<md-option ng-value="tam.id"
+							ng-repeat="tam in tamanhosDePapel|orderBy:'nome'">{{ tam.nome }}
 						</md-option>
 					</md-select>
 				</md-input-container>
@@ -46,7 +49,7 @@
 		</form>
 		<div layout="row" layout-align="space-between start">
 			<md-button ng-click="cancelar()" class="md-raised md-accent" aria-label="Cancelar">Cancelar</md-button>
-			<md-button ng-disabled="medicaoItemForm.$pristine || !medicaoItemForm.$valid" ng-click="salvar()" class="md-raised md-primary" aria-label="Alterar">Alterar</md-button>
-		</div>
+			<md-button   ng-disabled="medicaoItemForm.$pristine || !medicaoItemForm.$valid" ng-click="salvar(item.tipo_medicao)" class="md-raised md-primary" aria-label="Alterar">Salvar unidade</md-button>
+			</div>
 	</md-dialog-content>
 </md-dialog>

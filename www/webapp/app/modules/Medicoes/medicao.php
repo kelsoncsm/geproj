@@ -74,7 +74,7 @@
             
                     <div class="container_100" id="propostas_container">
 <div class="controles" layout="row" layout-align="space-between start">
-    <md-button ng-click="onNovoItemClick()" class="md-raised md-accent novaPropBt" aria-label="Criar novo item">
+    <md-button ng-click="openItemDialog($event)" class="md-raised md-accent novaPropBt" aria-label="Criar novo item">
         <md-icon class="material-icons step">add</md-icon>
         Novo Item
     </md-button>

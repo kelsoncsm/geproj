@@ -30,7 +30,7 @@ $permissoes = $tela->getOpcoes();
         <h3>{{documento.codigo}}</h3>
 
         <div layout="row" layout-align="end center">
-            <md-button 
+            <md-button ng-if="documento.revisoes[0].progresso_validado <100"
                 class="md-raised md-primary"
                 ng-click="avancarRevisao($event)"
                 ng-disabled="documento.projeto_ativo == 0 "

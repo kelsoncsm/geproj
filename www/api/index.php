@@ -6171,6 +6171,28 @@
 		//ROTA DE MEDICAO
 
 		// ROTAS DE medicoes
+
+
+		$app->get('/cargos/:id',function($id) use ($app,$db,$token){
+			$idCargo = 1*$id;
+			$sql = 'SELECT a.id,
+						   a.nome,
+						   a.valor_hh
+					FROM cargos a
+					INNER JOIN
+					  (SELECT id_empresa
+					   FROM usuarios
+					   WHERE token=?) b ON a.id_empresa=b.id_empresa
+					WHERE a.id=?';
+			$response = new response(0,'ok');
+			$response->cargos = $db->query($sql,'si',$token,$idCargo);
+			$response->flush();
+		});
+
+
+
+
+
 		$app->post('/medicoes',function() use ($app,$db,$token){
 			// Lendo e saneando as informações da requisição
 			$medicao = json_decode($app->request->getBody());
@@ -6302,6 +6324,101 @@
 			registrarAcao($db,$id,ACAO_ATUALIZOU_MEDICAO,$medicao->id.','.$medicao->codigo.','.$medicao->id_projeto);
 		});
 
+
+
+		$app->put('/medicoes/Cargo/:id_item',function($id_item) use ($app,$db,$token){
+			// Lendo e saneando as informações da requisição
+			$medicao = json_decode($app->request->getBody());
+
+			// Atualizando a grd.
+			$sql = 'UPDATE medicao_cargo_cliente SET descricao=?,id_empresa=?,id_cliente=?,id_cargo=?,valor=?,qtd=?,id_medicao=?,tipo_medicao=? WHERE id=?';
+			try {
+				$db->query($sql,'siiiiiisi',$medicao->descricao,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_cargo,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao,$id_item);
+			} catch (Exception $e) {
+				http_response_code(401);
+				$response = new response(1,$e->getMessage());
+				$response->flush();
+				return;
+			}
+
+			// Enviando resposta para o cliente
+			$response = new response(0,'Item atualizada com sucesso.');
+			$response->flush();
+
+			// Registrando a ação
+			// registrarAcao($db,$id,ACAO_ATUALIZOU_MEDICAO,$medicao->id.','.$medicao->codigo.','.$medicao->id_projeto);
+		});
+
+		$app->put('/medicoes/Unidade/:id_item',function($id_item) use ($app,$db,$token){
+			// Lendo e saneando as informações da requisição
+			$medicao = json_decode($app->request->getBody());
+
+			// Atualizando a grd.
+			$sql = 'UPDATE medicao_unidade_cliente SET descricao=?,id_empresa=?,id_cliente=?,id_tamanho_papel=?,valor=?,qtd=?,id_medicao=?,tipo_medicao=? WHERE id=?';
+			try {
+				$db->query($sql,'siiiiiisi',$medicao->descricao,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_tamanho_papel,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao,id_item);
+			} catch (Exception $e) {
+				http_response_code(401);
+				$response = new response(1,$e->getMessage());
+				$response->flush();
+				return;
+			}
+
+			// Enviando resposta para o cliente
+			$response = new response(0,'Item atualizada com sucesso.');
+			$response->flush();
+
+			// Registrando a ação
+			// registrarAcao($db,$id,ACAO_ATUALIZOU_MEDICAO,$medicao->id.','.$medicao->codigo.','.$medicao->id_projeto);
+		});
+
+
+		$app->post('/medicoes/Cargo',function() use ($app,$db,$token){
+			// Lendo e saneando as informações da requisição
+			$medicao = json_decode($app->request->getBody());
+
+			// Inserindo nova medicao.
+			$sql = 'INSERT INTO medicao_cargo_cliente (descricao,id_empresa,id_cliente,id_cargo,valor,qtd,id_medicao,tipo_medicao) VALUES (?,?,?,?,?,?,?,?)';
+			try {
+				$db->query($sql,'siiiiiis',$medicao->descricao,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_cargo,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao);
+				$newId = $db->insert_id;
+				$response = new response(0,'ok');
+				$response->newId = $newId;
+				$response->flush();
+			} catch (Exception $e) {
+				http_response_code(401);
+				$response = new response(1,$e->getMessage());
+				$response->flush();
+				return;
+			}
+
+			// Registrando a ação
+			registrarAcao($db,$id,ACAO_CRIOU_MEDICAO,$newId.','.$newCodigo.','.$medicao->id_projeto);
+		});
+
+		$app->post('/medicoes/Unidade',function() use ($app,$db,$token){
+			// Lendo e saneando as informações da requisição
+			$medicao = json_decode($app->request->getBody());
+
+			// Inserindo nova medicao.
+			$sql = 'INSERT INTO medicao_unidade_cliente (descricao,id_empresa,id_cliente,id_tamanho_papel,valor,qtd,id_medicao,tipo_medicao) VALUES (?,?,?,?,?,?,?,?)';
+			try {
+				$db->query($sql,'siiiiiis',$medicao->descricao,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_tamanho_papel,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao);
+				$newId = $db->insert_id;
+				$response = new response(0,'ok');
+				$response->newId = $newId;
+				$response->flush();
+			} catch (Exception $e) {
+				http_response_code(401);
+				$response = new response(1,$e->getMessage());
+				$response->flush();
+				return;
+			}
+
+			// Registrando a ação
+			registrarAcao($db,$id,ACAO_CRIOU_MEDICAO,$newId.','.$newCodigo.','.$medicao->id_projeto);
+		});
+
 		$app->get('/medicoes/:id_medicao',function($id_medicao) use ($app,$db,$token){
 			// Lendo dados
 			$id_medicao = 1*$id_medicao;
@@ -6309,7 +6426,7 @@
 			// Lendo dados do cookie! :(
 			$user = json_decode($_COOKIE['user']);
 
-			$sql = 'SELECT c.id,
+			$sql = 'SELECT     c.id,
 							   c.id_projeto,
 							   c.codigo,
 							   c.datahora_registro,
@@ -6332,12 +6449,12 @@
 				$sql = 'SELECT id,codigo,nome,id_cliente,ativo FROM projetos WHERE id=?';
 				$medicao->projeto = (object)$db->query($sql,'i',$medicao->id_projeto)[0];
 
-				$sql = 'SELECT	mc.id,mc.descricao,mc.id_empresa,mc.tipo_medicao,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
+				$sql = 'SELECT	mc.id as id_item,mc.descricao,mc.id_empresa,mc.tipo_medicao,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
 				FROM   medicao_cargo_cliente mc  
 				WHERE mc.id_medicao=?';
 						
 				 $medicao->hora = $db->query($sql,'i',$id_medicao);
-				$sql = 'SELECT	muc.id,muc.descricao,muc.tipo_medicao,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
+				$sql = 'SELECT	muc.id as id_item ,muc.descricao,muc.tipo_medicao,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
 				FROM  medicao_unidade_cliente muc 
 				WHERE muc.id_medicao =?';
 				  
