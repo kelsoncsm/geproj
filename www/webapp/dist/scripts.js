@@ -24221,7 +24221,7 @@ function NavController($scope){
 
 		// definindo função Cancel
 		$scope.cancel = function(){
-			window.location = '/geproj/www/webapp/WebGeProj.php#/projetos';
+			window.location = '/webapp/WebGeProj.php#/projetos';
 		}
 
 		// Definindo função que salva o projeto

@@ -2328,11 +2328,13 @@
 				$ok = $rs['ok'];
 				$id_usuario = $rs['id_usuario'];
 
+				$qPaginas = 0;
+
 				if($ok == 1){
 					// Tudo ok! O documento a ser alterado é da mesma empresa do usuário
 					$sql = 'UPDATE documentos SET nome=?,codigo=?,codigo_cliente=?,codigo_alternativo=?,id_subarea=?,id_subdisciplina=?,tamanhoDoPapel=? ,qPaginas=? WHERE id=?';
 					try {
-						$db->query($sql,'ssssiiiii',$documento->nome,$documento->codigo,$documento->codigo_cliente,$documento->codigo_alternativo,$documento->id_subarea,$documento->id_subdisciplina,$documento->tamanhoDoPapel,$documento->qPaginas,$id_documento);
+						$db->query($sql,'ssssiiiii',$documento->nome,$documento->codigo,$documento->codigo_cliente,$documento->codigo_alternativo,$documento->id_subarea,$documento->id_subdisciplina,$documento->tamanhoDoPapel,$qPaginas,$id_documento);
 						$response = new response(0,'Documento alterado com sucesso.');
 						$response->flush();
 					} catch (Exception $e) {
@@ -2411,13 +2413,13 @@
 
 				if($ok == 1){
 					// Tudo ok! A documento a ser adicionada é do mesmo cliente do usuário
-
+					$qPaginas = 0;
 					// Salvando o documento
 					$sql = 'INSERT INTO documentos (nome,codigo,codigo_cliente,codigo_alternativo,id_subarea,id_subdisciplina,tamanhoDoPapel,qPaginas) VALUES (?,?,?,?,?,?,?,?)';
 					try {
 
 						// Salvando documento
-						$db->query($sql,'ssssiiii',$documento->nome,$documento->codigo,$documento->codigo_cliente,$documento->codigo_alternativo,$documento->id_subarea,$documento->id_subdisciplina,$documento->tamanhoDoPapel,$documento->qPaginas);
+						$db->query($sql,'ssssiiii',$documento->nome,$documento->codigo,$documento->codigo_cliente,$documento->codigo_alternativo,$documento->id_subarea,$documento->id_subdisciplina,$documento->tamanhoDoPapel,$qPaginas);
 
 						// Salvando o novo id do documento recém adicionado
 						$newId = $db->insert_id;

@@ -3,11 +3,11 @@
 	// verificando se o usuário está setado
 	if(!isset($_COOKIE['user'])){
 		// redirecionando para página inicial.
-		header("Location: /geproj/www/webapp/login.php");
+		header("Location: /webapp/login.php");
 		die();
 	}
 
-	// lendo user do cookie
+	// lendo user do cookie	
 	$user = json_decode($_COOKIE['user']);
 
 	// Incluindo constantes
