@@ -6395,7 +6395,7 @@
 			}
 
 			// Registrando a ação
-			registrarAcao($db,$id,ACAO_CRIOU_MEDICAO,$newId.','.$newCodigo.','.$medicao->id_projeto);
+			//registrarAcao($db,$id,ACAO_CRIOU_MEDICAO,$newId.','.$newCodigo.','.$medicao->id_projeto);
 		});
 
 		$app->post('/medicoes/Unidade',function() use ($app,$db,$token){
@@ -6418,7 +6418,7 @@
 			}
 
 			// Registrando a ação
-			registrarAcao($db,$id,ACAO_CRIOU_MEDICAO,$newId.','.$newCodigo.','.$medicao->id_projeto);
+			//registrarAcao($db,$id,ACAO_CRIOU_MEDICAO,$newId.','.$newCodigo.','.$medicao->id_projeto);
 		});
 
 		$app->get('/medicoes/:id_medicao',function($id_medicao) use ($app,$db,$token){
@@ -6451,16 +6451,6 @@
 				$sql = 'SELECT id,codigo,nome,id_cliente,ativo FROM projetos WHERE id=?';
 				$medicao->projeto = (object)$db->query($sql,'i',$medicao->id_projeto)[0];
 
-				$sql = 'SELECT	mc.id as id_item,mc.descricao,mc.id_empresa,mc.tipo_medicao,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
-				FROM   medicao_cargo_cliente mc  
-				WHERE mc.id_medicao=?';
-						
-				 $medicao->hora = $db->query($sql,'i',$id_medicao);
-				$sql = 'SELECT	muc.id as id_item ,muc.descricao,muc.tipo_medicao,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
-				FROM  medicao_unidade_cliente muc 
-				WHERE muc.id_medicao =?';
-				  
-			     $medicao->unidade = $db->query($sql,'i',$id_medicao);
 
 				// Enviando resposta para cliente
 					$response = new response(0,'ok');
@@ -6475,6 +6465,40 @@
 				}	
 			
 		});
+
+		$app->get('/medicoes/cargo/:id_medicao',function($id_medicao) use ($app,$db,$token){
+			// Lendo dados
+			$id_medicao = 1*$id_medicao;
+
+			// Lendo dados do cookie! :(
+			$user = json_decode($_COOKIE['user']);
+
+			$sql = 'SELECT	mc.id as id_item,mc.descricao,mc.id_empresa,mc.tipo_medicao,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
+				FROM   medicao_cargo_cliente mc  
+				WHERE mc.id_medicao=?';
+			
+			$response = new response(0,'ok');
+			$response->cargo = $rs = $db->query($sql,'i',$id_medicao);
+			$response->flush();
+			
+		});
+
+
+		$app->get('/medicoes/unidade/:id_medicao',function($id_medicao) use ($app,$db,$token){
+			// Lendo dados
+			$id_medicao = 1*$id_medicao;
+
+			// Lendo dados do cookie! :(
+			$user = json_decode($_COOKIE['user']);
+
+			$sql = 'SELECT	muc.id as id_item ,muc.descricao,muc.tipo_medicao,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
+			FROM  medicao_unidade_cliente muc 
+			WHERE muc.id_medicao =?';
+			$response = new response(0,'ok');
+			$response->unidade = $rs = $db->query($sql,'i',$id_medicao);
+			$response->flush();
+		});
+
 
 		$app->get('/medicoes/search/q',function() use ($app,$db,$token){
 				
@@ -7108,7 +7132,6 @@
 					$response->flush();
 					exit(1);
 				}
-
 				// Verificando se houve algum erro no upload
 				$erro_n = $_FILES['profiles']['error'][0]['file'];
 				if(UPLOAD_ERR_OK != $erro_n){

@@ -74,7 +74,7 @@
             
                     <div class="container_100" id="propostas_container">
 <div class="controles" layout="row" layout-align="space-between start">
-    <md-button ng-click="openItemDialog($event)" class="md-raised md-accent novaPropBt" aria-label="Criar novo item">
+    <md-button ng-click="openNewItemDialog($event,medicao)" class="md-raised md-accent novaPropBt" aria-label="Criar novo item">
         <md-icon class="material-icons step">add</md-icon>
         Novo Item
     </md-button>
@@ -91,17 +91,17 @@
         </tr>
     </thead>
     <tbody>
-    <tr ng-repeat="h in medicao.hora" ng-click="openItemDialog($event,h)">
-             <td style="width: 100px;text-align: center;">{{h.descricao}}</td>
-             <td style="width: 100px;text-align: center;">{{h.qtd}}</td>
-             <td style="width: 100px;text-align: center;">{{h.valor | currency }}</td>
-             <td style="width: 100px;text-align: center;">{{h.valor *  h.qtd | currency }}</td>
+    <tr ng-repeat="car in cargo" ng-click="openItemDialog($event,car)">
+             <td style="width: 100px;text-align: center;">{{car.descricao}}</td>
+             <td style="width: 100px;text-align: center;">{{car.qtd}}</td>
+             <td style="width: 100px;text-align: center;">{{car.valor | currency }}</td>
+             <td style="width: 100px;text-align: center;">{{car.valor *  car.qtd | currency }}</td>
         </tr>
-        <tr ng-repeat="u in medicao.unidade" ng-click="openItemDialog($event,u)">
-            <td style="width: 100px;text-align: center;">{{u.descricao}} </td>
-            <td style="width: 100px;text-align: center;">{{u.qtd}}</td>
-            <td style="width: 100px;text-align: center;">{{u.valor | currency }}</td>
-            <td style="width: 100px;text-align: center;">{{u.valor *  u.qtd | currency }}</td>
+        <tr ng-repeat="uni in unidade" ng-click="openItemDialog($event,uni)">
+            <td style="width: 100px;text-align: center;">{{uni.descricao}} </td>
+            <td style="width: 100px;text-align: center;">{{uni.qtd}}</td>
+            <td style="width: 100px;text-align: center;">{{uni.valor | currency }}</td>
+            <td style="width: 100px;text-align: center;">{{uni.valor *  uni.qtd | currency }}</td>
         </tr>
     </tbody>
 </table>

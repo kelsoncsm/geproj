@@ -382,6 +382,16 @@ WebGeProj.factory('GeProjFactory',
 			}
 
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.getItemCargo = function(id_medicao){
+				return $http.get(API_ROOT+'/medicoes/cargo/'+id_medicao,buildHeaders());
+			}
+
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.getItemUnidade = function(id_medicao){
+				return $http.get(API_ROOT+'/medicoes/unidade/'+id_medicao,buildHeaders());
+			}
+
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.adicionarItemMedicao = function(medicao,tipo){
 
 				if(tipo == 'H')
