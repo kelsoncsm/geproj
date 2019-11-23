@@ -27488,11 +27488,11 @@ function RootController($scope,$interval,$cookies,GeProjFactory,$mdSidenav,$mdMe
 
 
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GeProjFactory.atualizaItemMedicao = function(medicao,tipo){
+			GeProjFactory.atualizaItemMedicao = function(item,tipo){
 				if(tipo == 'H')
-					return $http.put(API_ROOT+'/medicoes/Cargo', +medicao.id_item.id,buildHeaders());
+					return $http.put(API_ROOT+'/medicoes/cargo/', +item.id_item,item,buildHeaders());
 				else
-					return $http.put(API_ROOT+'/medicoes/Unidade', +medicao.id_item,buildHeaders());
+					return $http.put(API_ROOT+'/medicoes/Unidade/', +item.id_item,item,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.getMedicao = function(id_medicao){

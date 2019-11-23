@@ -6328,7 +6328,7 @@
 
 
 
-		$app->put('/medicoes/Cargo/:id_item',function($id_item) use ($app,$db,$token){
+		$app->put('/medicoes/cargo/:id_item',function($id_item) use ($app,$db,$token){
 			// Lendo e saneando as informações da requisição
 			$medicao = json_decode($app->request->getBody());
 

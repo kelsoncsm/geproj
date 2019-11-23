@@ -395,18 +395,18 @@ WebGeProj.factory('GeProjFactory',
 			GeProjFactory.adicionarItemMedicao = function(medicao,tipo){
 
 				if(tipo == 'H')
-					return $http.post(API_ROOT+'/medicoes/Cargo', medicao,buildHeaders());
+					return $http.post(API_ROOT+'/medicoes/cargo', medicao,buildHeaders());
 				else
-					return $http.post(API_ROOT+'/medicoes/Unidade', medicao,buildHeaders());
+					return $http.post(API_ROOT+'/medicoes/unidade', medicao,buildHeaders());
 			}
 
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			GeProjFactory.atualizaItemMedicao = function(medicao,tipo){
+			GeProjFactory.atualizaItemMedicao = function(item,tipo){
 
 				if(tipo == 'H')
-					return $http.put(API_ROOT+'/medicoes/Cargo', +medicao.id_item.id,buildHeaders());
+					return $http.put(API_ROOT+'/medicoes/cargo/' +item.id_item,item,buildHeaders());
 				else
-					return $http.put(API_ROOT+'/medicoes/Unidade', +medicao.id_item,buildHeaders());
+					return $http.put(API_ROOT+'/medicoes/unidade/' +item.id_item,item,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			
