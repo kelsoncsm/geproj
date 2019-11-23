@@ -27,6 +27,19 @@ WebGeProj.directive('format', ['$filter', function ($filter) {
 	};
 }]);
 
+module.directive('input', function(){
+    return {
+        require: 'ngModel',
+        link: function(scope, elem, attrs, ngModel){
+            if(attrs.type == 'number'){
+                ngModel.$formatters.push(function(value){
+                    return parseFloat(value);
+                });
+            }
+        }
+    };
+});
+
 WebGeProj.directive('ngFileModel', ['$parse', function ($parse) {
 	return {
 		restrict: 'A',

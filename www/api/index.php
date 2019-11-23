@@ -6359,6 +6359,9 @@
 			$sql = 'UPDATE medicao_unidade_cliente SET descricao=?,id_empresa=?,id_cliente=?,id_tamanho_papel=?,valor=?,qtd=?,id_medicao=?,tipo_medicao=? WHERE id=?';
 			try {
 				$db->query($sql,'siiiiiisi',$medicao->descricao,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_tamanho_papel,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao,id_item);
+				$response = new response(0,'Item atualizada com sucesso.');
+			    $response->flush();
+
 			} catch (Exception $e) {
 				http_response_code(401);
 				$response = new response(1,$e->getMessage());
@@ -6367,9 +6370,7 @@
 			}
 
 			// Enviando resposta para o cliente
-			$response = new response(0,'Item atualizada com sucesso.');
-			$response->flush();
-
+		
 			// Registrando a ação
 			// registrarAcao($db,$id,ACAO_ATUALIZOU_MEDICAO,$medicao->id.','.$medicao->codigo.','.$medicao->id_projeto);
 		});
