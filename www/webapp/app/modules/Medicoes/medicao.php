@@ -18,7 +18,7 @@
     <md-tabs md-selected="0" md-dynamic-height md-border-bottom md-whiteframe="1dp">
         <md-tab label="Dados">
             <md-content class="md-padding dados">
-                <form name="formDados" ng-submit="salvar()">
+                <form name="formDados" ng-submit="salvar(medicao)">
                     <div layout="row" layout-align="space-between start">
 
                         <md-input-container flex="25">
@@ -58,10 +58,10 @@
                             <label>Código </label>
                             <input type="text" ng-model="medicao.codigo" disabled="disabled"
                                 placeholder="Automático após salvamento">
-						</md-input-container>
-						<md-input-container flex="50">
-						</md-input-container>
-<!-- 
+                        </md-input-container>
+                        <md-input-container flex="50">
+                        </md-input-container>
+                        <!-- 
                         <md-input-container flex="50">
                             <label>Tipo </label>
                             <md-select ng-model="medicao.tipo_medicao" required>
@@ -71,48 +71,50 @@
 							</md-select>
 						</md-input-container> -->
                     </div>
-            
-                    <div class="container_100" id="propostas_container">
-<div class="controles" layout="row" layout-align="space-between start">
-    <md-button ng-click="openNewItemDialog($event,medicao)" class="md-raised md-accent novaPropBt" aria-label="Criar novo item">
-        <md-icon class="material-icons step">add</md-icon>
-        Novo Item
-    </md-button>
-</div>
-</br>
-<table>
-    <thead>
-        <tr>
-            <td style="width: 100px;text-align: center;">Título</td>
-            <td style="width: 100px;text-align: center;">Quantidade</td>
-            <td style="width: 100px;text-align: center;">Valor</td>
-            <td style="width: 100px;text-align: center;">Total</td>
-           
-        </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="car in cargo" ng-click="openItemDialog($event,car)">
-             <td style="width: 100px;text-align: center;">{{car.descricao}}</td>
-             <td style="width: 100px;text-align: center;">{{car.qtd}}</td>
-             <td style="width: 100px;text-align: center;">{{car.valor | currency }}</td>
-             <td style="width: 100px;text-align: center;">{{car.valor *  car.qtd | currency }}</td>
-        </tr>
-        <tr ng-repeat="uni in unidade" ng-click="openItemDialog($event,uni)">
-            <td style="width: 100px;text-align: center;">{{uni.descricao}} </td>
-            <td style="width: 100px;text-align: center;">{{uni.qtd}}</td>
-            <td style="width: 100px;text-align: center;">{{uni.valor | currency }}</td>
-            <td style="width: 100px;text-align: center;">{{uni.valor *  uni.qtd | currency }}</td>
-        </tr>
-    </tbody>
-</table>
 
-</div>
-</form>
+                    <div class="container_100" id="propostas_container" ng-if="medicao.id > 0">
+                        <div class="controles" layout="row" layout-align="space-between start">
+                            <md-button ng-click="openNewItemDialog($event,medicao)"
+                                class="md-raised md-accent novaPropBt" aria-label="Criar novo item">
+                                <md-icon class="material-icons step">add</md-icon>
+                                Novo Item
+                            </md-button>
+                        </div>
+                        </br>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <td style="width: 100px;text-align: center;">Título</td>
+                                    <td style="width: 100px;text-align: center;">Quantidade</td>
+                                    <td style="width: 100px;text-align: center;">Valor</td>
+                                    <td style="width: 100px;text-align: center;">Total</td>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="car in cargo" ng-click="openItemDialog($event,car)">
+                                    <td style="width: 100px;text-align: center;">{{car.descricao}}</td>
+                                    <td style="width: 100px;text-align: center;">{{car.qtd}}</td>
+                                    <td style="width: 100px;text-align: center;">{{car.valor | currency }}</td>
+                                    <td style="width: 100px;text-align: center;">{{car.valor *  car.qtd | currency }}
+                                    </td>
+                                </tr>
+                                <tr ng-repeat="uni in unidade" ng-click="openItemDialog($event,uni)">
+                                    <td style="width: 100px;text-align: center;">{{uni.descricao}} </td>
+                                    <td style="width: 100px;text-align: center;">{{uni.qtd}}</td>
+                                    <td style="width: 100px;text-align: center;">{{uni.valor | currency }}</td>
+                                    <td style="width: 100px;text-align: center;">{{uni.valor *  uni.qtd | currency }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </form>
 
                 <div layout="row" layout-align="end center" class="bottom_controls">
                     <md-button ng-disabled="formDados.$pristine || formDados.$invalid || !medicao.alterada"
-                        ng-click="salvar()" class="md-raised md-primary" aria-label="Salvar">
-                        {{medicao.datahora_enviada!=null?'Esta  foi já enviada para o cliente. Ela não pode mais ser alterada':'Salvar GRD'}}
+                        ng-click="salvar(medicao)" class="md-raised md-primary" aria-label="Salvar">Salvar GRD
                     </md-button>
                 </div>
             </md-content>

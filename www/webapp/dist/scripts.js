@@ -21278,6 +21278,9 @@ module.exports = function(Chart) {
 				$mdDialog.hide();
 			}
 
+            			// Função que salva medicao
+		
+
 
 			// Função que salva medicao
 			$scope.salvarItem = function (item) {
@@ -21366,6 +21369,85 @@ module.exports = function(Chart) {
 				}
 			}
 
+        }
+        
+        $scope.salvar = function(medicao){
+
+            
+			// Mostra carregando
+			$scope.root.carregando = true;
+			
+			// Fazendo cópia de medicao
+			var medicao = angular.copy(medicao);
+			 
+
+			medicao.id_projeto = medicao.projeto.id;
+			
+			// removendo dados desnecessários
+			delete medicao.cliente;
+			delete medicao.projeto;
+
+			if($scope.medicao.id == undefined || $scope.medicao.id==0){
+				GeProjFactory.adicionarMedicao(medicao)
+				.success(function(response){
+					// Esconde carregando
+					$scope.root.carregando = false;
+
+					// Atribuindo id da medicao recém criada
+					$scope.medicao.id = response.newId;
+
+					// Alterando url para coerência
+					$location.url('/medicoes/'+$scope.medicao.id);
+
+					// Atribuindo-se a data de registro
+					$scope.medicao.datahora_registro = new Date();
+
+					// Mudando o tab para o próximo... TODO
+					// TODO: Fazer mudar para tab de documentos depois de salvar GRD
+
+					// Retornando Toast para o usuário
+					$mdToast.show(
+						$mdToast.simple()
+						.textContent('Medição criada com sucesso!')
+						.position('bottom left')
+						.hideDelay(5000)
+					);
+					
+				})
+				.error(function(error){
+					// Esconde carregando
+					$scope.root.carregando = false;
+				});
+			} else {
+				GeProjFactory.atualizarMedicao(medicao)
+				.success(function(response){
+					// Esconde carregando
+					$scope.root.carregando = false;
+
+					// Retornando Toast para o usuário
+					$mdToast.show(
+						$mdToast.simple()
+						.textContent('Medição atualizada com sucesso!')
+						.position('bottom left')
+						.hideDelay(5000)
+					);
+				})
+				.error(function(error){
+					// Esconde carregando
+					$scope.root.carregando = false;
+
+					// Retornando Toast para o usuário
+					$mdToast.show(
+						$mdToast.simple()
+						.textContent('Falha ao alterar Medição: ' + error.msg)
+						.position('bottom left')
+						.hideDelay(5000)
+					);
+
+					// imprimindo mensagem no console
+					console.warn(error);
+				});
+			}
 		}
 		// Carregando configurações do GeProj
 		var config = null;
