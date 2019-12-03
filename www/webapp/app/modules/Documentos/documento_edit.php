@@ -73,18 +73,6 @@
 							ng-repeat="dp in dependenciasPossiveis">{{dp.codigo}}</md-option>
 				</md-select>
 			</md-input-container>
-			<md-input-container flex="20">
-				<label>Dependências</label>
-				<md-select
-					ng-model="doc.dependencias"
-					data-md-container-class="SelectDpsHeader"
-					multiple>
-					<md-option
-							ng-value="dp.id"
-							ng-repeat="dp in dependenciasPossiveis">{{dp.codigo}}</md-option>
-				</md-select>
-			</md-input-container>
-
 			<md-input-container flex="20" >
 					<label>Tipo Papel </label>
 					<md-select  required ng-model="doc.tamanhoDoPapel" aria-label="Tamanho do Papel" class="md-no-underline" require>

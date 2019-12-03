@@ -914,7 +914,7 @@
 
 			// Carregando informaç~oes do usuário
 			var user = $cookies.getObject('user');
-
+		
 			// Construindo assunto a partir das configurações
 			var assunto = config.ASSUNTO_PADRAO_ENVIO_GRD.valor;
 			assunto = assunto
@@ -931,7 +931,8 @@
 					.replace('$empresa_nome',user.nome_empresa)
 					.replace('$projeto_nome',$scope.grd.projeto.nome)
 					.replace('$usuario_nome',user.nome)
-					.replace('$usuario_email',user.email);
+					.replace('$usuario_email',user.email)
+					.replace('$login',user.login);
 
 			// Contruindo assinatura de mensagem a partir das configurações
 			var ass = config.ASSINATURA_ENVIO_GRD.valor;

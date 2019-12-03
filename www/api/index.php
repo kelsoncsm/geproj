@@ -904,6 +904,26 @@
 				$response->flush();
 			});
 
+			$app->get('/subdisciplina/:id_disciplina',function($id_disciplina) use ($app,$db,$token){
+				// Lendo e saneando as informações da requisição
+			 
+				// Levantando subdisciplinas desta disciplina
+				 $sql = 'SELECT id,
+							nome,
+							sigla,
+							ativa
+						FROM subdisciplinas
+						WHERE
+							id_disciplina = ?
+						ORDER by nome';
+				
+					// criando o objeto response;
+					$response = new response(0,'Ok');
+				$response->subdisciplina = $db->query($sql,'i',$id_disciplina);
+				$response->flush();
+					
+			});
+
 			$app->put('/disciplinas/:id_disciplina/subs/:id_sub',function($id_disciplina,$id_sub) use ($app,$db,$token){
 				// Lendo e saneando as informações da requisição
 				$id_disciplina = 1*$id_disciplina;
@@ -3778,6 +3798,14 @@
 						// determinando o nome local
 						$filename = uniqid(true);
 						$caminho = CLIENT_DATA_PATH.$empresa.'/uploads/'.$id_projeto.'/';
+						if(!file_exists($caminho)){
+							if(!@mkdir($caminho)){
+								http_response_code(401);
+								$response = new response(1,'Pasta destino inexistente. Não foi possível criar uma pasta destino.');
+								$response->flush();
+								return;
+							}
+						}
 						$caminho_completo = $caminho.$filename;
 
 						// salvando no fs
@@ -6175,6 +6203,42 @@
 		// ROTAS DE medicoes
 
 
+		$app->get('/medicoes/:id_medicao/med',function($id_medicao) use ($app,$db,$token,$empresa){
+				
+			// Incluindo a med da empresa
+			include(CLIENT_DATA_PATH.$empresa.'/med.php');
+
+			// Verificando se foi enviada busca
+			if(array_key_exists('busca', $_GET)) {
+				$q = json_decode($_GET['busca']);
+
+				if(json_last_error() != JSON_ERROR_NONE){
+					http_response_code(401);
+					$response = new response(1,'Parâmetros de busca inválidos');
+					$response->flush();
+					exit(1);
+				}
+				// Criando buscador e realizando busca
+				$buscador = new Buscador($db);
+				$docs = $buscador->busca($q);
+
+				// Criando LDP
+				$med = new med($docs);
+
+			} else {
+				// Criando ldp do projeto
+				$med = new med($id_medicao);
+			}
+
+			// Enviando LDP
+			if(array_key_exists('view', $_GET) && $_GET['view']=='html'){
+				$med->enviarHtml();
+			} else {
+				// Enviando ldp
+				$med->enviarXlsx();
+			}
+		});
+
 		$app->get('/cargos/:id',function($id) use ($app,$db,$token){
 			$idCargo = 1*$id;
 			$sql = 'SELECT a.id,
@@ -6333,9 +6397,9 @@
 			$medicao = json_decode($app->request->getBody());
 
 			// Atualizando a grd.
-			$sql = 'UPDATE medicao_cargo_cliente SET descricao=?,id_empresa=?,id_cliente=?,id_cargo=?,valor=?,qtd=?,id_medicao=?,tipo_medicao=? WHERE id=?';
+			$sql = 'UPDATE medicao_cargo_cliente SET id_disciplina=?,id_subdisciplina=?,id_empresa=?,id_cliente=?,id_cargo=?,valor=?,qtd=?,id_medicao=?,tipo_medicao=? WHERE id=?';
 			try {
-				$db->query($sql,'siiiiiisi',$medicao->descricao,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_cargo,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao,$id_item);
+				$db->query($sql,'iiiiiiiisi',$medicao->id_disciplina,$medicao->id_subdisciplina,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_cargo,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao,$id_item);
 			} catch (Exception $e) {
 				http_response_code(401);
 				$response = new response(1,$e->getMessage());
@@ -6356,9 +6420,9 @@
 			$medicao = json_decode($app->request->getBody());
 
 			// Atualizando a grd.
-			$sql = 'UPDATE medicao_unidade_cliente SET descricao=?,id_empresa=?,id_cliente=?,id_tamanho_papel=?,valor=?,qtd=?,id_medicao=?,tipo_medicao=? WHERE id=?';
+			$sql = 'UPDATE medicao_unidade_cliente SET id_disciplina=?,id_subdisciplina=?,id_empresa=?,id_cliente=?,id_tamanho_papel=?,valor=?,qtd=?,id_medicao=?,tipo_medicao=? WHERE id=?';
 			try {
-				$db->query($sql,'siiiiiisi',$medicao->descricao,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_tamanho_papel,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao,id_item);
+				$db->query($sql,'iiiiiiiisi',$medicao->id_disciplina,$medicao->id_subdisciplina,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_tamanho_papel,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao,id_item);
 				$response = new response(0,'Item atualizada com sucesso.');
 			    $response->flush();
 
@@ -6381,9 +6445,18 @@
 			$medicao = json_decode($app->request->getBody());
 
 			// Inserindo nova medicao.
-			$sql = 'INSERT INTO medicao_cargo_cliente (descricao,id_empresa,id_cliente,id_cargo,valor,qtd,id_medicao,tipo_medicao) VALUES (?,?,?,?,?,?,?,?)';
+			$sql = 'INSERT INTO medicao_cargo_cliente (
+				id_disciplina,
+				id_subdisciplina,
+				id_empresa,
+				id_cliente,
+				id_cargo,
+				valor,
+				qtd,
+				id_medicao,
+				tipo_medicao) VALUES (?,?,?,?,?,?,?,?,?)';
 			try {
-				$db->query($sql,'siiiiiis',$medicao->descricao,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_cargo,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao);
+				$db->query($sql,'iiiiiiiis',$medicao->id_disciplina,$medicao->id_subdisciplina,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_cargo,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao);
 				$newId = $db->insert_id;
 				$response = new response(0,'ok');
 				$response->newId = $newId;
@@ -6404,9 +6477,9 @@
 			$medicao = json_decode($app->request->getBody());
 
 			// Inserindo nova medicao.
-			$sql = 'INSERT INTO medicao_unidade_cliente (descricao,id_empresa,id_cliente,id_tamanho_papel,valor,qtd,id_medicao,tipo_medicao) VALUES (?,?,?,?,?,?,?,?)';
+			$sql = 'INSERT INTO medicao_unidade_cliente (id_disciplina,id_subdisciplina,id_empresa,id_cliente,id_tamanho_papel,valor,qtd,id_medicao,tipo_medicao) VALUES (?,?,?,?,?,?,?,?,?)';
 			try {
-				$db->query($sql,'siiiiiis',$medicao->descricao,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_tamanho_papel,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao);
+				$db->query($sql,'iiiiiiiis',$medicao->id_disciplina,$medicao->id_subdisciplina,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_tamanho_papel,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao);
 				$newId = $db->insert_id;
 				$response = new response(0,'ok');
 				$response->newId = $newId;
@@ -6474,7 +6547,7 @@
 			// Lendo dados do cookie! :(
 			$user = json_decode($_COOKIE['user']);
 
-			$sql = 'SELECT	mc.id as id_item,mc.descricao,mc.id_empresa,mc.tipo_medicao,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
+			$sql = 'SELECT	mc.id as id_item,mc.id_disciplina,mc.id_subdisciplina,mc.id_empresa,mc.tipo_medicao,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
 				FROM   medicao_cargo_cliente mc  
 				WHERE mc.id_medicao=?';
 			
@@ -6492,7 +6565,7 @@
 			// Lendo dados do cookie! :(
 			$user = json_decode($_COOKIE['user']);
 
-			$sql = 'SELECT	muc.id as id_item ,muc.descricao,muc.tipo_medicao,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
+			$sql = 'SELECT	muc.id as id_item ,muc.id_disciplina,muc.id_subdisciplina,muc.tipo_medicao,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
 			FROM  medicao_unidade_cliente muc 
 			WHERE muc.id_medicao =?';
 			$response = new response(0,'ok');

@@ -45,27 +45,27 @@
 			unset($dbkey);
 
 			// Levantando dados de GRD
-			$sql = 'SELECT c.id AS cliente_id,
-						   c.nome AS cliente_nome,
-						   c.endereco AS cliente_endereco,
-						   b.id AS projeto_id,
-					       b.nome AS projeto_nome,
-					       a.obs AS obs,
-					       c.contato_nome,
-					       c.contato_email,
-					       now() AS DATA,
-					       a.codigo,
-					       a.unique_link,
-					       c.id_empresa,
-					       a.datahora_enviada,
-					       a.datahora_registro,
-					       a.idu_remetente as id_remetente,
-					       d.nome as nome_remetente
-					FROM grds a
-					INNER JOIN projetos b ON a.id_projeto = b.id
-					INNER JOIN clientes c ON b.id_cliente = c.id
-					LEFT JOIN usuarios d ON a.idu_remetente = d.id
-					WHERE a.id=? order by a.codigo';
+				$sql = 'SELECT c.id AS cliente_id,
+							c.nome AS cliente_nome,
+							c.endereco AS cliente_endereco,
+							b.id AS projeto_id,
+							b.nome AS projeto_nome,
+							a.obs AS obs,
+							c.contato_nome,
+							c.contato_email,
+							now() AS DATA,
+							a.codigo,
+							a.unique_link,
+							c.id_empresa,
+							a.datahora_enviada,
+							a.datahora_registro,
+							a.idu_remetente as id_remetente,
+							d.nome as nome_remetente
+						FROM grds a
+						INNER JOIN projetos b ON a.id_projeto = b.id
+						INNER JOIN clientes c ON b.id_cliente = c.id
+						LEFT JOIN usuarios d ON a.idu_remetente = d.id
+						WHERE a.id=? order by a.codigo';
 			$rs = $db->query($sql,'i',$id)['0'];
 
 			// Criando instância

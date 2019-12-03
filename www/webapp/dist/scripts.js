@@ -20963,9 +20963,7 @@ module.exports = function(Chart) {
 	}
 
 
-})();;
-// Inicio Medição
-(function () {
+})();;(function () {
 	// Criando o módulo
 	var MedicoesModule = angular.module('Medicoes', []);
 
@@ -21010,7 +21008,9 @@ module.exports = function(Chart) {
 					r.datahora_enviada = r.datahora_enviada == null ? null : new Date(r.datahora_enviada);
 				}
 			})
-		}
+        }
+        
+       
 
 		function goToMedicao(id) {
 			$location.url('/medicoes/' + id);
@@ -21114,6 +21114,8 @@ module.exports = function(Chart) {
 
 
 
+
+
 		// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 	}
 
@@ -21168,10 +21170,15 @@ module.exports = function(Chart) {
 				);
 			});
 
+            $scope.baixarMedicao = function (idmedicao, evt) {
 
+                evt.stopPropagation();
+                GeProjFactory.baixarMedicao(idmedicao);
+            }
+    
 		$scope.openNewItemDialog = function (evt, item) {
 
-
+			item.id_item = 0;
 
 			$mdDialog.show(
 				{
@@ -21181,7 +21188,7 @@ module.exports = function(Chart) {
 						parentDoc: item,
 						parentScope: $scope
 					},
-					templateUrl: './app/modules/medicoes/meditem.dialog.tmpl.html',
+					templateUrl: './app/modules/Medicoes/meditem-dialog.tmpl.html',
 					parent: angular.element(document.body),
 					targetEvent: evt,
 					clickOutsideToClose: true
@@ -21195,8 +21202,6 @@ module.exports = function(Chart) {
 
 		$scope.openItemDialog = function (evt, item) {
 
-
-
 			$mdDialog.show(
 				{
 					controller: itemDialogController,
@@ -21205,7 +21210,7 @@ module.exports = function(Chart) {
 						parentDoc: item,
 						parentScope: $scope
 					},
-					templateUrl: './app/modules/medicoes/meditem.dialog.tmpl.html',
+					templateUrl: './app/modules/Medicoes/meditem-dialog.tmpl.html',
 					parent: angular.element(document.body),
 					targetEvent: evt,
 					clickOutsideToClose: true
@@ -21217,9 +21222,111 @@ module.exports = function(Chart) {
 				});
 		}
 
+        
+        $scope.cancelarMedicao = function () {
+			$location.url('/medicoes');
+		}
+					// Função que salva medicao
+					$scope.salvarMedicao = function(medicao){
+						// Mostra carregando
+						$scope.root.carregando = true;
+						
+						// Fazendo cópia de medicao
+						var medicao = angular.copy(medicao);
+						 
+			
+						medicao.id_projeto = medicao.projeto.id;
+						
+						// removendo dados desnecessários
+						delete medicao.cliente;
+						delete medicao.projeto;
+			
+						if($scope.medicao.id == undefined || $scope.medicao.id==0){
+							GeProjFactory.adicionarMedicao(medicao)
+							.success(function(response){
+								// Esconde carregando
+								$scope.root.carregando = false;
+			
+								// Atribuindo id da medicao recém criada
+								$scope.medicao.id = response.newId;
+			
+								// Alterando url para coerência
+								$location.url('/medicoes/'+$scope.medicao.id);
+			
+								// Atribuindo-se a data de registro
+								$scope.medicao.datahora_registro = new Date();
+			
+								// Mudando o tab para o próximo... TODO
+								// TODO: Fazer mudar para tab de documentos depois de salvar GRD
+			
+								// Retornando Toast para o usuário
+								$mdToast.show(
+									$mdToast.simple()
+									.textContent('Medição criada com sucesso!')
+									.position('bottom left')
+									.hideDelay(5000)
+								);
+								
+							})
+							.error(function(error){
+								// Esconde carregando
+								$scope.root.carregando = false;
+							});
+						} else {
+							GeProjFactory.atualizarMedicao(medicao)
+							.success(function(response){
+								// Esconde carregando
+								$scope.root.carregando = false;
+			
+								// Retornando Toast para o usuário
+								$mdToast.show(
+									$mdToast.simple()
+									.textContent('Medição atualizada com sucesso!')
+									.position('bottom left')
+									.hideDelay(5000)
+								);
+							})
+							.error(function(error){
+								// Esconde carregando
+								$scope.root.carregando = false;
+			
+								// Retornando Toast para o usuário
+								$mdToast.show(
+									$mdToast.simple()
+									.textContent('Falha ao alterar Medição: ' + error.msg)
+									.position('bottom left')
+									.hideDelay(5000)
+								);
+			
+								// imprimindo mensagem no console
+								console.warn(error);
+							});
+						}
+					}
+
+		// Função controller do diálogo para alterar endereço físico
 		// Função controller do diálogo para alterar endereço físico
 		// Função controller do diálogo para alterar endereço físico
 		function itemDialogController($scope, parentScope, parentDoc, item) {
+
+
+
+			// Carregando disciplinas
+			GeProjFactory.getDisciplinas()
+				.success(function (response) {
+					$scope.disciplinas = response.disciplinas;
+				})
+				.error(function (error) {
+					// Retornando Toast para usuário
+					$mdToast.show(
+						$mdToast.simple()
+							.textContent('Falha ao tentar carregar disciplinas.')
+							.position('bottom left')
+							.hideDelay(5000)
+					);
+				});
+
+
 
 			if (item.id_item == 0) {
 
@@ -21244,11 +21351,43 @@ module.exports = function(Chart) {
 				GeProjFactory.getTamanhosDePapel().success(function (response) {
 					$scope.tamanhosDePapel = response.tamanhosDePapel;
 				});
+
+				// Carregando disciplinas
+				GeProjFactory.getDisciplinas()
+					.success(function (response) {
+						$scope.disciplinas = response.disciplinas;
+
+					})
+					.error(function (error) {
+						// Retornando Toast para usuário
+						$mdToast.show(
+							$mdToast.simple()
+								.textContent('Falha ao tentar carregar disciplinas.')
+								.position('bottom left')
+								.hideDelay(5000)
+						);
+					});
+
 			} else {
 
 				$scope.tipoMedicao = [
 					{ id: "H", nome: "Hora/Hora" },
 					{ id: "U", nome: "Unitario" }];
+
+				// Carregando disciplinas
+				GeProjFactory.getSubDisciplina(item.id_disciplina)
+						.success(function (response) {
+							$scope.subdisciplinas = response.subdisciplina;
+						})
+						.error(function (error) {
+							// Retornando Toast para usuário
+							$mdToast.show(
+								$mdToast.simple()
+									.textContent('Falha ao tentar carregar Sub-disciplinas.')
+									.position('bottom left')
+									.hideDelay(5000)
+							);
+						});
 
 
 				if (item.tipo_medicao == 'U') {
@@ -21267,34 +21406,47 @@ module.exports = function(Chart) {
 						$scope.cargos = response.cargos;
 					});
 
-                }
-                item.valor = 1*item.valor;
-               
-                $scope.item =angular.copy(item);
 
+				}
+
+				item.valor = 1 * item.valor;
+
+				$scope.item = angular.copy(item);
+
+			}
+            
+            
+			$scope.onDisciplinaChange = function (id_disciplina) {
+
+
+				if (id_disciplina != '') {
+
+
+					GeProjFactory.getSubDisciplina(id_disciplina)
+						.success(function (response) {
+							$scope.subdisciplinas = response.subdisciplina;
+						})
+						.error(function (error) {
+							// Retornando Toast para usuário
+							$mdToast.show(
+								$mdToast.simple()
+									.textContent('Falha ao tentar carregar Sub-disciplinas.')
+									.position('bottom left')
+									.hideDelay(5000)
+							);
+						});
+				}
 			}
 
 			$scope.cancelar = function () {
 				$mdDialog.hide();
 			}
 
-            			// Função que salva medicao
-		
-
 
 			// Função que salva medicao
 			$scope.salvarItem = function (item) {
 
-				//salvarItem
-
-				// Mostra carregando
-				// $scope.root.carregando = true;
-
-				// Fazendo cópia de medicao
-				
-
 				if (item.id_item == 0) {
-
 
 			   var medicao = angular.copy($scope.medicao);
 
@@ -21351,7 +21503,7 @@ module.exports = function(Chart) {
 					GeProjFactory.atualizaItemMedicao(item, tipo)
 						.success(function (response) {
 
-						LoadItemMedicao(item.id_medicao);
+							LoadItemMedicao(item.id_medicao);
 
 							$mdToast.show(
 								$mdToast.simple()
@@ -21369,86 +21521,10 @@ module.exports = function(Chart) {
 				}
 			}
 
-        }
-        
-        $scope.salvar = function(medicao){
-
-            
-			// Mostra carregando
-			$scope.root.carregando = true;
-			
-			// Fazendo cópia de medicao
-			var medicao = angular.copy(medicao);
-			 
-
-			medicao.id_projeto = medicao.projeto.id;
-			
-			// removendo dados desnecessários
-			delete medicao.cliente;
-			delete medicao.projeto;
-
-			if($scope.medicao.id == undefined || $scope.medicao.id==0){
-				GeProjFactory.adicionarMedicao(medicao)
-				.success(function(response){
-					// Esconde carregando
-					$scope.root.carregando = false;
-
-					// Atribuindo id da medicao recém criada
-					$scope.medicao.id = response.newId;
-
-					// Alterando url para coerência
-					$location.url('/medicoes/'+$scope.medicao.id);
-
-					// Atribuindo-se a data de registro
-					$scope.medicao.datahora_registro = new Date();
-
-					// Mudando o tab para o próximo... TODO
-					// TODO: Fazer mudar para tab de documentos depois de salvar GRD
-
-					// Retornando Toast para o usuário
-					$mdToast.show(
-						$mdToast.simple()
-						.textContent('Medição criada com sucesso!')
-						.position('bottom left')
-						.hideDelay(5000)
-					);
-					
-				})
-				.error(function(error){
-					// Esconde carregando
-					$scope.root.carregando = false;
-				});
-			} else {
-				GeProjFactory.atualizarMedicao(medicao)
-				.success(function(response){
-					// Esconde carregando
-					$scope.root.carregando = false;
-
-					// Retornando Toast para o usuário
-					$mdToast.show(
-						$mdToast.simple()
-						.textContent('Medição atualizada com sucesso!')
-						.position('bottom left')
-						.hideDelay(5000)
-					);
-				})
-				.error(function(error){
-					// Esconde carregando
-					$scope.root.carregando = false;
-
-					// Retornando Toast para o usuário
-					$mdToast.show(
-						$mdToast.simple()
-						.textContent('Falha ao alterar Medição: ' + error.msg)
-						.position('bottom left')
-						.hideDelay(5000)
-					);
-
-					// imprimindo mensagem no console
-					console.warn(error);
-				});
-			}
 		}
+
+
+			
 		// Carregando configurações do GeProj
 		var config = null;
 		GeProjFactory.getConfiguracoes().
@@ -21503,8 +21579,11 @@ module.exports = function(Chart) {
 		// Define função a ser executada quando o projeto muda
 		$scope.onProjetoChange = function () {
 			$scope.medicao.alterada = true;
-		}
-
+        }
+        
+        
+	
+        
 		// Função que leva para a busca de medicaos
 		$scope.goToPesquisa = function () {
 			$location.url('/medicoes');
@@ -21693,9 +21772,7 @@ module.exports = function(Chart) {
 	MedicoesModule.controller('MedicoesController', MedicoesController);
 	MedicoesModule.controller('MedicaoController', MedicaoController);
 
-})()
-// Fim Medicao
-;;angular.module('Disciplinas',[])
+})();;angular.module('Disciplinas',[])
 .controller('DisciplinasController',DisciplinasController)
 .controller('DisciplinaController',DisciplinaController)
 .controller('SubdisciplinaController',SubdisciplinaController)
@@ -23363,7 +23440,9 @@ function OldDisciplinaController($scope,$routeParams,GeProjFactory){
 			$scope.grd = parentScope.grd;
 
 			// Carregando informaç~oes do usuário
-			var user = $cookies.getObject('user');
+            var user = $cookies.getObject('user');
+            
+         
 
 			// Construindo assunto a partir das configurações
 			var assunto = config.ASSUNTO_PADRAO_ENVIO_GRD.valor;
@@ -23381,7 +23460,8 @@ function OldDisciplinaController($scope,$routeParams,GeProjFactory){
 					.replace('$empresa_nome',user.nome_empresa)
 					.replace('$projeto_nome',$scope.grd.projeto.nome)
 					.replace('$usuario_nome',user.nome)
-					.replace('$usuario_email',user.email);
+					.replace('$usuario_email',user.email)
+					.replace('$login',user.login);;
 
 			// Contruindo assinatura de mensagem a partir das configurações
 			var ass = config.ASSINATURA_ENVIO_GRD.valor;
@@ -27234,6 +27314,11 @@ function RootController($scope,$interval,$cookies,GeProjFactory,$mdSidenav,$mdMe
 			GeProjFactory.getDisciplina = function(id_disciplina){
 				return $http.get(API_ROOT+'/disciplinas/'+id_disciplina,buildHeaders());
 			}
+
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.getSubDisciplina = function(id_disciplina){
+				return $http.get(API_ROOT+'/subdisciplina/'+id_disciplina,buildHeaders());
+			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para atualizar o usuario enviado
 			GeProjFactory.atualizarDisciplina = function(disciplina){
@@ -27727,6 +27812,36 @@ function RootController($scope,$interval,$cookies,GeProjFactory,$mdSidenav,$mdMe
 				// Retornando promise da requisição de busca
 				return $http.get(API_ROOT+'/medicoes/search/q?'+queryString,buildHeaders());
             }
+
+
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.baixarMedicao = function(idMedicao,busca){
+
+				// Criando um formulário para enviar a requisição pelo arquivo
+				var form = document.createElement("form");
+				// form.setAttribute('action',API_ROOT + '/medicoes/' + idMedicao + '/ldp');
+				form.setAttribute('action',API_ROOT + '/medicoes/' + idMedicao + '/med');
+				form.setAttribute('method','GET');
+				form.setAttribute('style','display:none');
+
+				// Criando de busca para conter o objeto de busca
+				if(busca!=undefined){
+					var input = document.createElement('input');
+					input.setAttribute('name','busca2');
+					
+					input.setAttribute('value',JSON.stringify(busca));
+					form.appendChild(input);
+				}
+
+				// adicionando form a dom
+				document.body.appendChild(form);
+
+				// submetendo o form
+				form.submit();
+
+				// removendo o form da dom
+				form.parentNode.removeChild(form);
+			}
             
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.buscarDocumentos = function(query){

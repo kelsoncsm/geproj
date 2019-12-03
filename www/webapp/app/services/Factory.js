@@ -49,6 +49,10 @@ WebGeProj.factory('GeProjFactory',
 				return $http.get(API_ROOT+'/disciplinas/'+id_disciplina,buildHeaders());
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.getSubDisciplina = function(id_disciplina){
+				return $http.get(API_ROOT+'/subdisciplina/'+id_disciplina,buildHeaders());
+			}
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			// Faz requisição para atualizar o usuario enviado
 			GeProjFactory.atualizarDisciplina = function(disciplina){
 				return $http.put(API_ROOT+'/disciplinas/'+disciplina.id,disciplina,buildHeaders());
@@ -375,6 +379,34 @@ WebGeProj.factory('GeProjFactory',
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.atualizarMedicao = function(medicao){
 				return $http.put(API_ROOT+'/medicoes/'+medicao.id, Medicao,buildHeaders());	
+			}
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			GeProjFactory.baixarMedicao = function(idMedicao,busca){
+
+				// Criando um formulário para enviar a requisição pelo arquivo
+				var form = document.createElement("form");
+				// form.setAttribute('action',API_ROOT + '/medicoes/' + idMedicao + '/ldp');
+				form.setAttribute('action',API_ROOT + '/medicoes/' + idMedicao + '/med');
+				form.setAttribute('method','GET');
+				form.setAttribute('style','display:none');
+
+				// Criando de busca para conter o objeto de busca
+				if(busca!=undefined){
+					var input = document.createElement('input');
+					input.setAttribute('name','busca2');
+					
+					input.setAttribute('value',JSON.stringify(busca));
+					form.appendChild(input);
+				}
+
+				// adicionando form a dom
+				document.body.appendChild(form);
+
+				// submetendo o form
+				form.submit();
+
+				// removendo o form da dom
+				form.parentNode.removeChild(form);
 			}
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			GeProjFactory.getListaItensMedicao = function(id_medicao){

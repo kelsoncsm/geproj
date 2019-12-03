@@ -4,41 +4,6 @@ WebGeProj.directive('focus', function(){
 	};
 });
 
-WebGeProj.directive('format', ['$filter', function ($filter) {
-	return {
-		require: '?ngModel',
-		link: function (scope, elem, attrs, ctrl) {
-			if (!ctrl) return;
-
-			ctrl.$formatters.unshift(function (a) {
-				return $filter(attrs.format)(ctrl.$modelValue)
-			});
-
-			ctrl.$parsers.unshift(function (viewValue) {
-							  
-		  elem.priceFormat({
-			prefix: '',
-			centsSeparator: ',',
-			thousandsSeparator: '.'
-		});                
-				return elem[0].value;
-			});
-		}
-	};
-}]);
-
-module.directive('input', function(){
-    return {
-        require: 'ngModel',
-        link: function(scope, elem, attrs, ngModel){
-            if(attrs.type == 'number'){
-                ngModel.$formatters.push(function(value){
-                    return parseFloat(value);
-                });
-            }
-        }
-    };
-});
 
 WebGeProj.directive('ngFileModel', ['$parse', function ($parse) {
 	return {

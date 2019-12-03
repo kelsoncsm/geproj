@@ -121,8 +121,16 @@
                 <div class="resultado_item">
                     <label>Registrada em</label>
                     <span>{{med.medicao_registradaEm |date:"dd/MM/yyyy à's' HH:mm:ss"}}</span>
-                </div>  
+                </div>
+            
+
             </div>
+       
+
+            
+
+
+
         </div>
 
         <div class="instrucoes" ng-if="resultados.length == 0">
