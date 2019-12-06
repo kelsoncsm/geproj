@@ -6392,14 +6392,25 @@
 
 
 
-		$app->put('/medicoes/cargo/:id_item',function($id_item) use ($app,$db,$token){
+
+
+		$app->post('/medicoes/item',function() use ($app,$db,$token){
 			// Lendo e saneando as informações da requisição
 			$medicao = json_decode($app->request->getBody());
 
-			// Atualizando a grd.
-			$sql = 'UPDATE medicao_cargo_cliente SET id_disciplina=?,id_subdisciplina=?,id_empresa=?,id_cliente=?,id_cargo=?,valor=?,qtd=?,id_medicao=?,tipo_medicao=? WHERE id=?';
+		// Inserindo nova medicao.
+		$sql = 'INSERT INTO medicao_item (
+			id_disciplina,
+			id_subdisciplina,
+			id_empresa,
+			id_cliente,
+			id_cargo,
+			id_tamanho_papel,
+			id_medicao,
+			tipo_medicao) VALUES (?,?,?,?,?,?,?,?)';
 			try {
-				$db->query($sql,'iiiiiiiisi',$medicao->id_disciplina,$medicao->id_subdisciplina,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_cargo,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao,$id_item);
+				 $db->query($sql,'iiiiiiis',$medicao->id_disciplina,$medicao->id_subdisciplina,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_cargo,$medicao->id_tamanho_papel,$medicao->id_medicao,$medicao->tipo_medicao);
+				 $newId = $db->insert_id;
 			} catch (Exception $e) {
 				http_response_code(401);
 				$response = new response(1,$e->getMessage());
@@ -6407,93 +6418,82 @@
 				return;
 			}
 
-			// Enviando resposta para o cliente
-			$response = new response(0,'Item atualizada com sucesso.');
-			$response->flush();
-
-			// Registrando a ação
-			// registrarAcao($db,$id,ACAO_ATUALIZOU_MEDICAO,$medicao->id.','.$medicao->codigo.','.$medicao->id_projeto);
-		});
-
-		$app->put('/medicoes/Unidade/:id_item',function($id_item) use ($app,$db,$token){
-			// Lendo e saneando as informações da requisição
-			$medicao = json_decode($app->request->getBody());
-
-			// Atualizando a grd.
-			$sql = 'UPDATE medicao_unidade_cliente SET id_disciplina=?,id_subdisciplina=?,id_empresa=?,id_cliente=?,id_tamanho_papel=?,valor=?,qtd=?,id_medicao=?,tipo_medicao=? WHERE id=?';
-			try {
-				$db->query($sql,'iiiiiiiisi',$medicao->id_disciplina,$medicao->id_subdisciplina,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_tamanho_papel,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao,id_item);
-				$response = new response(0,'Item atualizada com sucesso.');
-			    $response->flush();
-
-			} catch (Exception $e) {
-				http_response_code(401);
-				$response = new response(1,$e->getMessage());
-				$response->flush();
-				return;
+			if($medicao->tipo_medicao == 'H'){
+			// Inserindo revisões na GRD
+			$sqlqtdcargo = 'INSERT INTO medicao_item_qtd_cargo (id_item,SR,PL,JR,PRS,PRL,DE) VALUES (?,?,?,?,?,?,?)';
+			$db->query($sqlqtdcargo,'iiiiiii',$newId,$medicao->ESR,$medicao->EPL,$medicao->EJR,$medicao->PRS,$medicao->PRL,$medicao->DE);
+			$newqtd = $db->insert_id;
+			$sqlvlrcargo = 'INSERT INTO medicao_item_vlr_cargo (id_qtd_cargo,valor) VALUES (?,?)';
+			$db->query($sqlvlrcargo,'ii',$newqtd,$medicao->valor);
+			}else{
+				// Inserindo revisões na GRD
+			$sqlqtdfolha = 'INSERT INTO medicao_item_qtd_folhas (id_item,A0,A1,A2,A3,A4) VALUES (?,?,?,?,?,?)';
+			$db->query($sqlqtdfolha,'iiiiii',$newId,$medicao->A0,$medicao->A1,$medicao->A2,$medicao->A3,$medicao->A4);
+			$newqtd = $db->insert_id;
+			$sqlvlrfolha = 'INSERT INTO medicao_item_vlr_folhas (id_qtd_folhas,valor) VALUES (?,?)';
+			$db->query($sqlvlrfolha,'ii',$newqtd,$medicao->valor);
+			
 			}
 
-			// Enviando resposta para o cliente
-		
-			// Registrando a ação
-			// registrarAcao($db,$id,ACAO_ATUALIZOU_MEDICAO,$medicao->id.','.$medicao->codigo.','.$medicao->id_projeto);
 		});
 
+		// $app->put('/propostas/:id_proposta', function($id_proposta) use ($app,$db,$token,$config) {
 
-		$app->post('/medicoes/Cargo',function() use ($app,$db,$token){
+		// 	// Lendo a proposta do corpo da requisição
+		// 	$proposta = json_decode($app->request->getBody());
+
+		// 	// Salvando o título da proposta
+		// 	$sql='UPDATE propostas SET titulo=? WHERE id=?';
+		// 	try {
+		// 		$db->query($sql,'si',$proposta->titulo,$id_proposta);
+		// 	} catch (Exception $e) {
+		// 		http_response_code(401);
+		// 		$response = new response(1,'Falha ao tentar alterar a proposta');
+		// 		$response->flush();
+		// 		exit(1);
+		// 	}
+			
+		// 	// Retornando resposta para o cliente
+		// 	$response = new response(0,'ok');
+		// 	$response->flush();
+
+
+		$app->put('/medicoes/item/:id_item',function($id_item) use ($app,$db,$token){
 			// Lendo e saneando as informações da requisição
-			$medicao = json_decode($app->request->getBody());
+			$item_medicao = json_decode($app->request->getBody());
 
-			// Inserindo nova medicao.
-			$sql = 'INSERT INTO medicao_cargo_cliente (
-				id_disciplina,
-				id_subdisciplina,
-				id_empresa,
-				id_cliente,
-				id_cargo,
-				valor,
-				qtd,
-				id_medicao,
-				tipo_medicao) VALUES (?,?,?,?,?,?,?,?,?)';
+		// Inserindo nova medicao.
+		$sql = '  UPDATE medicao_item SET id_disciplina=?,id_subdisciplina=?,id_empresa=?,id_cliente=?,id_cargo=?,id_tamanho_papel=?,id_medicao=?,tipo_medicao=? where id=?';
 			try {
-				$db->query($sql,'iiiiiiiis',$medicao->id_disciplina,$medicao->id_subdisciplina,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_cargo,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao);
-				$newId = $db->insert_id;
-				$response = new response(0,'ok');
-				$response->newId = $newId;
-				$response->flush();
-			} catch (Exception $e) {
-				http_response_code(401);
-				$response = new response(1,$e->getMessage());
-				$response->flush();
-				return;
+				 $db->query($sql,'iiiiiiisi',$item_medicao->id_disciplina,$item_medicao->id_subdisciplina,$item_medicao->id_empresa,$item_medicao->id_cliente,$item_medicao->id_cargo,$item_medicao->id_tamanho_papel,$item_medicao->id_medicao,$item_medicao->tipo_medicao,$item_medicao-> id_item);
+				} catch (Exception $e) {
+					http_response_code(401);
+					$response = new response(1,'Falha ao tentar alterar a item medição');
+					$response->flush();
+					exit(1);
 			}
 
-			// Registrando a ação
-			//registrarAcao($db,$id,ACAO_CRIOU_MEDICAO,$newId.','.$newCodigo.','.$medicao->id_projeto);
-		});
-
-		$app->post('/medicoes/Unidade',function() use ($app,$db,$token){
-			// Lendo e saneando as informações da requisição
-			$medicao = json_decode($app->request->getBody());
-
-			// Inserindo nova medicao.
-			$sql = 'INSERT INTO medicao_unidade_cliente (id_disciplina,id_subdisciplina,id_empresa,id_cliente,id_tamanho_papel,valor,qtd,id_medicao,tipo_medicao) VALUES (?,?,?,?,?,?,?,?,?)';
-			try {
-				$db->query($sql,'iiiiiiiis',$medicao->id_disciplina,$medicao->id_subdisciplina,$medicao->id_empresa,$medicao->id_cliente,$medicao->id_tamanho_papel,$medicao->valor,$medicao->qtd,$medicao->id_medicao,$medicao->tipo_medicao);
-				$newId = $db->insert_id;
-				$response = new response(0,'ok');
-				$response->newId = $newId;
-				$response->flush();
-			} catch (Exception $e) {
-				http_response_code(401);
-				$response = new response(1,$e->getMessage());
-				$response->flush();
-				return;
+			if($item_medicao->tipo_medicao == 'H'){
+			// Inserindo revisões na GRD
+			$sqlqtdcargo = 'UPDATE medicao_item_qtd_cargo SET id_item=?,SR=?,PL=?,JR=?,PRS=?,PRL=?,DE=? where id=? ';
+			$db->query($sqlqtdcargo,'iiiiiiii',$item_medicao->id_item,$item_medicao->ESR,$item_medicao->EPL,$item_medicao->EJR,$item_medicao->PRS,$item_medicao->PRL,$item_medicao->DE,$item_medicao-> id_item_qtd_cargo);
+			 
+			$sqlvlrcargo = 'UPDATE medicao_item_vlr_cargo set id_qtd_cargo=?,valor=? where id=?';
+			$db->query($sqlvlrcargo,'iii',$item_medicao->id_item_qtd_cargo,$item_medicao->valor,$item_medicao->id_item_vlr_cargo);
+			}else{
+				// Inserindo revisões na GRD
+			$sqlqtdfolha = 'UPDATE medicao_item_qtd_folhas set id_item=?,A0=?,A1=?,A2=?,A3=?,A4=? where id=?';
+			$db->query($sqlqtdfolha,'iiiiiii',$item_medicao->id_item,$item_medicao->A0,$item_medicao->A1,$item_medicao->A2,$item_medicao->A3,$item_medicao->A4,$item_medicao->A4,$item_medicao->id_item_qtd_folhas);
+		 
+			$sqlvlrfolha = 'UPDATE medicao_item_vlr_folhas set id_qtd_folhas=?,valor=? where id=?';
+			$db->query($sqlvlrfolha,'iii',$item_medicao->id_item_qtd_folhas,$item_medicao->valor,$item_medicao->id_item_vlr_folhas);
+			
 			}
 
-			// Registrando a ação
-			//registrarAcao($db,$id,ACAO_CRIOU_MEDICAO,$newId.','.$newCodigo.','.$medicao->id_projeto);
 		});
+
+
+		  
 
 		$app->get('/medicoes/:id_medicao',function($id_medicao) use ($app,$db,$token){
 			// Lendo dados
@@ -6538,39 +6538,6 @@
 					return;
 				}	
 			
-		});
-
-		$app->get('/medicoes/cargo/:id_medicao',function($id_medicao) use ($app,$db,$token){
-			// Lendo dados
-			$id_medicao = 1*$id_medicao;
-
-			// Lendo dados do cookie! :(
-			$user = json_decode($_COOKIE['user']);
-
-			$sql = 'SELECT	mc.id as id_item,mc.id_disciplina,mc.id_subdisciplina,mc.id_empresa,mc.tipo_medicao,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
-				FROM   medicao_cargo_cliente mc  
-				WHERE mc.id_medicao=?';
-			
-			$response = new response(0,'ok');
-			$response->cargo = $rs = $db->query($sql,'i',$id_medicao);
-			$response->flush();
-			
-		});
-
-
-		$app->get('/medicoes/unidade/:id_medicao',function($id_medicao) use ($app,$db,$token){
-			// Lendo dados
-			$id_medicao = 1*$id_medicao;
-
-			// Lendo dados do cookie! :(
-			$user = json_decode($_COOKIE['user']);
-
-			$sql = 'SELECT	muc.id as id_item ,muc.id_disciplina,muc.id_subdisciplina,muc.tipo_medicao,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
-			FROM  medicao_unidade_cliente muc 
-			WHERE muc.id_medicao =?';
-			$response = new response(0,'ok');
-			$response->unidade = $rs = $db->query($sql,'i',$id_medicao);
-			$response->flush();
 		});
 
 
@@ -6699,28 +6666,37 @@
 		$app->get('/medicoes/itens/:id_medicao',function($id_medicao) use ($app,$db,$token){
 			// Lendo dados
 			$id_medicao = 1*$id_medicao;
-			$item = [];
+		 
+	$sql = 'SELECT   concat(sd.sigla," - ",sd.nome) as descricao,
+			CASE WHEN mqf.A0 > 0  THEN  mqf.A0
+			WHEN mqf.A1  > 0  THEN mqf.A1 
+			WHEN mqf.A2  > 0  THEN mqf.A2 
+			WHEN mqf.A3  > 0  THEN mqf.A3 
+			WHEN mqf.A4  > 0  THEN mqf.A4 
+			WHEN mqc.SR  > 0  THEN mqc.SR 
+			WHEN mqc.PL  > 0  THEN mqc.PL 
+			WHEN mqc.JR  > 0  THEN mqc.JR 
+			WHEN mqc.PRS > 0  THEN mqc.PRS
+			WHEN mqc.PRL > 0  THEN mqc.PRL
+			WHEN mqc.DE  > 0  THEN mqc.DE 
+			end as qtd,
+			ifnull(miv.valor,mif.valor) as valor,mi.id_cargo,mi.id_disciplina,mi.id_medicao,mi.id as id_item,mi.id_subdisciplina,mi.id_tamanho_papel, 
+			mqc.id as id_item_qtd_cargo, miv.id as id_item_vlr_cargo,mqf.id as id_item_qtd_folhas, mif.id as  id_item_vlr_folhas,mi.tipo_medicao,mi.id_empresa,mi.id_cliente,
+			mqf.A0 ,			mqf.A1 ,			mqf.A2 ,			mqf.A3 ,			mqf.A4 ,			mqc.SR as ESR ,			mqc.PL as EPL ,			mqc.JR as EJR ,			mqc.PRS,			mqc.PRL,			mqc.DE 
+			from medicao_item mi
+			left join medicao_item_qtd_cargo mqc on mqc.id_item = mi.id
+			left join medicao_item_vlr_cargo miv on miv.id_qtd_cargo = mqc.id
+			left join medicao_item_qtd_folhas mqf on mqf.id_item = mi.id
+			left join medicao_item_vlr_folhas mif on mif.id_qtd_folhas = mqf.id
+			left join cargos car on car.id = mi.id_cargo
+			left join tamanhos_de_papel tp on tp.id = mi.id_tamanho_papel
+			inner join subdisciplinas sd on sd.id = mi.id_subdisciplina
+		WHERE mi.id_medicao=?';
 			
-
-			$sql = 'SELECT 	mc.id,mc.id_empresa,mc.id_cliente,mc.id_cargo,mc.valor,mc.qtd,mc.id_medicao 
-					 FROM  medicao med
-				    LEFT JOIN  medicao_cargo_cliente mc  on mc.id_medicao = med.id
-					WHERE med.id=?';
-			 $rs = $db->query($sql,'i',$id_medicao);
-			 
-			 $item->cargo = $db->query($sql,'i',$id_medicao);
-		
-				$sql = 'SELECT 	muc.id,muc.id_empresa,muc.id_cliente,muc.id_tamanho_papel,muc.valor,muc.qtd,muc.id_medicao 
-				        FROM  medicao med
-					    LEFT JOIN  medicao_unidade_cliente muc on muc.id_medicao = med.id
-						WHERE med.id =?';
-						
-			    $item->item_hh = $db->query($sql,'i',$id_medicao);
-				
-					$response = new response(0,'ok');
-					$response->item = $item;
-					$response->flush();
-					return;
+			$response = new response(0,'ok');
+			$response->item_medicao = $db->query($sql,'i',$id_medicao);
+			$response->flush();
+			return;
 					
 
 		});

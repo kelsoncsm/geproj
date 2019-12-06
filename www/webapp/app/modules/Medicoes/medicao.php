@@ -80,12 +80,10 @@
                     <div class="container_100" id="propostas_container" ng-if="medicao.id > 0">
                         <div class="controles" layout="row" layout-align="space-between start">
                             <md-button ng-click="openNewItemDialog($event,medicao)"
-                                class="md-raised md-accent novaPropBt" aria-label="Criar novo item">
+                                class="md-raised md-accent novaPropBt" aria-label="Criar novo item" >
                                 <md-icon class="material-icons step">add</md-icon>
-                                Novo Item
                             </md-button>
                         </div>
-                        </br>
                         <table>
                             <thead>
                                 <tr>
@@ -96,20 +94,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="car in cargo" ng-click="openItemDialog($event,car)">
-                                    <td style="width: 100px;text-align: center;">{{car.descricao}}</td>
-                                    <td style="width: 100px;text-align: center;">{{car.qtd}}</td>
-                                    <td style="width: 100px;text-align: center;">{{car.valor | currency }}</td>
-                                    <td style="width: 100px;text-align: center;">{{car.valor *  car.qtd | currency }}
+                                <tr ng-repeat="im in item_medicao" ng-click="openItemDialog($event,im)">
+                                    <td style="width: 338px;text-align: center;">{{im.descricao}}</td>
+                                    <td style="width: 100px;text-align: center;">{{im.qtd}}</td>
+                                    <td style="width: 100px;text-align: center;">{{im.valor | currency }}</td>
+                                    <td style="width: 100px;text-align: center;">{{im.valor *  im.qtd | currency }}
                                     </td>
                                 </tr>
-                                <tr ng-repeat="uni in unidade" ng-click="openItemDialog($event,uni)">
-                                    <td style="width: 100px;text-align: center;">{{uni.descricao}} </td>
-                                    <td style="width: 100px;text-align: center;">{{uni.qtd}}</td>
-                                    <td style="width: 100px;text-align: center;">{{uni.valor | currency }}</td>
-                                    <td style="width: 100px;text-align: center;">{{uni.valor *  uni.qtd | currency }}
-                                    </td>
-                                </tr>
+                               
                             </tbody>
                         </table>
                     </div> 

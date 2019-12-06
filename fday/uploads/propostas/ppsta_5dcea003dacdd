@@ -1,0 +1,16 @@
+
+/*select * from pdas where id in (1453,1454,1455)
+select * from revisoes where  id in (2760,2761,2762)
+select * from arquivos
+
+sel
+
+
+SELECT count(*) as nPdas FROM revisoes a INNER JOIN pdas b ON (a.id=b.id_revisao AND a.id_documento=?)
+
+2760
+2761
+2762
+
+delete from revisoes where id no in (2760,2761,2762)
+delete from documentos where id > 2562*/
