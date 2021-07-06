@@ -14,7 +14,7 @@
 
 		// Testando login
 		$sql = 'SELECT id
-				FROM gdoks_clientes
+				FROM clientes
 				WHERE login=?
 				  AND cast(aes_decrypt(senha,unhex(sha2("'.AES_KEY.'",512))) AS char(50)) = ?';
 		$rs = $db->query($sql,'ss',$_POST['login'],$_POST['senha']);
@@ -32,7 +32,7 @@
 			$token = uniqid('',true);
 
 			// Gravando o token na base
-			$sql = 'UPDATE gdoks_clientes set token=?,validade_do_token="'.Date('Y-m-d H:i:s',time()+TOKEN_DURARION).'" where id=?';
+			$sql = 'UPDATE clientes set token=?,validade_do_token="'.Date('Y-m-d H:i:s',time()+TOKEN_DURARION).'" where id=?';
 			$db->query($sql,'si',$token,$rs[0]['id']);
 
 			// Levantando dados do cliente e da empresa 
@@ -43,8 +43,8 @@
 					       a.nome_fantasia,
 					       b.nome AS nome_empresa,
 					       b.codigo AS codigo_empresa
-					FROM gdoks_clientes a
-					INNER JOIN gdoks_empresas b ON a.id_empresa=b.id
+					FROM clientes a
+					INNER JOIN empresas b ON a.id_empresa=b.id
 					WHERE a.token=?';
 			$cliente = (object)(($db->query($sql,'s',$token))[0]);
 			

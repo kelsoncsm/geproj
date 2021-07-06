@@ -8,8 +8,8 @@
 	require('db.php');
 	require('definicoes_de_acoes.php');
 	require('response.php');
-	require('GDoks/Grd.php');
-	require('GDoks/Crypter.php');
+	require('GeProj/Grd.php');
+	require('GeProj/Crypter.php');
 	
 
 	// defining api - - - - - - - - - - - - - - - - - - - -
@@ -96,7 +96,7 @@
 		$db = new DB($dbkey);
 		
 		// Verificando um usuário que esteja cadastrado com o email fornecido
-		$sql = 'SELECT id,nome FROM gdoks_usuarios WHERE email=?';
+		$sql = 'SELECT id,nome FROM usuarios WHERE email=?';
 		$rs = $db->query($sql,'s',$data->email);
 		if(sizeof($rs) == 0){
 			http_response_code(401);
@@ -183,7 +183,7 @@
 		$id = file_get_contents($file);
 		
 		// Verificando um usuário que esteja cadastrado com o email fornecido
-		$sql = 'UPDATE gdoks_usuarios SET senha=PASSWORD(?),login=? WHERE id=?';
+		$sql = 'UPDATE usuarios SET senha=PASSWORD(?),login=? WHERE id=?';
 		try {
 			$db->query($sql,'ssi',$data->pass1,$data->login,$id);
 		} catch (Exception $e){

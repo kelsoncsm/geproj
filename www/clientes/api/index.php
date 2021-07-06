@@ -11,8 +11,8 @@
 	require('constantes.php');
 	require('db.php');
 	require('response.php');
-	require('GDoks/Grd.php');
-	require('GDoks/Crypter.php');
+	require('GeProj/Grd.php');
+	require('GeProj/Crypter.php');
 
 	// Definindo o timezone padrão
 	date_default_timezone_set('America/Sao_Paulo');
@@ -69,7 +69,7 @@
 	$db = new DB($dbkey);
 
 	// Verificando a autenticidade da autorização
-	$sql = 'SELECT id FROM gdoks_clientes WHERE token=? AND validade_do_token>NOW()';
+	$sql = 'SELECT id FROM clientes WHERE token=? AND validade_do_token>NOW()';
 	$rs = $db->query($sql,'s',$token);
 	if(sizeof($rs) == 0){
 		vaDeReto('Token expirado ou inválido',100);
@@ -96,7 +96,7 @@
 					try {
 
 						// Tentando executar consulta
-						$sql = 'UPDATE gdoks_clientes SET token=?,validade_do_token=? WHERE id=?';
+						$sql = 'UPDATE clientes SET token=?,validade_do_token=? WHERE id=?';
 						$db->query($sql,'ssi',$newToken,$validade,$id_cliente);
 
 					} catch (Exception $e) {
@@ -119,7 +119,7 @@
 				$app->post('/mudarSenha',function() use ($app,$db,$id_cliente){
 					$novaSenha = json_decode($app->request->getBody())->novaSenha;
 					try {
-						$sql = 'UPDATE gdoks_clientes SET senha=AES_ENCRYPT(?, UNHEX(SHA2(?,512))) WHERE id=?';
+						$sql = 'UPDATE clientes SET senha=AES_ENCRYPT(?, UNHEX(SHA2(?,512))) WHERE id=?';
 						$db->query($sql,'ssi',AES_KEY,$novaSenha,$id_cliente);
 					} catch (Exception $e) {
 						http_response_code(401);
@@ -145,9 +145,9 @@
 								       a.datahora_enviada,
 								       b.nome AS nome_projeto,
 								       count(*) AS nDocs
-								FROM gdoks_grds a
-								INNER JOIN gdoks_projetos b ON a.id_projeto=b.id
-								INNER JOIN gdoks_grds_x_revisoes c ON c.id_grd=a.id
+								FROM grds a
+								INNER JOIN projetos b ON a.id_projeto=b.id
+								INNER JOIN grds_x_revisoes c ON c.id_grd=a.id
 								WHERE b.id_cliente=?
 								  AND datahora_enviada IS NOT NULL
 								GROUP BY a.id,
@@ -177,8 +177,8 @@
 				$app->get('/grds/:id_grd/download',function($id_grd) use ($app,$db,$id_cliente,$empresa){
 					// Verirficando se a grd é do cliente em questão
 					$sql = 'SELECT a.codigo
-							FROM gdoks_grds a
-							INNER JOIN gdoks_projetos b ON a.id_projeto=b.id
+							FROM grds a
+							INNER JOIN projetos b ON a.id_projeto=b.id
 							AND b.id_cliente=?
 							AND a.id=?';
 					$rs = $db->query($sql,'ii',$id_cliente,$id_grd);

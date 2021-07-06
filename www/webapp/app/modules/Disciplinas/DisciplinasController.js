@@ -5,12 +5,12 @@ angular.module('Disciplinas',[])
 .controller('EspecialistasController',EspecialistasController)
 .controller('ValidadoresController',ValidadoresController)
 
-function DisciplinasController($scope,GDoksFactory,$location){
+function DisciplinasController($scope,GeProjFactory,$location){
 	// Definindo variável que carrega aa disciplinas
 	$scope.disciplinas = [];
 
 	// Carregando disciplinas da base
-	var openReq = indexedDB.open("gdoks");
+	var openReq = indexedDB.open("geproj");
 	openReq.onsuccess = function(){
 		var db = openReq.result;
 		db.transaction('disciplinas').objectStore('disciplinas').getAll().onsuccess = function(evt){
@@ -24,7 +24,7 @@ function DisciplinasController($scope,GDoksFactory,$location){
 	}
 };
 
-function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$location){
+function DisciplinaController($scope,$routeParams,GeProjFactory,$mdToast,$location){
 	// Lendo id da url
 	var id = $routeParams.id;
 
@@ -34,7 +34,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 
 	function carregaUsuarios(){
 		// Levantando usuários da base
-		indexedDB.open("gdoks").onsuccess = function(evt){
+		indexedDB.open("geproj").onsuccess = function(evt){
 			evt.target.result.transaction("usuarios").objectStore("usuarios").getAll().onsuccess = function(evt){
 				$scope.$apply(function(){
 					$scope.usuarios = evt.target.result;
@@ -67,7 +67,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 			};
 		} else {
 			// Carregando dados da disciplina a partir da base no cliente
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				var db = evt.target.result;
 				var transaction = db.transaction(['disciplinas','usuarios']);
 				transaction.objectStore('disciplinas').get(id*1).onsuccess = function(evt){
@@ -98,7 +98,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 		$scope.root.carregando = true;
 
 		if($scope.disciplina.id == 0){
-			GDoksFactory.adicionarDisciplina($scope.disciplina)
+			GeProjFactory.adicionarDisciplina($scope.disciplina)
 			.success(
 				function(response){
 					// Esconde carregando
@@ -108,7 +108,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 					$scope.disciplina.id = response.newId;
 
 					// salvando na base de dados local
-					indexedDB.open('gdoks').onsuccess = function(evt){
+					indexedDB.open('geproj').onsuccess = function(evt){
 						evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').add($scope.disciplina);
 					}
 
@@ -144,7 +144,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 				}
 			);
 		} else {
-			GDoksFactory.atualizarDisciplina($scope.disciplina)
+			GeProjFactory.atualizarDisciplina($scope.disciplina)
 			.success(
 				function(response){
 					// Esconde carregando
@@ -159,7 +159,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 					);
 
 					// atualizando usuário na base local
-					indexedDB.open('gdoks').onsuccess = function(evt){
+					indexedDB.open('geproj').onsuccess = function(evt){
 						evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina);
 					}
 				}
@@ -186,7 +186,7 @@ function DisciplinaController($scope,$routeParams,GDoksFactory,$mdToast,$locatio
 
 	// Definindo função que cancela as alterações
 	$scope.cancel = function(){
-		window.location = "WebGDoks.php#/disciplinas";
+		window.location = "WebGeProj.php#/disciplinas";
 	}
 }
 
@@ -208,7 +208,7 @@ function SubdisciplinaController($scope,$mdDialog){
 	}
 }
 
-function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFactory,$mdToast){
+function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GeProjFactory,$mdToast){
 	$scope.sub = sub;
 
 	$scope.salvar = function(sub){
@@ -220,7 +220,7 @@ function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFac
 
 		// Verificando se vai adicionar ou atualizar subdisciplina
 		if(sub.id != 0){
-			GDoksFactory.atualizarSubdisciplina(sub)
+			GeProjFactory.atualizarSubdisciplina(sub)
 				.success(
 					function(response){
 						// Esconde Carregando
@@ -232,7 +232,7 @@ function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFac
 						parentSub.ativa = sub.ativa;
 
 						// atualizar na base local
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').put(parentScope.disciplina);
 						}
 
@@ -264,7 +264,7 @@ function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFac
 					}
 				);
 		} else {
-			GDoksFactory.adicionarSubdisciplina(sub)
+			GeProjFactory.adicionarSubdisciplina(sub)
 				.success(
 					function(response){
 						// Escondendo o carregando
@@ -285,7 +285,7 @@ function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFac
 						parentScope.disciplina.subs.push(sub);
 
 						// atualizar na base local
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							var putRequest = evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').put(parentScope.disciplina);
 							putRequest.onsuccess = function(evt){
 								console.log("atualizou disciplina na base local");
@@ -326,7 +326,7 @@ function SubDialogController($scope,sub,parentSub,parentScope,$mdDialog,GDoksFac
 	}
 }
 
-function EspecialistasController($scope,GDoksFactory,$mdToast){
+function EspecialistasController($scope,GeProjFactory,$mdToast){
 
 	// Copiando vetor de especialistas para comportamento de interface
 	$scope.$watch('disciplina',function(){
@@ -353,7 +353,7 @@ function EspecialistasController($scope,GDoksFactory,$mdToast){
 		var ids = $scope.especialistas.map(function(a){return a.id});
 
 		// Enviando informações para salvamento
-		GDoksFactory.salvarEspecialistas($scope.disciplina.id,ids)
+		GeProjFactory.salvarEspecialistas($scope.disciplina.id,ids)
 		.success(function(response){
 			// Esconde o carregando
 			$scope.root.carregando = false;
@@ -362,7 +362,7 @@ function EspecialistasController($scope,GDoksFactory,$mdToast){
 			$scope.disciplina.especialistas = $scope.especialistas;
 
 			// Salvando na base local
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				// clonando disciplina a ser salva na base
 				var d = angular.copy($scope.disciplina);
 				d.especialistas = d.especialistas.map(function(a){return a.id});
@@ -396,7 +396,7 @@ function EspecialistasController($scope,GDoksFactory,$mdToast){
 	}
 }
 
-function ValidadoresController($scope,GDoksFactory,$mdToast){
+function ValidadoresController($scope,GeProjFactory,$mdToast){
 
 	// Copiando vetor de validadores para comportamento de interface
 	$scope.$watch('disciplina',function(){
@@ -423,7 +423,7 @@ function ValidadoresController($scope,GDoksFactory,$mdToast){
 		var ids = $scope.validadores.map(function(a){return a.id});
 
 		// Enviando informações para salvamento
-		GDoksFactory.salvarValidadores($scope.disciplina.id,ids)
+		GeProjFactory.salvarValidadores($scope.disciplina.id,ids)
 		.success(function(response){
 			// Esconde o carregando
 			$scope.root.carregando = false;
@@ -432,7 +432,7 @@ function ValidadoresController($scope,GDoksFactory,$mdToast){
 			$scope.disciplina.validadores = $scope.validadores;
 
 			// Salvando na base local
-			indexedDB.open('gdoks').onsuccess = function(evt){
+			indexedDB.open('geproj').onsuccess = function(evt){
 				// clonando disciplina a ser salva na base
 				var d = angular.copy($scope.disciplina);
 				d.validadores = d.validadores.map(function(a){return a.id});
@@ -467,7 +467,7 @@ function ValidadoresController($scope,GDoksFactory,$mdToast){
 }
 
 
-function OldDisciplinaController($scope,$routeParams,GDoksFactory){
+function OldDisciplinaController($scope,$routeParams,GeProjFactory){
 	
 
 	// definindo função que remove subdisciplina
@@ -475,13 +475,13 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 		if(confirm("Tem certeza que deseja excluir a subdisciplina? A ação não poderá ser desfeita.")){
 			var sub = $scope.disciplina.subs.find(function(a){return a.id == this},id);
 			sub.id_disciplina = $scope.disciplina.id;
-			GDoksFactory.removerSubdisciplina(sub)
+			GeProjFactory.removerSubdisciplina(sub)
 				.success(
 					function(response){
 						$scope.disciplina.subs = $scope.disciplina.subs.filter(function(a){return a.id!=this},id);
 
 						// Atualizando na base local
-						var openReq = indexedDB.open('gdoks');
+						var openReq = indexedDB.open('geproj');
 						openReq.onsuccess = function(){
 							var db = openReq.result;
 							db.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina);
@@ -526,7 +526,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 	$scope.salvarSubdisciplina = function(){
 		if($scope.subdisciplinaEditada != null){
 			if($scope.subdisciplinaEditada.id != 0){
-				GDoksFactory.atualizarSubdisciplina($scope.subdisciplinaEditada)
+				GeProjFactory.atualizarSubdisciplina($scope.subdisciplinaEditada)
 					.success(
 						function(response){
 							var sub = $scope.disciplina.subs.find(function(a){return a.id == this},$scope.subdisciplinaEditada.id);
@@ -537,7 +537,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 							$scope.erroEmOperacaoDeSubdisciplina = null;
 
 							// atualizar na base local
-							var openReq = indexedDB.open('gdoks');
+							var openReq = indexedDB.open('geproj');
 							openReq.onsuccess = function(){
 								var db = openReq.result;
 								db.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina)
@@ -550,14 +550,14 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 						}
 					);
 			} else {
-				GDoksFactory.adicionarSubdisciplina($scope.subdisciplinaEditada)
+				GeProjFactory.adicionarSubdisciplina($scope.subdisciplinaEditada)
 					.success(
 						function(response){
 							$scope.subdisciplinaEditada.id = response.newId;
 							$scope.subdisciplinaEditada = null;
 
 							// atualizar na base local
-							var openReq = indexedDB.open('gdoks');
+							var openReq = indexedDB.open('geproj');
 							openReq.onsuccess = function(){
 								var db = openReq.result;
 								db.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina);
@@ -578,7 +578,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 		$scope.data = {};
 
 		// levantando usuários na base de dados local
-		var openReq = indexedDB.open('gdoks');
+		var openReq = indexedDB.open('geproj');
 		openReq.onsuccess = function(evt){
 			var db = openReq.result;
 			db.transaction('usuarios').objectStore('usuarios').getAll().onsuccess = function(evt){
@@ -609,13 +609,13 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 	// definindo função que remove especialista
 	$scope.removerEspecialista = function(id_especialista){
 		if(confirm("Tem certeza que deseja remover o especialista da disciplina?")){
-			GDoksFactory.removerEspecialista($scope.disciplina.id,id_especialista)
+			GeProjFactory.removerEspecialista($scope.disciplina.id,id_especialista)
 				.success(
 					function(response){
 						$scope.disciplina.especialistas = $scope.disciplina.especialistas.filter(function(a){return a != this},id_especialista);
 
 						// salvando especialista na base local
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							$scope.$apply(function(){
 								evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina);
 							})
@@ -638,13 +638,13 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 	// definindo função que salva alterações em subdisciplinas
 	$scope.salvarEspecialista = function(){
-		GDoksFactory.adicionarEspecialista($scope.disciplina.id,$scope.data.selecionado.id)
+		GeProjFactory.adicionarEspecialista($scope.disciplina.id,$scope.data.selecionado.id)
 			.success(
 				function(response){
 					$scope.disciplina.especialistas.push($scope.data.selecionado.id);
 					
 					// Capturando o especialista selecionado e adicionando a vetor de especialistas
-					var openReq = indexedDB.open('gdoks');
+					var openReq = indexedDB.open('geproj');
 					openReq.onsuccess = function(evt){
 						var transaction = openReq.result.transaction(['usuarios','disciplinas'],'readwrite');
 						transaction.objectStore('usuarios').get($scope.data.selecionado.id).onsuccess = function(evt){
@@ -669,7 +669,7 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 		$scope.dataValidadores = {};
 
 		// Levantando os possíveis validadores desta disciplina na base local
-		var openReq = indexedDB.open('gdoks');
+		var openReq = indexedDB.open('geproj');
 		openReq.onsuccess = function(evt){
 			var db = evt.target.result;
 			db.transaction('usuarios').objectStore('usuarios').getAll().onsuccess = function(evt){
@@ -700,14 +700,14 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 	// definindo função que remove validador
 	$scope.removerValidador = function(id_validador){
 		if(confirm("Tem certeza que deseja remover o validador da disciplina?")){
-			GDoksFactory.removerValidador($scope.disciplina.id,id_validador)
+			GeProjFactory.removerValidador($scope.disciplina.id,id_validador)
 				.success(
 					function(response){
 						$scope.disciplina.validadores = $scope.disciplina.validadores.filter(function(a){return a.id != this},id_validador);
 						$scope.validadores = $scope.validadores.filter(function(a){return a.id != this},id_validador);
 
 						// salvando remoção na base de dados
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							evt.target.result.transaction('disciplinas','readwrite').objectStore('disciplinas').put($scope.disciplina);
 						}
 					}
@@ -727,14 +727,14 @@ function OldDisciplinaController($scope,$routeParams,GDoksFactory){
 
 	// definindo função que salva alterações em subdisciplinas
 	$scope.salvarValidador = function(){
-		GDoksFactory.adicionarValidador($scope.disciplina.id,$scope.dataValidadores.selecionado.id,$scope.tiposDeValidadores.selecionado.id)
+		GeProjFactory.adicionarValidador($scope.disciplina.id,$scope.dataValidadores.selecionado.id,$scope.tiposDeValidadores.selecionado.id)
 			.success(
 				function(response){
 					// Alterando validador no scope
 					$scope.disciplina.validadores.push({"id":$scope.dataValidadores.selecionado.id,"tipo":$scope.tiposDeValidadores.selecionado.id});
 
 					// Alterando o validador na base
-					indexedDB.open('gdoks').onsuccess = function(evt){
+					indexedDB.open('geproj').onsuccess = function(evt){
 						// salvando disciplina alterada na base local
 						var transaction = evt.target.result.transaction(['disciplinas','usuarios'],'readwrite');
 						transaction.objectStore('disciplinas').put($scope.disciplina);

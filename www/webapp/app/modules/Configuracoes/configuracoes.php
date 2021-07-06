@@ -4,7 +4,7 @@
 
 	// Carregando configurações da empresa
 	try {
-		$configuracoes = GDoks::getConf($user->empresa);
+		$configuracoes = GeProj::getConf($user->empresa);
 	} catch (Exception $e) {
 		echo($e->getMessage());
 		exit(1);

@@ -6,7 +6,7 @@
 	module.controller('DocumentoController', DocumentoController);
 
 	// Defininfo controller
-	function DocumentoController($scope,Upload,$mdExpansionPanel,$routeParams,GDoksFactory,$mdToast,$cookies,$mdDialog,$interval,$location){
+	function DocumentoController($scope,Upload,$mdExpansionPanel,$routeParams,GeProjFactory,$mdToast,$cookies,$mdDialog,$interval,$location){
 
 		// Carregando informações do usuário logado a partir do cookie
 		$scope.usuario = $cookies.getObject('user');
@@ -16,12 +16,7 @@
 
 		// Alguns dados do possível update a ser realizado
 		$scope.update = {};
-
-		// Pedindo para carregar tamanhos de papel
-		$scope.tamanhosDePapel = [];
-		$scope.tamanhoPadrao = null;
-		carregaTamanhosDePapel();
-
+ 
 		// Definindo vetor que mantém os usuários
 		$scope.usuarios = [];
 
@@ -66,9 +61,9 @@
 			for (var i = $scope.updateFiles.length - 1; i >= 0; i--) {
 				if(ultimosArquivos.find(function(a){return a.nome_cliente==this},$scope.updateFiles[i].name) == undefined){
 					// Arquivo NOVO
-					item = {nome:$scope.updateFiles[i].name, nPaginas:1, tamanhoDoPapel:$scope.tamanhoPadrao.id, tipo:'novo',acao:1};
+					item = {nome:$scope.updateFiles[i].name,tipo:'novo',acao:1};
 				} else {
-					item = {nome:$scope.updateFiles[i].name, nPaginas:1, tamanhoDoPapel:$scope.tamanhoPadrao.id, tipo:'antigoParaAtualizar',acao:1}
+					item = {nome:$scope.updateFiles[i].name, nPaginas:1,  tipo:'antigoParaAtualizar',acao:1}
 				}
 				$scope.formUploadItems.push(item);
 			}
@@ -76,7 +71,7 @@
 			// percorrendo o último pacote de arquivos procurando os arquivos que não constam no vetor de arquivos escolhidos
 			for (var i = ultimosArquivos.length - 1; i >= 0; i--) {
 				if($scope.updateFiles.find(function(a){return a.name == ultimosArquivos[i].nome_cliente}) == undefined){
-					item = {nome:ultimosArquivos[i].nome_cliente, nPaginas:1, tamanhoDoPapel:$scope.tamanhoPadrao.id, tipo:'antigoNaoAtualizar',acao:1}
+					item = {nome:ultimosArquivos[i].nome_cliente, tipo:'antigoNaoAtualizar',acao:1}
 					$scope.formUploadItems.push(item);
 				}				
 			}
@@ -88,7 +83,7 @@
 		}
 
 		$scope.bloquearParaRevisao = function(){
-			GDoksFactory.bloquearDocumentoParaRevisao($scope.documento.id)
+			GeProjFactory.bloquearDocumentoParaRevisao($scope.documento.id)
 			.success(function(response){
 				$scope.documento.datahora_do_checkout = new Date(response.datahora);
 				$scope.documento.idu_checkout = $scope.usuario.id;
@@ -112,7 +107,7 @@
 		}
 
 		$scope.desbloquear = function(){
-			GDoksFactory.desbloquearDocumento($scope.documento.id)
+			GeProjFactory.desbloquearDocumento($scope.documento.id)
 			.success(function(response){
 				$scope.documento.idu_checkout = null;
 				$scope.documento.datahora_do_checkout = null;
@@ -133,15 +128,15 @@
 		}
 
 		$scope.baixar = function(){
-			GDoksFactory.baixarPDA($scope.documento.revisoes[0].pdas[0].id);
+			GeProjFactory.baixarPDA($scope.documento.revisoes[0].pdas[0].id);
 		}
 
 		$scope.downloadPda = function(idPda){
-			GDoksFactory.baixarPDA(idPda);
+			GeProjFactory.baixarPDA(idPda);
 		}
 
 		$scope.downloadArquivo = function(idArquivo){
-			GDoksFactory.downloadArquivo(idArquivo);
+			GeProjFactory.downloadArquivo(idArquivo);
 		}
 
 		$scope.enviarArquivos = function(){
@@ -251,7 +246,7 @@
 					// Mostra carregando
 					$scope.root.carregando = true;
 
-					GDoksFactory.removerDocumento($scope.documento)
+					GeProjFactory.removerDocumento($scope.documento)
 					.success(function(response){
 
 						// Esconde carregando
@@ -314,7 +309,7 @@
 
 			$mdDialog.show(confirm).then(
 				function() {
-					GDoksFactory.avancarRevisao($scope.documento)
+					GeProjFactory.avancarRevisao($scope.documento)
 					.success(function(response){
 						if(response.error == 0){
 							var rev = {
@@ -372,7 +367,7 @@
 			}
 
 			$scope.validar = function(){
-				GDoksFactory.validarProgresso($scope.doc.id,$scope.doc.revisoes[0].progresso_a_validar)
+				GeProjFactory.validarProgresso($scope.doc.id,$scope.doc.revisoes[0].progresso_a_validar)
 				.success(function(response){
 					// Atualizando documento localmente
 					parentScope.documento.revisoes[0].pdas[0].progresso_total = $scope.doc.revisoes[0].progresso_a_validar + $scope.doc.revisoes[0].progresso_validado;
@@ -405,7 +400,7 @@
 			$scope.root.carregando = true;
 
 			// Faz a requisição a factory
-			GDoksFactory.getDocumento(id)
+			GeProjFactory.getDocumento(id)
 			.success(function(response){
 				// Esconde carregando
 				$scope.root.carregando = false;
@@ -454,37 +449,8 @@
 				);
 			});
 		}
-
-		function carregaTamanhosDePapel(){
-			GDoksFactory.getTamanhosDePapel()
-			.success(function(response){
-				$scope.tamanhosDePapel = response.tamanhosDePapel;
-				$scope.tamanhoPadrao = $scope.tamanhosDePapel.find(function(a){
-						return a.nome == "A4";
-					});
-
-				// Montando dicionário
-				$scope.dic_tamanhosDePapel = [];
-				for (var i = $scope.tamanhosDePapel.length - 1; i >= 0; i--) {
-					$scope.dic_tamanhosDePapel[$scope.tamanhosDePapel[i].id] = $scope.tamanhosDePapel[i].nome;
-				}
-			})
-			.error(function(error){
-				// Retornando Toast para o usuário
-				$mdToast.show(
-					$mdToast.simple()
-					.textContent('Não foi possível carregar tamanhos de papel: ' + error.msg)
-					.position('bottom left')
-					.hideDelay(5000)
-				);
-
-				// Enviando erro para o console
-				console.warn(error);
-			})
-		}
-
 		function carregaUsuarios(){
-			indexedDB.open("gdoks").onsuccess = function(evt){
+			indexedDB.open("geproj").onsuccess = function(evt){
 				evt.target.result.transaction('usuarios').objectStore('usuarios').getAll().onsuccess = function(evt){
 					$scope.$apply(function(){
 						$scope.usuarios = evt.target.result;

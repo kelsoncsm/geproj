@@ -7,7 +7,7 @@
 		die();
 	}
 
-	// lendo user do cookie
+	// lendo user do cookie	
 	$user = json_decode($_COOKIE['user']);
 
 	// Incluindo constantes
@@ -25,7 +25,7 @@
 	$url = $_SERVER['SCRIPT_NAME'];
 
 	// Carregando o objeto tela
-	include('GDoks/Tela.php');
+	include('GeProj/Tela.php');
 	try {
 		$tela = Tela::CreateByUrl($url,$user->id,$db);
 	} catch (Exception $e) {

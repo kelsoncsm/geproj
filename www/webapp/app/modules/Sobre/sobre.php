@@ -4,7 +4,7 @@
 	$date = (new DateTime(substr($commit,0,19)))->format('d/m/Y à\s H:i:s');
  ?>
 <div class="container_80" id="sobre_container">
-	<img src="img/logo.png" alt="GDoks" class="logo">
+	<img src="img/logo.png" alt="GeProj" class="logo">
 	
 	<a href="#/ua" class="ua">
 		<span>Última Atualização:</span>
@@ -43,5 +43,5 @@
 
 	<div class="obs">* As datas e funcionalidades descritas aqui não estabelecem um compromisso com o cliente e podem ser alteradas sem aviso.</div>
 	<h3>Todo List</h3>
-	<pre><?php include('../../../../../gdoks.todo');	?></pre>
+	<pre><?php include('../../../../../geproj.todo');	?></pre>
 </div>

@@ -1,6 +1,6 @@
 angular.module('Senha',[]).controller('SenhaController',SenhaController)
 
-function SenhaController($scope,$mdToast,GDoksFactory){
+function SenhaController($scope,$mdToast,GeProjFactory){
 	// Inicializando o objeto data;
 	$scope.data = {};
 	$scope.data.login = '';
@@ -8,7 +8,7 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 	$scope.data.senha2 = '';
 
 	$scope.mudaLoginSenha = function(novoLogin,novaSenha){
-		GDoksFactory.mudaLoginSenha(novoLogin,novaSenha)
+		GeProjFactory.mudaLoginSenha(novoLogin,novaSenha)
 			.success(
 				function(response){
 					$mdToast.show(
@@ -32,6 +32,6 @@ function SenhaController($scope,$mdToast,GDoksFactory){
 	}
 
 	$scope.cancel = function(){
-		window.location = "WebGDoks.php#/home";
+		window.location = "WebGeProj.php#/home";
 	}
 }

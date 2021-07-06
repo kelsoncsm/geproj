@@ -4,7 +4,7 @@
 	angular.module('Projetos').controller('ProjetosDocumentosController',ProjetosDocumentosController);
 	
 	// Definindo o controller
-	function ProjetosDocumentosController($scope,GDoksFactory,$mdExpansionPanel,$mdDialog,$mdToast,Upload,$cookies,$timeout){
+	function ProjetosDocumentosController($scope,GeProjFactory,$mdExpansionPanel,$mdDialog,$mdToast,Upload,$cookies,$timeout){
 
 		// Definindo criticas
 		$scope.criticas = [];
@@ -21,6 +21,7 @@
 						id_doc: id_doc,
 						documentos: angular.copy($scope.projeto.documentos),
 						cargos:$scope.cargos,
+					
 						parentScope:$scope,
 						copy:clonar
 					},
@@ -55,7 +56,7 @@
 					$scope.root.carregando = true;
 
 					documento.id_projeto = $scope.projeto.id;
-					GDoksFactory.removerDocumento(documento)
+					GeProjFactory.removerDocumento(documento)
 					.success(function(response){
 
 						// Esconde carregando
@@ -92,11 +93,18 @@
 			);
 		};
 
-		function dialogController($scope,disciplinas,id_doc,documentos,cargos,parentScope,copy,GDoksFactory){
+		function dialogController($scope,disciplinas,id_doc,documentos,cargos,parentScope,copy,GeProjFactory){
 
 			// Copiando as disciplinas para o scope
 			$scope.disciplinas = disciplinas;
 			delete disciplinas;
+
+			
+			// Pedindo para carregar tamanhos de papel
+			$scope.tamanhosDePapel = [];
+			$scope.tamanhoPadrao = null;
+			carregaTamanhosDePapel();
+
 			
 			// Copiando cargos para o scope
 			$scope.cargos = cargos;
@@ -164,8 +172,10 @@
 					"ehValidador":null,
 					"revisoes":[],
 					"grds":[],
-					"dependencias":[],
-					"hhs":[]
+                    "dependencias":[],
+                    "hhs":[],
+                    "dic_tamanhosDePapel": [],
+					"nPaginas": null
 				}
 
 				// Executando função de documento carregado
@@ -176,7 +186,7 @@
 				// Mostra carregando
 				parentScope.carregando = true;
 
-				GDoksFactory.getDocumento(id_doc)
+				GeProjFactory.getDocumento(id_doc)
 				.success(function(response){
 					
 					// Esconde carregando
@@ -214,6 +224,35 @@
 				
 			}
 
+
+			function carregaTamanhosDePapel(){
+				GeProjFactory.getTamanhosDePapel()
+				.success(function(response){
+					$scope.tamanhosDePapel = response.tamanhosDePapel;
+					$scope.tamanhoPadrao = $scope.tamanhosDePapel.find(function(a){
+							return a.nome == "A4";
+						});
+	
+					// Montando dicionário
+					$scope.dic_tamanhosDePapel = [];
+					for (var i = $scope.tamanhosDePapel.length - 1; i >= 0; i--) {
+						$scope.dic_tamanhosDePapel[$scope.tamanhosDePapel[i].id] = $scope.tamanhosDePapel[i].nome;
+					}
+				})
+				.error(function(error){
+					// Retornando Toast para o usuário
+					$mdToast.show(
+						$mdToast.simple()
+						.textContent('Não foi possível carregar tamanhos de papel: ' + error.msg)
+						.position('bottom left')
+						.hideDelay(5000)
+					);
+	
+					// Enviando erro para o console
+					console.warn(error);
+				})
+			}
+			
 			/**
 			 * Função a ser executada quando o documento é definido.
 			 */
@@ -352,7 +391,7 @@
 				// Verificando se é inserção de documento ou atualização pelo id
 				if(doc.id == 0){
 					// Inserir novo documento
-					GDoksFactory.adicionarDocumento(doc)
+					GeProjFactory.adicionarDocumento(doc)
 					.success(function(response){
 						// Esconde carregando
 						parentScope.root.carregando = false;
@@ -390,7 +429,7 @@
 					});
 				} else {
 					// Atualizar documento existente
-					GDoksFactory.alterarDocumento(doc)
+					GeProjFactory.alterarDocumento(doc)
 					.success(function(response){
 						// Esconde carregando
 						parentScope.root.carregando = false;
@@ -442,7 +481,7 @@
 		}
 
 		$scope.baixarModeloParaImportacao = function(){
-			GDoksFactory.baixarModeloParaImportacao($scope.projeto.id);
+			GeProjFactory.baixarModeloParaImportacao($scope.projeto.id);
 		}
 
 		//$scope.UploadXlsx = function($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event){

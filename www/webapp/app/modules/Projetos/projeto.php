@@ -1,6 +1,6 @@
 <?php 
 	// Incluindo classe "Tela" para carregar as opções da tela Documentos
-	include('GDoks/Tela.php');
+	include('GeProj/Tela.php');
 
 	// Levantando dados do usuário a partir do cookie
 	$user = json_decode($_COOKIE['user']);
@@ -30,12 +30,12 @@
 						<div layout="row" layout-align="space-between start" class="md-inline-form">
 							<md-input-container flex="30">
 								<label>Nome</label>
-								<input type="text" placeholder="Dê um nome para o projeto" ng-model="projeto.nome" required>
+								<input type="text" placeholder="Dê um nome para o projeto" ng-model="projeto.nome" capitalize required>
 							</md-input-container>
 							
 							<md-input-container flex="30">
 								<label>Código</label>
-								<input ng-disabled="geraCodigosAutomaticamente" ng-required="!geraCodigosAutomaticamente" type="text" placeholder="{{geraCodigosAutomaticamente?'Será gerado automaticamente':'Digite um código identificador para o projeto'}}" ng-model="projeto.codigo">
+								<input  type="text" placeholder="{{geraCodigosAutomaticamente?'Será gerado automaticamente':'Digite um código identificador para o projeto'}}" ng-model="projeto.codigo">
 							</md-input-container>
 
 							<md-input-container flex="30">
@@ -272,7 +272,7 @@
 							ng-click="openDocumentoDialog($event,0)">
 								<md-icon class="material-icons step" aria-label="Criar um novo documento">add</md-icon>Novo Documento
 						</md-button>
-						<md-button
+						<!-- <md-button
 							class="md-raised md-primary"
 							aria-label="Baixar Modelo de LDP"
 							ng-click="baixarModeloParaImportacao()">
@@ -280,7 +280,7 @@
 								<md-tooltip md-delay="0" md-direction="bottom" md-autohide="true">
 									Baixar modelo para importação (modelo.xlsx)
 								</md-tooltip>
-						</md-button>
+						</md-button> -->
 						<md-button
 							class="md-raised md-primary"
 							aria-label="Enviar arquivo para importação"
@@ -375,7 +375,7 @@
 						</tr>
 						<tr class="par">
 							<td>
-								<div class="label">Trabalho (Homem x Hora)</div>
+								<div class="label">Trabalho (Homem x Hora) 2</div>
 								<div class="value" ng-repeat="hh in doc.hhs" ng-if="doc.hhs.length > 0">
 									{{hh.cargo.nome}}: {{hh.hh}} hh
 								</div>

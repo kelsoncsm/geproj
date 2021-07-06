@@ -35,7 +35,7 @@
 	$db = new DB($dbkey);
 
 	// verificando se o token existe e é válido.
-	$sql = 'SELECT id FROM gdoks_usuarios WHERE token=? and validade_do_token>now()';
+	$sql = 'SELECT id FROM usuarios WHERE token=? and validade_do_token>now()';
 	$resultado = $db->query($sql,'s',$EU->token);
 	if(sizeof($resultado) == 0){
 		// redirecionando para página inicial.

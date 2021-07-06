@@ -4,7 +4,7 @@
 	.controller('ProjetoController',ProjetoController)
 	.controller('DashProjetoController',DashProjetoController);
 
-	function ProjetosController($scope,GDoksFactory,$location){
+	function ProjetosController($scope,GeProjFactory,$location){
 
 		// Definindo o valor mínimo para que a busca de projeto seja executada
 		$scope.minBusca = 3;
@@ -18,7 +18,7 @@
 		var ids_projetos = null;
 
 		// Definindo critério padrão de ordem
-		$scope.o = 'nome';
+		$scope.o = 'codigo';
 
 		// Definindo valor padrão para mostrar inativos ou não
 		$scope.mostrarInativos = false;
@@ -28,7 +28,7 @@
 		
 
 		// Carregando histórico de projetos carregados
-		GDoksFactory.getHistProjetos()
+		GeProjFactory.getHistProjetos()
 		.success(function(response){
 			ids_projetos = response.historico;
 			parseHistorico();
@@ -67,7 +67,7 @@
 			// Mostrar carregando
 			$scope.root.carregando = true;
 
-			GDoksFactory.getProjetosDetalhados(listarInativos)
+			GeProjFactory.getProjetosDetalhados(listarInativos)
 			.success(function(response){
 				// Escondendo carregando
 				$scope.root.carregando = false;
@@ -136,11 +136,11 @@
 		// Função que baixa LDP
 		$scope.baixarLDP = function(idProjeto,evt){
 			evt.stopPropagation();
-			GDoksFactory.baixarLDP(idProjeto);
+			GeProjFactory.baixarLDP(idProjeto);
 		}
 	};
 
-	function ProjetoController($scope,$routeParams,$timeout,$cookies,Upload,GDoksFactory,$mdToast,$location){
+	function ProjetoController($scope,$routeParams,$timeout,$cookies,Upload,GeProjFactory,$mdToast,$location){
 
 		// Variáveis de controle sobre o conteúdo de clientes e usuários (se info já foi carregada da base);
 		var clientesCarregados = false;
@@ -150,7 +150,7 @@
 		var documentosCarregados = false;
 
 		// Carregando clientes da base local
-		GDoksFactory.getClientes()
+		GeProjFactory.getClientes()
 		.success(function(response){
 			$scope.clientes = response.clientes;
 			$scope.clientes.selecionado = undefined;
@@ -168,7 +168,7 @@
 		});
 
 		// Carregando usuarios da base local
-		GDoksFactory.loadUsuarios()
+		GeProjFactory.loadUsuarios()
 		.success(function(response){
 				// Carregando usuários
 				$scope.usuarios = response.usuarios;
@@ -181,7 +181,7 @@
 
 		// Carregando disciplinas do servidor
 		$scope.disciplinas = [];
-		GDoksFactory.getDisciplinas()
+		GeProjFactory.getDisciplinas()
 		.success(function(response){
 			$scope.disciplinas = response.disciplinas;
 			disciplinasCarregadas = true;
@@ -191,15 +191,15 @@
 
 		// Carregando cargos do servidor
 		$scope.cargos = [];
-		GDoksFactory.getCargos().success(function(response){
+		GeProjFactory.getCargos().success(function(response){
 			$scope.cargos = response.cargos;
 			cargosCarregados = true;
 			carregaProjeto();
 		});
 
-		// Carregando configurações do GDoks
+		// Carregando configurações do GeProj
 		$scope.geraCodigosAutomaticamente = false;
-		GDoksFactory.getConfiguracoes().
+		GeProjFactory.getConfiguracoes().
 		success(function(response){
 			$scope.geraCodigosAutomaticamente = (response.config.GERAR_CODIGOS_DE_PROJETOS_AUTOMATICAMENTE.valor === true);
 		})
@@ -253,7 +253,7 @@
 						carregaPropostas();
 					}
 				} else {
-					GDoksFactory.getProjeto($scope.projeto.id)
+					GeProjFactory.getProjeto($scope.projeto.id)
 					.success(function(response){
 						$scope.projeto = response.projeto;
 						$scope.projeto.id_responsavel = ($scope.projeto.id_responsavel==null)?0:$scope.projeto.id_responsavel;
@@ -296,7 +296,7 @@
 		// Função que carrega documentos de projeto
 		$scope.carregaDocumentos = function (){
 			if ($scope.projeto.id != 0) {
-				GDoksFactory.getDocumentosDoProjeto($scope.projeto.id)
+				GeProjFactory.getDocumentosDoProjeto($scope.projeto.id)
 				.success(function(response){
 					var docs = response.documentos;
 					var achouSub,j,k;
@@ -353,7 +353,7 @@
 
 		// Função que carrega propostas de cliente
 		function carregaPropostas(){
-			GDoksFactory.getPropostasDeCliente($scope.clientes.selecionado.id)
+			GeProjFactory.getPropostasDeCliente($scope.clientes.selecionado.id)
 			.success(function(response){
 				$scope.propostas = response.propostas;
 				parsePropostas();
@@ -433,7 +433,7 @@
 
 		// definindo função Cancel
 		$scope.cancel = function(){
-			window.location = '/webapp/WebGDoks.php#/projetos';
+			window.location = '/WebGeProj.php#/projetos';
 		}
 
 		// Definindo função que salva o projeto
@@ -455,7 +455,7 @@
 			delete projeto.subareas;
 
 			if(projeto.id == 0){
-				GDoksFactory.adicionarProjeto(projeto)
+				GeProjFactory.adicionarProjeto(projeto)
 				.success(
 					function(response){
 
@@ -474,7 +474,7 @@
 						projeto.id = response.newId;
 
 						// Adicionando projeto na base local
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							// limpando dados para armazenamento na base local.
 							delete projeto.id_responsavel;
 							delete projeto.data_inicio_p;
@@ -508,7 +508,7 @@
 					}
 				);
 			} else {
-				GDoksFactory.atualizarProjeto(projeto)
+				GeProjFactory.atualizarProjeto(projeto)
 				.success(
 					function(response){
 						// Esconde Carregando
@@ -521,9 +521,9 @@
 							.position('bottom left')
 							.hideDelay(5000)
 						);
-
+						
 						// Atualizando projeto na base local
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							// limpando dados para armazenamento.
 							delete projeto.id_responsavel;
 							delete projeto.data_inicio_p;
@@ -531,6 +531,8 @@
 
 							// armazenando.
 							evt.target.result.transaction('projetos','readwrite').objectStore('projetos').put(projeto);
+						
+						
 						}
 					}
 				)
@@ -555,7 +557,7 @@
 		}
 	};
 
-	function DashProjetoController($scope,GDoksFactory,$location,$routeParams,$mdToast,$mdDialog){
+	function DashProjetoController($scope,GeProjFactory,$location,$routeParams,$mdToast,$mdDialog){
 		
 		// Definindo variáveis de scope
 		$scope.projeto = {};
@@ -566,7 +568,7 @@
 		var id_projeto = $routeParams.id;
 
 		// Carregando projeto	
-		GDoksFactory.getProjeto(id_projeto)
+		GeProjFactory.getProjeto(id_projeto)
 		.success(function(response){
 			if(response.error == 0){
 				// Parsing datas do projeto
@@ -597,10 +599,10 @@
 		})
 
 		// Carregando estatísticas de projeto
-		GDoksFactory.getEstatisticasDeProjeto(id_projeto);
+		GeProjFactory.getEstatisticasDeProjeto(id_projeto);
 
 		// Carregando documentos do projeto
-		GDoksFactory.getDocumentosDoProjeto($routeParams.id)
+		GeProjFactory.getDocumentosDoProjeto($routeParams.id)
 		.success(function(response){
 			if(response.error == 0){
 				// parsing datas limites dos documentos
@@ -630,7 +632,7 @@
 		});
 
 		// Carregando GRDs do projeto
-		GDoksFactory.getGrdsDoProjeto($routeParams.id)
+		GeProjFactory.getGrdsDoProjeto($routeParams.id)
 		.success(function(response){
 			if(response.error == 0){
 				// Parsing datahora
@@ -701,7 +703,7 @@
 					$scope.root.carregando = true;
 
 					documento.id_projeto = $scope.projeto.id;
-					GDoksFactory.removerDocumento(documento)
+					GeProjFactory.removerDocumento(documento)
 					.success(function(response){
 
 						// Esconde carregando

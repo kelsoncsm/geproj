@@ -1,0 +1,68 @@
+<md-dialog  class="grddoc_dialog">
+	<md-dialog-content>
+		<form name="medicaoItemForm" ng-submit="salvarItem(item)" layout="column">
+
+			<div layout="row" layout-align="space-between start">
+				
+				<md-input-container flex="40">
+					<label>Disciplina</label>
+					<md-select ng-model="item.id_disciplina" ng-change="onDisciplinaChange(item.id_disciplina)" required>
+					  <md-option ng-value="opt.id"  ng-repeat="opt in disciplinas|orderBy:'nome'">{{ opt.nome }}</md-option>
+					</md-select>
+				</md-input-container>
+				<md-input-container flex="50">
+					<label>Subdisciplina</label>
+					<md-select ng-model="item.id_subdisciplina" required>
+					  <md-option ng-value="opt.id" ng-repeat="opt in subdisciplinas|orderBy:'nome'">{{ opt.nome }}</md-option>
+					</md-select>
+				</md-input-container>
+			</div>
+			 <div layout="row" layout-align="space-between start">
+				<md-input-container flex="25">
+					<label>Tipo </label>
+					<md-select  ng-model="item.tipo_medicao" required   ng-disabled="item.id_item > 0" >
+						<md-option ng-value="tipo_medicao.id" 
+							ng-repeat="tipo_medicao in tipoMedicao|orderBy:'nome'">{{ tipo_medicao.nome }}
+						</md-option>
+					</md-select>
+				</md-input-container>
+				 <md-input-container flex="25" ng-if="item.tipo_medicao == 'H'" >
+					<label>Cargo </label>
+					<md-select ng-model="item.id_cargo" required  ng-disabled="item.id_item > 0">
+						<md-option ng-value="carg.id" 
+							ng-repeat="carg in cargos|orderBy:'nome'">{{carg.nome}}
+						</md-option>
+					</md-select>
+				</md-input-container> 
+				<md-input-container flex="25" ng-if="item.tipo_medicao == 'U'">
+					<label>Formato </label>
+					<md-select ng-model="item.id_tamanho_papel" required ng-disabled="item.id_item > 0" >
+						<md-option ng-value="tam.id" 
+							ng-repeat="tam in tamanhosDePapel|orderBy:'nome'">{{ tam.nome }}
+						</md-option>
+					</md-select>
+				</md-input-container>
+				<md-input-container flex="20">
+					<label>Quantidade</label>
+					<input type="number" min="1" ng-model="item.qtd" required>
+				</md-input-container>
+				<md-input-container flex="20">
+					<label>Valor</label>
+				  <input
+				  type="text"
+				  step="0.01"
+				  ng-model="item.valor"
+				  min="0"	
+				  max="1000000000000"
+				  ng-max="1000000000000"
+				  ng-min="0"  required> 
+				</md-input-container> 
+			</div>
+			<button type="submit" style="display: none"></button>
+		</form>
+		<div layout="row" layout-align="space-between start">
+			<md-button ng-click="cancelar()" class="md-raised md-accent" aria-label="Cancelar">Cancelar</md-button>
+			<md-button ng-disabled="medicaoItemForm.$pristine || !medicaoItemForm.$valid" ng-click="salvarItem(item)" class="md-raised md-primary" aria-label="Alterar">Salvar</md-button>
+		</div>
+	</md-dialog-content>
+</md-dialog>

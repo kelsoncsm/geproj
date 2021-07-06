@@ -7,7 +7,7 @@
 	mod.controller('ProjetosSubareasController',ProjetosSubareasController);
 	
 	// Definindo controller
-	function ProjetosSubareasController($scope,GDoksFactory,$mdDialog,$mdToast){
+	function ProjetosSubareasController($scope,GeProjFactory,$mdDialog,$mdToast){
 			$scope.openDialog = function(ev,idSubarea){
 				
 				// Declarando o objeto area clicado
@@ -30,7 +30,7 @@
 
 							$scope.salvar = function(subarea){
 								if(subarea.id == 0){
-									GDoksFactory.adicionarSubarea(subarea)
+									GeProjFactory.adicionarSubarea(subarea)
 									.success(function(response){
 										// Atribuindo novo id para a subárea recém criada
 										subarea.id = response.newId;
@@ -57,7 +57,7 @@
 										);
 									});
 								} else {
-									GDoksFactory.atualizarSubarea(subarea)
+									GeProjFactory.atualizarSubarea(subarea)
 									.success(function(response){
 										parentSubarea.nome = subarea.nome;
 										parentSubarea.codigo = subarea.codigo;
@@ -123,7 +123,7 @@
 				$mdDialog.show(confirm).then(
 					function() {
 						var subarea = $scope.projeto.subareas.find(function(a){return a.id==this},idSubarea);
-						GDoksFactory.removerSubarea(subarea)
+						GeProjFactory.removerSubarea(subarea)
 						.success(function(response){
 							$scope.projeto.subareas = $scope.projeto.subareas.filter(function(a){return a.id!= this},idSubarea);
 							$mdToast.show(

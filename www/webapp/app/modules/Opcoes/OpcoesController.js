@@ -5,7 +5,7 @@ angular.module('Opcoes',[])
 	}
 	$scope.logout = function(){
 		$cookies.remove('user',{path:'/'});
-		indexedDB.deleteDatabase('gdoks');
+		indexedDB.deleteDatabase('geproj');
 		window.location = '/';
 	}
 	$scope.onHelpClick = function(){

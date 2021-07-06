@@ -6,7 +6,7 @@
 	module.controller('DocumentoEditController', DocumentoEditController);
 
 	// Defininfo controller
-	function DocumentoEditController($scope,$routeParams,GDoksFactory,$mdToast,$cookies,$location){
+	function DocumentoEditController($scope,$routeParams,GeProjFactory,$mdToast,$cookies,$location){
 
 		// Lendo o id da rota
 		var id = $routeParams.id;
@@ -16,7 +16,11 @@
 
 		// Definindo global para guardar documentos do projeto
 		var documentos = null;
-		
+			// Pedindo para carregar tamanhos de papel
+			$scope.tamanhosDePapelEdit = [];
+			$scope.tamanhoPadraoEdit = null;
+			carregaTamanhosDePapelEdit();
+	
 		if(id == 0){
 
 			// Criando documento vazio
@@ -27,7 +31,7 @@
 			let clone = $location.search().clone;
 
 			if(id_projeto != undefined && !isNaN(id_projeto)){
-				GDoksFactory.getProjeto(id_projeto)
+				GeProjFactory.getProjeto(id_projeto)
 				.success(function(response){
 					$scope.doc.id_cliente = response.projeto.id_cliente
 					$scope.doc.nome_cliente = response.projeto.nome_cliente;
@@ -39,7 +43,7 @@
 				})
 			} else if (clone != undefined && !isNaN(clone)){
 				// Carregando documento da base
-				GDoksFactory.getDocumento(clone)
+				GeProjFactory.getDocumento(clone)
 				.success(function(response){
 					
 					// Escrevento resultado da requisição no escopo
@@ -66,7 +70,7 @@
 
 		} else {
 			// Carregando documento da base
-			GDoksFactory.getDocumento(id)
+			GeProjFactory.getDocumento(id)
 			.success(function(response){
 
 				// Escrevento resultado da requisição no escopo
@@ -111,10 +115,10 @@
 
 				// Atribuindo subarea e subdisciplina
 				doc.id_subarea = $scope.areas.selecionada.subareas.selecionada.id;
-				doc.id_subdisciplina = $scope.disciplinas.selecionada.subs.selecionada.id;
-
+				doc.id_subdisciplina = $scope.disciplinas.selecionada.subs.selecionada.id;z
+			
 				// Documento NOVO. Proceder criação
-				GDoksFactory.adicionarDocumento(doc)
+				GeProjFactory.adicionarDocumento(doc)
 				.success(function(response){
 					// Esconde carregando
 					$scope.root.carregando = false;
@@ -142,8 +146,10 @@
 	
 			} else {
 
+
+				console.log(doc)
 				// Documento já existente. Proceder alteração
-				GDoksFactory.alterarDocumento(doc)
+				GeProjFactory.alterarDocumento(doc)
 				.success(function(response){
 					// Esconde carregando
 					$scope.root.carregando = false;
@@ -174,12 +180,41 @@
 			}
 		}
 
+
+		function carregaTamanhosDePapelEdit(){
+			GeProjFactory.getTamanhosDePapel()
+			.success(function(response){
+				$scope.tamanhosDePapelEdit = response.tamanhosDePapel;
+				$scope.tamanhoPadraoEdit = $scope.tamanhosDePapelEdit.find(function(a){
+						return a.nome == "A4";
+					});
+
+				// Montando dicionário
+				$scope.dic_tamanhosDePapelEdit = [];
+				for (var i = $scope.tamanhosDePapelEdit.length - 1; i >= 0; i--) {
+					$scope.dic_tamanhosDePapelEdit[$scope.tamanhosDePapelEdit[i].id] = $scope.tamanhosDePapelEdit[i].nome;
+				}
+			})
+			.error(function(error){
+				// Retornando Toast para o usuário
+				$mdToast.show(
+					$mdToast.simple()
+					.textContent('Não foi possível carregar tamanhos de papel: ' + error.msg)
+					.position('bottom left')
+					.hideDelay(5000)
+				);
+
+				// Enviando erro para o console
+				console.warn(error);
+			})
+		}
+
 		function onDocumentoCarregado(){
 			// Parsing date
 			$scope.doc.revisoes[0].data_limite = new Date($scope.doc.revisoes[0].data_limite);
 
 			// Carregando áreas
-			GDoksFactory.getAreas($scope.doc.id_projeto)
+			GeProjFactory.getAreas($scope.doc.id_projeto)
 			.success(function(response){
 				$scope.areas = response.areas;
 				if($scope.doc.id_area != undefined) {
@@ -198,7 +233,7 @@
 			});
 
 			// Carregando disciplinas
-			GDoksFactory.getDisciplinas()
+			GeProjFactory.getDisciplinas()
 			.success(function(response){
 				$scope.disciplinas = response.disciplinas;
 				if($scope.doc.id_disciplina != undefined){
@@ -217,7 +252,7 @@
 			});
 
 			// Carregando Cargos
-			GDoksFactory.getCargos()
+			GeProjFactory.getCargos()
 			.success(function(response){
 				$scope.cargos = response.cargos;
 			})
@@ -232,7 +267,7 @@
 			});
 
 			// Carregando documentos de projeto
-			GDoksFactory.getDocumentosDoProjeto($scope.doc.id_projeto)
+			GeProjFactory.getDocumentosDoProjeto($scope.doc.id_projeto)
 			.success(function(response){
 
 				// Salvando resposta do servidor
@@ -291,8 +326,10 @@
 					"revisoes": [{data_limite:new Date()}],
 					"grds": [],
 					"dependencias": [],
-					"hhs": []
-				};
+					"hhs": [],
+                    "tamanhosDePapel": null,
+					"qPaginas": null
+				};	
 			}
 		
 			// Determinando lista de possíveis dependentes

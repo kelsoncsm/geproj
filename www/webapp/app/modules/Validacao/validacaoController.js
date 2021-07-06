@@ -3,7 +3,7 @@
 	var module = angular.module('Validacao',[]);
 
 	// Definindo a função controller
-	var ValidacaoController = function($scope,GDoksFactory,$mdToast,$location){
+	var ValidacaoController = function($scope,GeProjFactory,$mdToast,$location){
 
 		// Iniciando variáveis do escopo
 		$scope.documentos = [];
@@ -11,7 +11,7 @@
 
 		// Função que carrega documentos a validar do usuário atual
 		(function(){
-			GDoksFactory.getDocumentosParaValidar()
+			GeProjFactory.getDocumentosParaValidar()
 			.success(function(response){
 				$scope.documentos = response.documentos.map(function(d){
 					d.validar=true;
@@ -48,7 +48,7 @@
 		}
 
 		$scope.baixarPDA = function(idPDA){
-			GDoksFactory.baixarPDA(idPDA);
+			GeProjFactory.baixarPDA(idPDA);
 		}
 
 		$scope.toggleSelecionados = function(){
@@ -90,7 +90,7 @@
 			})
 
 			// Requisitando validação
-			GDoksFactory.validarProgressos(docsParaValidar)
+			GeProjFactory.validarProgressos(docsParaValidar)
 			.success(function(response){
 				// Escondendo o carregando
 				$scope.root.carregando = false;

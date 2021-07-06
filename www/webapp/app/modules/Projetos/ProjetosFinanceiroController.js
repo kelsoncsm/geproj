@@ -1,5 +1,5 @@
 angular.module('Projetos').controller('ProjetosFinanceiroController',ProjetosFinanceiroController);
-function ProjetosFinanceiroController($scope,GDoksFactory,$mdToast,$routeParams){
+function ProjetosFinanceiroController($scope,GeProjFactory,$mdToast,$routeParams){
 	
 	// Lendo id do projeto da rota
 	var id_projeto = $routeParams.id;
@@ -21,7 +21,7 @@ function ProjetosFinanceiroController($scope,GDoksFactory,$mdToast,$routeParams)
 
 	// Carregando dados financeiros do projeto
 	if(id_projeto != 0){
-		GDoksFactory.getDadosFinanceirosDoProjeto(id_projeto)
+		GeProjFactory.getDadosFinanceirosDoProjeto(id_projeto)
 		.success(function(response){
 			$scope.dadosFinanceiros = {};
 			if(response.dadosFinanceiros.forma_de_cobranca != undefined){
@@ -55,7 +55,7 @@ function ProjetosFinanceiroController($scope,GDoksFactory,$mdToast,$routeParams)
 
 	// Definindo função que salva dados financeiros
 	$scope.salvar = function(){
-		GDoksFactory.salvaDadosFinanceirosDoProjeto(id_projeto,$scope.dadosFinanceiros)
+		GeProjFactory.salvaDadosFinanceirosDoProjeto(id_projeto,$scope.dadosFinanceiros)
 		.success(function(response){
 			// Retornando Toast para o usuário
 			$mdToast.show(

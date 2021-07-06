@@ -1,7 +1,7 @@
 (function(){
 	var modProjetos = angular.module('Projetos');
 
-	var ProjetosDAOsController = function($scope,Upload,$cookies,GDoksFactory,$mdToast,$mdDialog){
+	var ProjetosDAOsController = function($scope,Upload,$cookies,GeProjFactory,$mdToast,$mdDialog){
 
 		// Arquivos de documentos de abertura de operações
 		$scope.daoFiles = [];
@@ -137,7 +137,7 @@
 					// Ajeitando dao a ser removida
 					var dao = $scope.projeto.daos.find(function(a){return a.id == this},idDao);
 					dao.id_projeto = $scope.projeto.id;
-					GDoksFactory.removerDAO(dao)
+					GeProjFactory.removerDAO(dao)
 					.success(function(response){
 						// Esconde carregando
 						$scope.root.carregando = false;

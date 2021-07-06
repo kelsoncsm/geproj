@@ -72,19 +72,19 @@
 					       d.nome AS subdisciplina_nome,
 					       e.nome AS disciplina_nome,
 					       R.serial AS serial
-					FROM gdoks_documentos a
-					INNER JOIN gdoks_subareas b ON a.id_subarea=b.id
-					INNER JOIN gdoks_areas c ON b.id_area=c.id
-					INNER JOIN gdoks_subdisciplinas d ON a.id_subdisciplina=d.id
-					INNER JOIN gdoks_disciplinas e ON d.id_disciplina=e.id
+					FROM documentos a
+					INNER JOIN subareas b ON a.id_subarea=b.id
+					INNER JOIN areas c ON b.id_area=c.id
+					INNER JOIN subdisciplinas d ON a.id_subdisciplina=d.id
+					INNER JOIN disciplinas e ON d.id_disciplina=e.id
 					LEFT JOIN
 					  (SELECT
 							a.id_documento,
 						    max(a.serial) as serial
-						FROM gdoks_revisoes a
-						INNER JOIN gdoks_documentos b on a.id_documento=b.id
-						INNER JOIN gdoks_subareas c on b.id_subarea=c.id
-						INNER JOIN gdoks_areas d on c.id_area=d.id
+						FROM revisoes a
+						INNER JOIN documentos b on a.id_documento=b.id
+						INNER JOIN subareas c on b.id_subarea=c.id
+						INNER JOIN areas d on c.id_area=d.id
 						WHERE d.id_projeto=?
 						group by a.id_documento
 						order by a.id DESC) R ON R.id_documento=a.id
@@ -108,10 +108,10 @@
 						b.contato_nome,
 						b.contato_email,
 						b.contato_telefone
-					FROM gdoks_projetos a
-					INNER JOIN gdoks_clientes b ON (a.id_cliente=b.id
+					FROM projetos a
+					INNER JOIN clientes b ON (a.id_cliente=b.id
 					                                AND a.id=?)
-					INNER JOIN gdoks_usuarios c ON a.id_responsavel=c.id';
+					INNER JOIN usuarios c ON a.id_responsavel=c.id';
 			$this->projeto = (object)($this->db->query($sql,'i',$id_projeto)[0]);
 		}
 

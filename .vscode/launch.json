@@ -4,19 +4,19 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        
         {
-            "name": "Listen for XDebug",
-            "type": "php",
-            "request": "launch",
-            "port": 9000
+            "type": "node",
+            "request": "attach",
+            "name": "Attach",
+            "port": 9229
         },
+        
         {
-            "name": "Launch currently open script",
-            "type": "php",
+            "type": "node",
             "request": "launch",
-            "program": "${file}",
-            "cwd": "${fileDirname}",
-            "port": 9000
+            "name": "Launch Program",
+            "program": "${workspaceFolder}\\www\\webapp\\app\\modules\\Propostas\\PropostasController.js"
         }
     ]
 }

@@ -4,10 +4,10 @@
 	.controller('ClienteController',ClienteController);
 
 
-	function ClientesController($scope,GDoksFactory,$location){
+	function ClientesController($scope,GeProjFactory,$location){
 		// levantando clientes na base de dados local
 		$scope.clientes = [];
-		indexedDB.open('gdoks').onsuccess = function(evt){
+		indexedDB.open('geproj').onsuccess = function(evt){
 			evt.target.result.transaction('clientes').objectStore('clientes').getAll().onsuccess = function(evt){
 				$scope.$apply(function(){$scope.clientes = evt.target.result});
 			}
@@ -18,7 +18,7 @@
 		}
 	};
 
-	function ClienteController($scope,$routeParams,GDoksFactory,$location,$mdToast){
+	function ClienteController($scope,$routeParams,GeProjFactory,$location,$mdToast){
 		// Capturando o id passado na url
 		var id = $routeParams.id;
 
@@ -42,13 +42,18 @@
 			$scope.cliente.login = '';
 			$scope.cliente.senha1 = '';
 			$scope.cliente.senha2 = '';
+			$scope.cliente.caminho = '';
+			
+		 
 		} else {
 			// Carregando informações do cliente a partir da base
-			GDoksFactory.getCliente(id)
+			GeProjFactory.getCliente(id)
 				.success(
 					function(response){
 						$scope.cliente = response.cliente;
 						$scope.cliente.tipo = response.cliente.cpf == null?'1':'2';
+						$scope.cliente.imgs = [];
+
 					}
 				)
 				.error(
@@ -75,7 +80,7 @@
 
 			if($scope.cliente.id == 0){
 
-				GDoksFactory.adicionarCliente(cliente)
+				GeProjFactory.adicionarCliente(cliente)
 				.success(
 					function(response){
 						// Esconde carregando
@@ -103,7 +108,7 @@
 						delete cliente.ftp_usuario;
 						delete cliente.ftp_senha;
 
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							evt.target.result.transaction('clientes','readwrite').objectStore('clientes').add(cliente);
 						}
 						
@@ -117,6 +122,7 @@
 
 						// Voltando para a tela de clientes
 						$location.url("/clientes");
+
 					}
 				)
 				.error(
@@ -137,7 +143,7 @@
 					}
 				);
 			} else {
-				GDoksFactory.atualizarCliente(cliente)
+				GeProjFactory.atualizarCliente(cliente)
 				.success(
 					function(response){
 						// Esconde carregando
@@ -168,7 +174,7 @@
 						delete cliente.ftp_host;
 						delete cliente.ftp_usuario;
 						delete cliente.ftp_senha;
-						indexedDB.open('gdoks').onsuccess = function(evt){
+						indexedDB.open('geproj').onsuccess = function(evt){
 							evt.target.result.transaction('clientes','readwrite').objectStore('clientes').put(cliente);
 						}
 

@@ -1,0 +1,52 @@
+  
+  <!-- 
+                        <md-input-container flex="50">
+                            <label>Tipo </label>
+                            <md-select ng-model="medicao.tipo_medicao" required>
+                                <md-option ng-value="tipo_medicao.id"
+                                    ng-repeat="tipo_medicao in tipoMedicao|orderBy:'nome'">{{ tipo_medicao.nome }}
+                                </md-option>
+							</md-select>
+						</md-input-container> -->
+  
+  
+  <md-content id="addprojeto_documentos_container" class="md-padding" >
+				<h3>Itens</h3>
+				<div layout="row" layout-align="space-between center">
+					<form id="form_import" name="form_import">
+						<md-button
+							class="md-raised md-primary"
+							aria-label="Novo Documento"
+							ng-click="openDocumentoDialog($event,0)">
+								<md-icon class="material-icons step" aria-label="Criar um novo documento">add</md-icon>Novo Documento
+						</md-button>
+					</form>
+					
+				</div>
+				<table class="lista_de_docs" >
+					<thead>
+						<tr>
+                           <td>Código</td>
+							<td>Descrição</td>
+							<td>Quantidade</td>
+							<td>Valor</td>
+						</tr>
+					</thead>
+					<tbody ng-repeat="cargo in medicao.cargo">
+						<tr class="impar">
+							<td>
+								<span class="codigo">{{cargo.id}}</span>
+                            </td>
+                            <td>
+                            <span class="decricao">{{cargo.id_cliente}}</span>
+                            </td>
+							<td>
+								<span class="quantidade">{{cargo.qtd}}</span>
+                            </td>
+                            <td>
+                            <span class="Valor">{{cargo.id_cargo}}</span>
+                            </td>
+						</tr>
+					</tbody>
+				</table>
+			</md-content>
