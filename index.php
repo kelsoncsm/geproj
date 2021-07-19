@@ -5,6 +5,6 @@
 		$uri = 'http://';
 	}
 	$uri .= $_SERVER['HTTP_HOST'];
-	header('Location: '.$uri.'/www');
+	header('Location: '.$uri.'/geproj/www/');
 	exit;
 ?>
